@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amritan.backend.dto.JobDto;
 import com.amritan.backend.service.JobService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/jobs")
 public class JobController {
@@ -29,7 +31,7 @@ public class JobController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<JobDto> createJob(@RequestBody JobDto jobtDto){
+	public ResponseEntity<JobDto> createJob(@Valid @RequestBody JobDto jobtDto){
 		JobDto savedJobDto = jobService.createJob(jobtDto);
 		
 		return new ResponseEntity<>(

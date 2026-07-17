@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amritan.backend.dto.UserDto;
 import com.amritan.backend.service.UserService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -30,7 +32,7 @@ public class UserController {
 	
 	
 	@PostMapping
-	public ResponseEntity<UserDto> createUser(@RequestBody UserDto dto){
+	public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto dto){
 		UserDto userDto = userService.createUserDto(dto);
 		
 		return new ResponseEntity<>(

@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amritan.backend.dto.CandidateDto;
 import com.amritan.backend.service.CandidateService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/candidates")
 public class CandidateController {
@@ -28,7 +30,7 @@ public class CandidateController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<CandidateDto> createCandidate(@RequestBody CandidateDto dto){
+	public ResponseEntity<CandidateDto> createCandidate(@Valid @RequestBody CandidateDto dto){
 		CandidateDto candidateDto = candidateService.createCandidate(dto);
 		
 		return new ResponseEntity<>(

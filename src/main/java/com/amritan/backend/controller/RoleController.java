@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amritan.backend.dto.RoleDto;
 import com.amritan.backend.service.RoleService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/roles")
 public class RoleController {
@@ -29,7 +31,7 @@ public class RoleController {
 	
 	// create role
 	@PostMapping
-	public ResponseEntity<RoleDto> createRole( @RequestBody RoleDto roleDto){
+	public ResponseEntity<RoleDto> createRole(@Valid @RequestBody RoleDto roleDto){
 		RoleDto saveRoledDto = roleService.createRole(roleDto);
 		
 		return new ResponseEntity<>(
