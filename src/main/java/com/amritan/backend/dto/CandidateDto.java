@@ -12,6 +12,7 @@ public class CandidateDto {
 
 	private Long id;
 	
+	
 	@NotBlank(message = "Name must be required")
 	@Size(min=3,max=50)
 	private String firstName;
