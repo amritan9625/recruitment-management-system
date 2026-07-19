@@ -1,8 +1,11 @@
 package com.amritan.backend.mapper;
 
+import org.springframework.stereotype.Component;
+
 import com.amritan.backend.dto.CandidateDto;
 import com.amritan.backend.entity.Candidate;
 
+@Component
 public class CandidateMapper {
 
 	

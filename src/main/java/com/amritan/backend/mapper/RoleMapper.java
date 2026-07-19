@@ -1,9 +1,12 @@
 package com.amritan.backend.mapper;
 
 
+import org.springframework.stereotype.Component;
+
 import com.amritan.backend.dto.RoleDto;
 import com.amritan.backend.entity.Role;
 
+@Component
 public class RoleMapper {
 
 	public static Role mapToEntity(RoleDto dto) {

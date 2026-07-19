@@ -1,8 +1,11 @@
 package com.amritan.backend.mapper;
 
+import org.springframework.stereotype.Component;
+
 import com.amritan.backend.dto.JobDto;
 import com.amritan.backend.entity.Job;
 
+@Component
 public class JobMapper {
 
 	public static Job mapToEntity(JobDto dto) {
