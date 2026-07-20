@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amritan.backend.dto.ApplicationDto;
+import com.amritan.backend.enums.ApplicationStatus;
 import com.amritan.backend.service.ApplicationService;
 
 import jakarta.validation.Valid;
@@ -51,6 +53,38 @@ public class ApplicationController {
 		
 		return ResponseEntity.ok(applicationDto);
 	}
+	
+	
+	
+	@GetMapping("/job/{jobId}")
+	public ResponseEntity<List<ApplicationDto>> getApplicationsByJob(@PathVariable Long jobId) {
+	    
+		List<ApplicationDto> applicationDtos = applicationService.getApplicationsByJob(jobId);
+		
+		return ResponseEntity.ok(applicationDtos);
+	}
+	
+	
+	
+	@GetMapping("/candidate/{candidateId}")
+	public ResponseEntity<List<ApplicationDto>> getApplicationsByCandidate(@PathVariable Long candidateId) {
+	    List<ApplicationDto> applicationDtos = applicationService.getApplicationsByCandidate(candidateId);
+	    
+	    return ResponseEntity.ok(applicationDtos);
+	}
+	
+	
+	@PutMapping("/{id}/status")
+	public ResponseEntity<ApplicationDto> updateStatus(
+	        @PathVariable Long id,
+	        @RequestParam ApplicationStatus status) {
+
+	    ApplicationDto applicationDto = applicationService.updateStatus(id, status);
+	    
+	    return ResponseEntity.ok(applicationDto);
+	}
+		
+	
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<ApplicationDto> updateApplication(@PathVariable Long id, @RequestBody ApplicationDto dto){

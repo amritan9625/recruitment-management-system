@@ -17,7 +17,6 @@ import com.amritan.backend.repository.ApplicationRepository;
 import com.amritan.backend.repository.CandidateRepository;
 import com.amritan.backend.repository.JobRepository;
 
-import lombok.RequiredArgsConstructor;
 
 @Service
 public class ApplicationServiceImpl implements ApplicationService{
@@ -89,6 +88,45 @@ public class ApplicationServiceImpl implements ApplicationService{
 		
 		return applicationMapper.mapToDto(application);
 	}
+	
+	
+	
+	@Override
+	public List<ApplicationDto> getApplicationsByJob(Long jobId) {
+
+	    return applicationRepository.findByJobId(jobId)
+	            .stream()
+	            .map(applicationMapper::mapToDto)
+	            .toList();
+
+	}
+	
+	
+	
+	@Override
+	public List<ApplicationDto> getApplicationsByCandidate(Long candidateId) {
+
+	    return applicationRepository.findByCandidateId(candidateId)
+	            .stream()
+	            .map(applicationMapper::mapToDto)
+	            .toList();
+
+	}
+	
+	@Override
+	public ApplicationDto updateStatus(Long id, ApplicationStatus status) {
+
+	    Application application = applicationRepository.findById(id)
+	            .orElseThrow(() -> new RuntimeException("Application not found"));
+
+	    application.setStatus(status);
+
+	    Application saved = applicationRepository.save(application);
+
+	    return applicationMapper.mapToDto(saved);
+
+	}
+	
 
 	@Override
 	public ApplicationDto updateApplication(Long id, ApplicationDto dto) {
