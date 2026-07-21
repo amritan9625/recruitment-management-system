@@ -62,18 +62,19 @@ public class InterviewServiceImpl implements InterviewService{
 
 	@Override
 	public InterviewDto updateInterview(Long id, InterviewDto dto) {
-		Application application = applicationRepository.findById(dto.getApplicationId())
-		        .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
-
 		Interview interview = interviewRepository.findById(id)
 				.orElseThrow(() ->
 				new ResourceNotFoundException("Interview not found with id : "+id));
 		
+		Application application = applicationRepository.findById(id)
+				.orElseThrow(() ->
+				new ResourceNotFoundException("Application not found with id : "+id));
 		
 		interview.setInterviewDate(dto.getInterviewDate());
 		interview.setMode(dto.getMode());
 		interview.setInterviewer(dto.getInterviewer());
 		interview.setStatus(dto.getStatus());
+		
 		interview.setApplication(application);
 		
 		Interview savedInterview = interviewRepository.save(interview);

@@ -14,10 +14,10 @@ public class ApplicationDto {
 
 	private Long id;
 	
-	@NotNull
+	@NotNull(message = "Candidate Id is must")
 	private Long candidateId;
 	
-	@NotNull
+	@NotNull(message = "Job Id is must")
 	private Long jobId;
 	
 	private ApplicationStatus status;	// ApplicationStatus will automatically converts the JSON string into the enum
