@@ -1,8 +1,7 @@
-package com.amritan.backend.service;
+package com.amritan.backend.service.impl;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amritan.backend.dto.RoleDto;
@@ -10,16 +9,16 @@ import com.amritan.backend.entity.Role;
 import com.amritan.backend.exception.ResourceNotFoundException;
 import com.amritan.backend.mapper.RoleMapper;
 import com.amritan.backend.repository.RoleRepository;
+import com.amritan.backend.service.RoleService;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class RoleServiceImpl implements RoleService{
 
-	private RoleRepository roleRepository;
+	private final RoleRepository roleRepository;
 	
-	@Autowired
-	public void setRoleRepository(RoleRepository roleRepository) {
-		this.roleRepository = roleRepository;
-	}
 
 	@Override
 	public RoleDto createRole(RoleDto roleDto) {

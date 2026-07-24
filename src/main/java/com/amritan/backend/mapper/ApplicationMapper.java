@@ -8,7 +8,7 @@ import com.amritan.backend.entity.Application;
 @Component
 public class ApplicationMapper {
 
-	public Application mapToEntity(ApplicationDto dto) {
+	public static Application mapToEntity(ApplicationDto dto) {
 		Application application = new Application();
 		
 		application.setId(dto.getId());
@@ -16,7 +16,7 @@ public class ApplicationMapper {
 		return application;
 	}
 	
-	public ApplicationDto mapToDto(Application application) {
+	public static ApplicationDto mapToDto(Application application) {
 		ApplicationDto dto = new ApplicationDto();
 		
 		dto.setId(application.getId());

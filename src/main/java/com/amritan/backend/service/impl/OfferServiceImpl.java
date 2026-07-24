@@ -1,4 +1,4 @@
-package com.amritan.backend.service;
+package com.amritan.backend.service.impl;
 
 import java.util.List;
 
@@ -13,6 +13,7 @@ import com.amritan.backend.mapper.OfferMapper;
 import com.amritan.backend.repository.CandidateRepository;
 import com.amritan.backend.repository.JobRepository;
 import com.amritan.backend.repository.OfferRepository;
+import com.amritan.backend.service.OfferService;
 
 import lombok.RequiredArgsConstructor;
 

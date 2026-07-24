@@ -1,9 +1,8 @@
-package com.amritan.backend.service;
+package com.amritan.backend.service.impl;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amritan.backend.dto.InterviewDto;
@@ -13,6 +12,7 @@ import com.amritan.backend.exception.ResourceNotFoundException;
 import com.amritan.backend.mapper.InterviewMapper;
 import com.amritan.backend.repository.ApplicationRepository;
 import com.amritan.backend.repository.InterviewRepository;
+import com.amritan.backend.service.InterviewService;
 
 import lombok.RequiredArgsConstructor;
 

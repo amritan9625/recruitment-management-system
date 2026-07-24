@@ -1,8 +1,7 @@
-package com.amritan.backend.service;
+package com.amritan.backend.service.impl;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amritan.backend.dto.UserDto;
@@ -12,22 +11,17 @@ import com.amritan.backend.exception.ResourceNotFoundException;
 import com.amritan.backend.mapper.UserMapper;
 import com.amritan.backend.repository.RoleRepository;
 import com.amritan.backend.repository.UserRepository;
+import com.amritan.backend.service.UserService;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
 	private UserRepository userRepository;
 	private RoleRepository roleRepository;
 	
-	@Autowired
-	private void setUserRepository(UserRepository userRepository) {
-		this.userRepository = userRepository;
-	}
-	
-	@Autowired
-	private void setRoleRepository(RoleRepository roleRepository) {
-		this.roleRepository = roleRepository;
-	}
 	
 	
 	@Override

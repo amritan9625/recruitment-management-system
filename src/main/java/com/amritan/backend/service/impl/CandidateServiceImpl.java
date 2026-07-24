@@ -1,8 +1,7 @@
-package com.amritan.backend.service;
+package com.amritan.backend.service.impl;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amritan.backend.dto.CandidateDto;
@@ -10,18 +9,15 @@ import com.amritan.backend.entity.Candidate;
 import com.amritan.backend.exception.ResourceNotFoundException;
 import com.amritan.backend.mapper.CandidateMapper;
 import com.amritan.backend.repository.CandidateRepository;
+import com.amritan.backend.service.CandidateService;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class CandidateServiceImpl implements CandidateService{
 
-	private CandidateRepository candidateRepository;
-	
-	@Autowired
-	public void setCandidateRepository(CandidateRepository candidateRepository) {
-		this.candidateRepository = candidateRepository;
-	}
-	
-	
+	private final CandidateRepository candidateRepository;
 	
 	@Override
 	public CandidateDto createCandidate(CandidateDto candidateDto) {

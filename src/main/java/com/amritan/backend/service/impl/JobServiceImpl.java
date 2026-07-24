@@ -1,8 +1,7 @@
-package com.amritan.backend.service;
+package com.amritan.backend.service.impl;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amritan.backend.dto.JobDto;
@@ -10,17 +9,16 @@ import com.amritan.backend.entity.Job;
 import com.amritan.backend.exception.ResourceNotFoundException;
 import com.amritan.backend.mapper.JobMapper;
 import com.amritan.backend.repository.JobRepository;
+import com.amritan.backend.service.JobService;
+
+import lombok.RequiredArgsConstructor;
 
 
 @Service
+@RequiredArgsConstructor
 public class JobServiceImpl implements JobService{
 	
-	private JobRepository jobRepository;
-	
-	@Autowired
-	public void setJobRepository(JobRepository jobRepository) {
-		this.jobRepository = jobRepository;
-	}
+	private final JobRepository jobRepository;
 
 	@Override
 	public JobDto createJob(JobDto jobDto) {

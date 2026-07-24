@@ -26,6 +26,6 @@ public class UserDto {
 	@NotBlank(message = "Phone no. is required")
 	private String phone;
 	
-	@NotNull(message = "Role ID is reuired")
+	@NotNull(message = "Role ID is required")
 	private Long roleId;
 }
