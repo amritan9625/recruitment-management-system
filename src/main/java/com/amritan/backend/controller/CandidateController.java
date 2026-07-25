@@ -1,6 +1,5 @@
 package com.amritan.backend.controller;
 
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,9 +11,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amritan.backend.dto.CandidateDto;
+import com.amritan.backend.dto.PageResponse;
+import com.amritan.backend.enums.CandidateStatus;
 import com.amritan.backend.service.CandidateService;
 
 import jakarta.validation.Valid;
@@ -38,10 +40,19 @@ public class CandidateController {
 	}
 	
 	@GetMapping
-	public ResponseEntity<List<CandidateDto>> getAllCandidates(){
-		List<CandidateDto> candidates = candidateService.getAllCandidates();
+	public ResponseEntity<PageResponse<CandidateDto>> getAllCandidates(
+	        								@RequestParam(defaultValue = "0") int pageNo,
+	        								@RequestParam(defaultValue = "10") int pageSize,
+	        								@RequestParam(defaultValue = "id") String sortBy,
+	        								@RequestParam(defaultValue = "asc") String sortDir ){
 		
-		return ResponseEntity.ok(candidates);
+		return ResponseEntity.ok(
+				candidateService.getAllCandidates(
+				        pageNo,
+				        pageSize,
+				        sortBy,
+				        sortDir
+				));
 	}
 	
 	@GetMapping("/{id}")
@@ -64,7 +75,32 @@ public class CandidateController {
 		
 		return ResponseEntity.ok("Candidate Deleted Successfully");
 		
-}	
+	}
+	
+	@GetMapping("/search")
+	public ResponseEntity<PageResponse<CandidateDto>> searchCandidates(
+	        									@RequestParam String keyword,
+	        									@RequestParam(defaultValue="0") int pageNo,
+	        									@RequestParam(defaultValue="10") int pageSize){
+		
+		return ResponseEntity.ok(
+				candidateService.searchCandidates(
+						keyword,
+						pageNo,
+						pageSize));
+	}
+	
+	
+	@GetMapping("/status/{status}")
+	public ResponseEntity<PageResponse<CandidateDto>> getCandidatesByStatus(
+	        									@PathVariable CandidateStatus status,
+	        									@RequestParam(defaultValue="0") int pageNo,
+	        									@RequestParam(defaultValue="10") int pageSize ){
+		
+		return ResponseEntity.ok(
+				candidateService.getCandidatesByStatus(status, pageNo, pageSize));
+	}
+	
 }
 
 

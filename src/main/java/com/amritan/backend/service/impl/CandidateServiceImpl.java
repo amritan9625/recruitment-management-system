@@ -2,10 +2,16 @@ package com.amritan.backend.service.impl;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.amritan.backend.dto.CandidateDto;
+import com.amritan.backend.dto.PageResponse;
 import com.amritan.backend.entity.Candidate;
+import com.amritan.backend.enums.CandidateStatus;
 import com.amritan.backend.exception.ResourceNotFoundException;
 import com.amritan.backend.mapper.CandidateMapper;
 import com.amritan.backend.repository.CandidateRepository;
@@ -19,6 +25,7 @@ public class CandidateServiceImpl implements CandidateService{
 
 	private final CandidateRepository candidateRepository;
 	
+	
 	@Override
 	public CandidateDto createCandidate(CandidateDto candidateDto) {
 		Candidate candidate = CandidateMapper.mapToEntity(candidateDto);
@@ -26,14 +33,32 @@ public class CandidateServiceImpl implements CandidateService{
 		
 		return CandidateMapper.mapToDto(savedCandidate);
 	}
+	
 
 	@Override
-	public List<CandidateDto> getAllCandidates() {
-		List<Candidate> candidates = candidateRepository.findAll();
+	public PageResponse<CandidateDto> getAllCandidates(int pageNo, int pageSize
+								, String sortBy, String sortDir) {
+		Sort sort = sortDir.equalsIgnoreCase("asc")
+		        ? Sort.by(sortBy).ascending()
+		        : Sort.by(sortBy).descending();
 		
-		return candidates.stream()
-				.map(CandidateMapper::mapToDto)
-				.toList();
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		
+		Page<Candidate> page = candidateRepository.findAll(pageable);
+		
+		List<CandidateDto> content = page.getContent()
+		        .stream()
+		        .map(CandidateMapper::mapToDto)
+		        .toList();
+		
+		return new PageResponse<>(
+		        content,
+		        page.getNumber(),
+		        page.getSize(),
+		        page.getTotalElements(),
+		        page.getTotalPages(),
+		        page.isLast()
+		);
 	}
 	
 	@Override
@@ -59,6 +84,7 @@ public class CandidateServiceImpl implements CandidateService{
 		candidate.setSkills(dto.getSkills());
 		candidate.setExperience(dto.getExperience());
 		candidate.setResumeUrl(dto.getResumeUrl());
+		candidate.setStatus(dto.getStatus());
 		
 		return CandidateMapper.mapToDto(candidate);
 	}
@@ -72,6 +98,57 @@ public class CandidateServiceImpl implements CandidateService{
 		
 		candidateRepository.delete(candidate);
 		
+	}
+
+
+	@Override
+	public PageResponse<CandidateDto> searchCandidates(String keyword, int pageNo, int pageSize) {
+		
+		Sort sort = Sort.by("id").ascending();
+		
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		
+		Page<Candidate> page = candidateRepository.findByFirstNameContainingIgnoreCase(
+		                keyword,
+		                pageable
+		        );
+		
+		List<CandidateDto> content = page.getContent()
+		        .stream()
+		        .map(CandidateMapper::mapToDto)
+		        .toList();
+		
+		return new PageResponse<>(
+		        content,
+		        page.getNumber(),
+		        page.getSize(),
+		        page.getTotalElements(),
+		        page.getTotalPages(),
+		        page.isLast()
+		);
+	}
+
+	@Override
+	public PageResponse<CandidateDto> getCandidatesByStatus(CandidateStatus status, int pageNo, int pageSize) {
+		
+		Sort sort = Sort.by("id").ascending();
+		
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		
+		Page<Candidate> page = candidateRepository.findByStatus(status, pageable);
+		
+		List<CandidateDto> content = page.getContent()
+		        .stream()
+		        .map(CandidateMapper::mapToDto)
+		        .toList();
+		
+		return new PageResponse<>(
+		        content,
+		        page.getNumber(),
+		        page.getSize(),
+		        page.getTotalElements(),
+		        page.getTotalPages(),
+		        page.isLast() );
 	}
 
 }

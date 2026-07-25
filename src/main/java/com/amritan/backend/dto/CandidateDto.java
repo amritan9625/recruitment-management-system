@@ -1,5 +1,7 @@
 package com.amritan.backend.dto;
 
+import com.amritan.backend.enums.CandidateStatus;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -34,4 +36,7 @@ public class CandidateDto {
 	
 	@NotBlank(message = "Resume URL must be required")
 	private String resumeUrl;
+	
+	@NotBlank(message = "Status is required")
+	private CandidateStatus status;
 }

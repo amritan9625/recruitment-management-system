@@ -20,6 +20,7 @@ public class CandidateMapper {
 		candidate.setSkills(dto.getSkills());
 		candidate.setExperience(dto.getExperience());
 		candidate.setResumeUrl(dto.getResumeUrl());
+		candidate.setStatus(dto.getStatus());
 		
 		return candidate;
 	}
@@ -35,6 +36,7 @@ public class CandidateMapper {
 		dto.setSkills(candidate.getSkills());
 		dto.setExperience(candidate.getExperience());
 		dto.setResumeUrl(candidate.getResumeUrl());
+		dto.setStatus(candidate.getStatus());
 		
 		return dto;
 	}
