@@ -86,7 +86,9 @@ public class CandidateServiceImpl implements CandidateService{
 		candidate.setResumeUrl(dto.getResumeUrl());
 		candidate.setStatus(dto.getStatus());
 		
-		return CandidateMapper.mapToDto(candidate);
+		Candidate updateCandidate = candidateRepository.save(candidate);
+		
+		return CandidateMapper.mapToDto(updateCandidate);
 	}
 
 	@Override

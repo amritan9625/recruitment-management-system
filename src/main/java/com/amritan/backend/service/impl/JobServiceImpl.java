@@ -2,9 +2,14 @@ package com.amritan.backend.service.impl;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.amritan.backend.dto.JobDto;
+import com.amritan.backend.dto.PageResponse;
 import com.amritan.backend.entity.Job;
 import com.amritan.backend.exception.ResourceNotFoundException;
 import com.amritan.backend.mapper.JobMapper;
@@ -27,16 +32,32 @@ public class JobServiceImpl implements JobService{
 		
 		return JobMapper.mapToDto(savedJob);
 	}
+	
 
 	@Override
-	public List<JobDto> getAllJobs() {
-		
-		return jobRepository.findAll()
-				.stream()
-				.map(JobMapper::mapToDto)
-				.toList();
+	public PageResponse<JobDto> getAllJobs(int pageNo, int pageSize, String sortBy, String sortDir) {
+		Sort sort = sortDir.equalsIgnoreCase("asc")
+					? Sort.by(sortBy).ascending()
+							: Sort.by(sortBy).descending();
+
+	    Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
+	    Page<Job> page = jobRepository.findAll(pageable);
+
+	    List<JobDto> content = page.getContent()
+	    		.stream()
+	    		.map(JobMapper::mapToDto)
+	    		.toList();
+
+	    return new PageResponse<>( content,
+	    		page.getNumber(),
+	    		page.getSize(),
+	    		page.getTotalElements(),
+	    		page.getTotalPages(),
+	    		page.isLast() );
 	}
 
+	
 	@Override
 	public JobDto getJobById(Long id) {
 		Job job = jobRepository.findById(id)
@@ -71,6 +92,69 @@ public class JobServiceImpl implements JobService{
                         new ResourceNotFoundException("Job not found with id: " + id));
 		
 		jobRepository.delete(job);
+	}
+
+	@Override
+	public PageResponse<JobDto> searchJobs(String keyword, int pageNo, int pageSize) {
+		Sort sort = Sort.by("id").ascending();
+		
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
+	    Page<Job> page = jobRepository.findAll(pageable);
+
+	    List<JobDto> content = page.getContent()
+	    		.stream()
+	    		.map(JobMapper::mapToDto)
+	    		.toList();
+
+	    return new PageResponse<>( content,
+	    		page.getNumber(),
+	    		page.getSize(),
+	    		page.getTotalElements(),
+	    		page.getTotalPages(),
+	    		page.isLast() );
+	}
+
+	@Override
+	public PageResponse<JobDto> getJobsByStatus(String status, int pageNo, int pageSize) {
+		Sort sort = Sort.by("id").ascending();
+		
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
+	    Page<Job> page = jobRepository.findByStatus(status, pageable);
+
+	    List<JobDto> content = page.getContent()
+	    		.stream()
+	    		.map(JobMapper::mapToDto)
+	    		.toList();
+
+	    return new PageResponse<>( content,
+	    		page.getNumber(),
+	    		page.getSize(),
+	    		page.getTotalElements(),
+	    		page.getTotalPages(),
+	    		page.isLast() );
+	}
+
+	@Override
+	public PageResponse<JobDto> getJobsByLocation(String location, int pageNo, int pageSize) {
+		Sort sort = Sort.by("id").ascending();
+		
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
+	    Page<Job> page = jobRepository.findByLocationContainingIgnoreCase(location, pageable);
+
+	    List<JobDto> content = page.getContent()
+	    		.stream()
+	    		.map(JobMapper::mapToDto)
+	    		.toList();
+
+	    return new PageResponse<>( content,
+	    		page.getNumber(),
+	    		page.getSize(),
+	    		page.getTotalElements(),
+	    		page.getTotalPages(),
+	    		page.isLast() );
 	}
 	
 	
