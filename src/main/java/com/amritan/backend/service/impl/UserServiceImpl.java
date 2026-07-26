@@ -2,8 +2,13 @@ package com.amritan.backend.service.impl;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.amritan.backend.dto.PageResponse;
 import com.amritan.backend.dto.UserDto;
 import com.amritan.backend.entity.Role;
 import com.amritan.backend.entity.User;
@@ -19,8 +24,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-	private UserRepository userRepository;
-	private RoleRepository roleRepository;
+	private final UserRepository userRepository;
+	private final RoleRepository roleRepository;
 	
 	
 	
@@ -38,14 +43,27 @@ public class UserServiceImpl implements UserService {
 		return UserMapper.mapToDto(savedUser);
 	}
 
+	
 	@Override
-	public List<UserDto> getAllUsers() {
-		List<User> users = userRepository.findAll();
+	public PageResponse<UserDto> getAllUsers(int pageNo, int pageSize, String sortBy, String sortDir) {
+		Sort sort = sortDir.equalsIgnoreCase("asc")
+				? Sort.by(sortBy).ascending()
+						: Sort.by(sortBy).descending();
 		
-		return users.stream()
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		
+		Page<User> page = userRepository.findAll(pageable);
+		
+		List<UserDto> content = page.getContent()
+				.stream()
 				.map(UserMapper::mapToDto)
 				.toList();
+		
+		return new PageResponse<>(content, page.getNumber()
+				, page.getSize(), page.getTotalElements()
+				, page.getTotalPages(), page.isLast());
 	}
+	
 
 	@Override
 	public UserDto getUserById(Long id) {
@@ -88,6 +106,44 @@ public class UserServiceImpl implements UserService {
 		
 		userRepository.delete(user);
 		
+	}
+
+
+	@Override
+	public PageResponse<UserDto> getUsersByName(String keyword, int pageNo, int pageSize) {
+		Sort sort = Sort.by("id").ascending();
+		
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		
+		Page<User> page = userRepository.findByNameContainingIgnoreCase(
+				keyword, pageable);
+		
+		List<UserDto> content = page.getContent()
+				.stream()
+				.map(UserMapper::mapToDto)
+				.toList();
+		
+		return new PageResponse<>(content, page.getNumber()
+				, page.getSize(), page.getTotalElements()
+				, page.getTotalPages(), page.isLast());
+	}
+
+	@Override
+	public PageResponse<UserDto> getUsersByEmail(String keyword, int pageNo, int pageSize) {
+		Sort sort = Sort.by("id").ascending();
+		
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		
+		Page<User> page = userRepository.findByEmailContainingIgnoreCase(keyword, pageable);
+		
+		List<UserDto> content = page.getContent()
+				.stream()
+				.map(UserMapper::mapToDto)
+				.toList();
+		
+		return new PageResponse<>(content, page.getNumber()
+				, page.getSize(), page.getTotalElements()
+				, page.getTotalPages(), page.isLast());
 	}
 
 }

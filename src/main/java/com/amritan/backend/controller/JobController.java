@@ -2,7 +2,6 @@ package com.amritan.backend.controller;
 
 import java.time.LocalDateTime;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,24 +20,21 @@ import com.amritan.backend.dto.PageResponse;
 import com.amritan.backend.service.JobService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/jobs")
+@RequiredArgsConstructor
 public class JobController {
 
-	private JobService jobService;
-	
-	@Autowired
-	public void setJobService(JobService jobService) {
-		this.jobService = jobService;
-	}
+	private final JobService jobService;
 	
 	@PostMapping
-	public ResponseEntity<JobDto> createJob(@Valid @RequestBody JobDto jobtDto){
-		JobDto savedJobDto = jobService.createJob(jobtDto);
+	public ResponseEntity<ApiResponse<JobDto> > createJob(@Valid @RequestBody JobDto jobtDto){
+		JobDto jobDto = jobService.createJob(jobtDto);
 		
-		return new ResponseEntity<>(
-				savedJobDto, HttpStatus.CREATED);
+		return new ResponseEntity<>(new ApiResponse<>(true, "Job created successfully",
+									jobDto, LocalDateTime.now()), HttpStatus.CREATED);
 	}
 	
 	
@@ -62,53 +58,83 @@ public class JobController {
     }
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<JobDto> getJobById(@PathVariable Long id){
-		JobDto dto = jobService.getJobById(id);
+	public ResponseEntity<ApiResponse<JobDto>> getJobById(@PathVariable Long id){
+		JobDto jobDto = jobService.getJobById(id);
 		
-		return ResponseEntity.ok(dto);
+		return ResponseEntity.ok(new ApiResponse<>(true, "Job fetched successfully",
+								jobDto, LocalDateTime.now()));
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<JobDto> updateJob(@PathVariable Long id, @RequestBody JobDto dto){
+	public ResponseEntity<ApiResponse<JobDto>> updateJob(@PathVariable Long id, @RequestBody JobDto dto){
 		JobDto updateDto = jobService.updateJob(id, dto);
 		
-		return ResponseEntity.ok(updateDto);
+		return ResponseEntity.ok(new ApiResponse<>(true, "Job updated successfully", 
+								updateDto, LocalDateTime.now()));
 	}
 	
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<String> deleteJob(@PathVariable Long id){
+	public ResponseEntity<ApiResponse<String>> deleteJob(@PathVariable Long id){
 		jobService.deleteJob(id);
 		
-		return ResponseEntity.ok("Job Deleted Successfully");
+		return ResponseEntity.ok(new ApiResponse<>(true, "Job Deleted Successfully",
+				null, LocalDateTime.now()));
 	}
 	
 	
 	 @GetMapping("/search")
-	    public ResponseEntity<PageResponse<JobDto>> searchJobs( @RequestParam String keyword,
+	    public ResponseEntity<ApiResponse<PageResponse<JobDto>>> searchJobs( @RequestParam String keyword,
 	    													@RequestParam(defaultValue = "0") int pageNo,
 	    													@RequestParam(defaultValue = "10") int pageSize) {
 
-	        return ResponseEntity.ok(
-	                jobService.searchJobs( keyword, pageNo, pageSize) );
+		 	PageResponse<JobDto> pageResponse = 
+					jobService.searchJobs(keyword, pageNo, pageSize);
+			ApiResponse<PageResponse<JobDto>> response = new ApiResponse<>();
+		
+			response.setSuccess(true);
+			response.setMessage("User fetched successfully");
+			response.setData(pageResponse);
+			response.setTimestamp(LocalDateTime.now());
+		
+			return ResponseEntity.ok(response);
+		
 	    }
 
 	    @GetMapping("/status/{status}")
-	    public ResponseEntity<PageResponse<JobDto>> getJobsByStatus( @PathVariable String status,
+	    public ResponseEntity<ApiResponse<PageResponse<JobDto>>> getJobsByStatus( @PathVariable String status,
 	    													@RequestParam(defaultValue = "0") int pageNo,
 	    													@RequestParam(defaultValue = "10") int pageSize) {
 
-	        return ResponseEntity.ok(
-	                jobService.getJobsByStatus( status, pageNo, pageSize) );
+	    		PageResponse<JobDto> pageResponse = 
+					jobService.getJobsByStatus(status, pageNo, pageSize);
+			ApiResponse<PageResponse<JobDto>> response = new ApiResponse<>();
+		
+			response.setSuccess(true);
+			response.setMessage("User fetched successfully");
+			response.setData(pageResponse);
+			response.setTimestamp(LocalDateTime.now());
+		
+			return ResponseEntity.ok(response);
+			
 	    }
 
 	    @GetMapping("/location")
-	    public ResponseEntity<PageResponse<JobDto>> getJobsByLocation( @RequestParam String location,
+	    public ResponseEntity<ApiResponse<PageResponse<JobDto>>> getJobsByLocation( @RequestParam String location,
 	    														@RequestParam(defaultValue = "0") int pageNo,
 	    														@RequestParam(defaultValue = "10") int pageSize) {
 
-	        return ResponseEntity.ok(
-	                jobService.getJobsByLocation( location, pageNo, pageSize) );
+	    		PageResponse<JobDto> pageResponse = 
+					jobService.getJobsByLocation(location, pageNo, pageSize);
+	    		
+			ApiResponse<PageResponse<JobDto>> response = new ApiResponse<>();
+		
+			response.setSuccess(true);
+			response.setMessage("User fetched successfully");
+			response.setData(pageResponse);
+			response.setTimestamp(LocalDateTime.now());
+			
+			return ResponseEntity.ok(response);
 	    }
 	
 }

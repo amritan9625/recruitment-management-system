@@ -3,7 +3,6 @@ package com.amritan.backend.controller;
 
 import java.time.LocalDateTime;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,16 +22,15 @@ import com.amritan.backend.enums.CandidateStatus;
 import com.amritan.backend.service.CandidateService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/candidates")
+@RequiredArgsConstructor
 public class CandidateController {
 
-	private CandidateService candidateService;
-	@Autowired
-	public void setCandidateService(CandidateService candidateService) {
-		this.candidateService = candidateService;
-	}
+	private final CandidateService candidateService;
+	
 	
 	@PostMapping
 	public ResponseEntity<ApiResponse<CandidateDto>> createCandidate(@Valid @RequestBody CandidateDto dto){
