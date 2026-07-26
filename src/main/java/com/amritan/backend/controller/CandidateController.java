@@ -1,6 +1,8 @@
 package com.amritan.backend.controller;
 
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amritan.backend.dto.ApiResponse;
 import com.amritan.backend.dto.CandidateDto;
 import com.amritan.backend.dto.PageResponse;
 import com.amritan.backend.enums.CandidateStatus;
@@ -32,73 +35,105 @@ public class CandidateController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<CandidateDto> createCandidate(@Valid @RequestBody CandidateDto dto){
+	public ResponseEntity<ApiResponse<CandidateDto>> createCandidate(@Valid @RequestBody CandidateDto dto){
 		CandidateDto candidateDto = candidateService.createCandidate(dto);
 		
-		return new ResponseEntity<>(
-				candidateDto, HttpStatus.CREATED);
+		return new ResponseEntity<>( new ApiResponse<>(true, "Candidate fetched successfully", 
+									candidateDto,
+									LocalDateTime.now()) , HttpStatus.CREATED);
 	}
 	
+	
+	
 	@GetMapping
-	public ResponseEntity<PageResponse<CandidateDto>> getAllCandidates(
+	public ResponseEntity<ApiResponse<PageResponse<CandidateDto>> > getAllCandidates(
 	        								@RequestParam(defaultValue = "0") int pageNo,
 	        								@RequestParam(defaultValue = "10") int pageSize,
 	        								@RequestParam(defaultValue = "id") String sortBy,
 	        								@RequestParam(defaultValue = "asc") String sortDir ){
 		
-		return ResponseEntity.ok(
-				candidateService.getAllCandidates(
-				        pageNo,
-				        pageSize,
-				        sortBy,
-				        sortDir
-				));
+		
+		PageResponse<CandidateDto> pageResponse = candidateService.getAllCandidates(pageNo, pageSize, sortBy, sortDir);
+		
+		ApiResponse<PageResponse<CandidateDto>> response = new ApiResponse<>();
+		
+		response.setSuccess(true);
+		response.setMessage("Candidates created successfully");
+		response.setData(pageResponse);
+		response.setTimestamp(LocalDateTime.now());
+		
+		return ResponseEntity.ok(response);
+		
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<CandidateDto> getCandidateById(@PathVariable Long id){
-		CandidateDto candidate = candidateService.getCandidateById(id);
+	public ResponseEntity<ApiResponse<CandidateDto>> getCandidateById(@PathVariable Long id){
+		CandidateDto candidateDto = candidateService.getCandidateById(id);
 		
-		return ResponseEntity.ok(candidate);
+		return ResponseEntity.ok(new ApiResponse<>(true, "Candidate fetched successfully",
+										candidateDto,
+										LocalDateTime.now() ) );
 	}
+	
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<CandidateDto> updateCandidate(@PathVariable Long id, @RequestBody CandidateDto dto){
+	public ResponseEntity<ApiResponse<CandidateDto>> updateCandidate(@PathVariable Long id, @RequestBody CandidateDto dto){
 		CandidateDto candidate = candidateService.updateCandidate(id, dto);
 		
-		return ResponseEntity.ok(candidate);
+		return ResponseEntity.ok(new ApiResponse<>(true, "Candidate updated successfully",
+				candidate,
+				LocalDateTime.now() ) );
 	}
+	
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<String> deleteCandidate(@PathVariable Long id){
+	public ResponseEntity<ApiResponse<String>> deleteCandidate(@PathVariable Long id){
 		candidateService.deleteCandidate(id);
 		
-		return ResponseEntity.ok("Candidate Deleted Successfully");
+		return ResponseEntity.ok(new ApiResponse<>(true, "Candidate deleted successfully",
+				null,
+				LocalDateTime.now() ) );
 		
 	}
 	
+	
 	@GetMapping("/search")
-	public ResponseEntity<PageResponse<CandidateDto>> searchCandidates(
+	public ResponseEntity<ApiResponse<PageResponse<CandidateDto>> > searchCandidates(
 	        									@RequestParam String keyword,
 	        									@RequestParam(defaultValue="0") int pageNo,
 	        									@RequestParam(defaultValue="10") int pageSize){
 		
-		return ResponseEntity.ok(
-				candidateService.searchCandidates(
-						keyword,
-						pageNo,
-						pageSize));
+		 PageResponse<CandidateDto> pageResponse =
+		            candidateService.searchCandidates(keyword, pageNo, pageSize);
+
+		    ApiResponse<PageResponse<CandidateDto>> response = new ApiResponse<>();
+
+		    response.setSuccess(true);
+		    response.setMessage("Candidates fetched successfully");
+		    response.setData(pageResponse);
+		    response.setTimestamp(LocalDateTime.now());
+
+		    return ResponseEntity.ok(response);
 	}
 	
 	
 	@GetMapping("/status/{status}")
-	public ResponseEntity<PageResponse<CandidateDto>> getCandidatesByStatus(
-	        									@PathVariable CandidateStatus status,
-	        									@RequestParam(defaultValue="0") int pageNo,
-	        									@RequestParam(defaultValue="10") int pageSize ){
-		
-		return ResponseEntity.ok(
-				candidateService.getCandidatesByStatus(status, pageNo, pageSize));
+	public ResponseEntity<ApiResponse<PageResponse<CandidateDto>>> getCandidatesByStatus(
+	        @PathVariable CandidateStatus status,
+	        @RequestParam(defaultValue = "0") int pageNo,
+	        @RequestParam(defaultValue = "10") int pageSize) {
+
+	    PageResponse<CandidateDto> pageResponse =
+	            candidateService.getCandidatesByStatus(status, pageNo, pageSize);
+
+	    ApiResponse<PageResponse<CandidateDto>> response = new ApiResponse<>();
+
+	    response.setSuccess(true);
+	    response.setMessage("Candidates fetched successfully");
+	    response.setData(pageResponse);
+	    response.setTimestamp(LocalDateTime.now());
+
+	    return ResponseEntity.ok(response);
 	}
 	
 }

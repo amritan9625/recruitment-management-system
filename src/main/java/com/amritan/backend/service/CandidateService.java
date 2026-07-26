@@ -8,7 +8,7 @@ import com.amritan.backend.enums.CandidateStatus;
 public interface CandidateService {
 
 	CandidateDto createCandidate(CandidateDto candidateDTO);
-
+	
 	PageResponse<CandidateDto> getAllCandidates(
 	        int pageNo,
 	        int pageSize,
@@ -33,4 +33,5 @@ public interface CandidateService {
             int pageNo,
             int pageSize
     );
+
 }

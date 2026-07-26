@@ -153,4 +153,6 @@ public class CandidateServiceImpl implements CandidateService{
 		        page.isLast() );
 	}
 
+
+
 }

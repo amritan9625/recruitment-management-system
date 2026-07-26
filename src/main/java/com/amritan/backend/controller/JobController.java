@@ -1,5 +1,7 @@
 package com.amritan.backend.controller;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amritan.backend.dto.ApiResponse;
 import com.amritan.backend.dto.JobDto;
 import com.amritan.backend.dto.PageResponse;
 import com.amritan.backend.service.JobService;
@@ -38,14 +41,24 @@ public class JobController {
 				savedJobDto, HttpStatus.CREATED);
 	}
 	
+	
+	
 	@GetMapping
-	public ResponseEntity<PageResponse<JobDto>> getAllJobs( @RequestParam(defaultValue = "0") int pageNo,
+	public ResponseEntity<ApiResponse<PageResponse<JobDto>> > getAllJobs( @RequestParam(defaultValue = "0") int pageNo,
 											@RequestParam(defaultValue = "10") int pageSize,
 											@RequestParam(defaultValue = "id") String sortBy,
 											@RequestParam(defaultValue = "asc") String sortDir) {
+		
+		PageResponse<JobDto> pageResponse =  jobService.getAllJobs(pageNo, pageSize, sortBy, sortDir);
+		
+		ApiResponse<PageResponse<JobDto>> response = new ApiResponse<>();
 
-        return ResponseEntity.ok(
-                jobService.getAllJobs(pageNo, pageSize, sortBy, sortDir) );
+	    response.setSuccess(true);
+	    response.setMessage("Jobs fetched successfully");
+	    response.setData(pageResponse);
+	    response.setTimestamp(LocalDateTime.now());
+
+        return ResponseEntity.ok(response);
     }
 	
 	@GetMapping("/{id}")
