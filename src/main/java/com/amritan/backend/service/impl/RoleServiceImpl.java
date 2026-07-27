@@ -2,8 +2,13 @@ package com.amritan.backend.service.impl;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.amritan.backend.dto.PageResponse;
 import com.amritan.backend.dto.RoleDto;
 import com.amritan.backend.entity.Role;
 import com.amritan.backend.exception.ResourceNotFoundException;
@@ -27,15 +32,28 @@ public class RoleServiceImpl implements RoleService{
 		
 		return RoleMapper.mapToDto(savedRole);			// Entity --> DTO
 	}
+	
 
 	@Override
-	public List<RoleDto> getAllRoles() {
-		List<Role> roles = roleRepository.findAll();
+	public PageResponse<RoleDto> getAllRoles(int pageNo, int pageSize, String sortBy, String sortDir) {
+		Sort sort = sortDir.equalsIgnoreCase("asc")
+				? Sort.by(sortBy).ascending()
+						: Sort.by(sortBy).descending();
 		
-		return roles.stream()
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		
+		Page<Role> page = roleRepository.findAll(pageable);
+		
+		List<RoleDto> content = page.getContent()
+				.stream()
 				.map(RoleMapper::mapToDto)
 				.toList();
+		
+		return new PageResponse<>(content, page.getNumber()
+				, page.getSize(), page.getTotalElements()
+				, page.getTotalPages(), page.isLast());
 	}
+	
 
 	@Override
 	public RoleDto getRoleById(Long id) {
@@ -70,6 +88,24 @@ public class RoleServiceImpl implements RoleService{
 							"Role not found with id : "+id) );
 		
 		roleRepository.delete(role);
+	}
+
+	@Override
+	public PageResponse<RoleDto> getByRoleName(String roleName, int pageNo, int pageSize) {
+		Sort sort = Sort.by("id").ascending();
+		
+		Pageable pageable = PageRequest.of(pageNo, pageSize,sort);
+		
+		Page<Role> page = roleRepository.findByRoleNameContainingIgnoreCase(roleName, pageable);
+		
+		List<RoleDto> content = page.getContent()
+				.stream()
+				.map(RoleMapper::mapToDto)
+				.toList();
+		
+		return new PageResponse<>(content, page.getNumber()
+				, page.getSize(), page.getTotalElements()
+				, page.getTotalPages(), page.isLast());
 	}
 	
 }
