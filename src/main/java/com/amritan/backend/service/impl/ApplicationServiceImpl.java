@@ -1,11 +1,15 @@
 package com.amritan.backend.service.impl;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.amritan.backend.dto.ApplicationDto;
+import com.amritan.backend.dto.PageResponse;
 import com.amritan.backend.entity.Application;
 import com.amritan.backend.entity.Candidate;
 import com.amritan.backend.entity.Job;
@@ -57,12 +61,25 @@ public class ApplicationServiceImpl implements ApplicationService{
 	}
 
 	@Override
-	public List<ApplicationDto> getAllApplications() {
-		List<Application> applications = applicationRepository.findAll();
+	public PageResponse<ApplicationDto> getAllApplications(int pageNo, int pageSize
+									, String sortBy, String sortDir) {
 		
-		return applications.stream()
+		Sort sort = sortDir.equalsIgnoreCase("asc")
+				? Sort.by(sortBy).ascending()
+						: Sort.by(sortBy).descending();
+		
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		
+		Page<Application> page = applicationRepository.findAll(pageable);
+		
+		List<ApplicationDto> content = page.getContent()
+				.stream()
 				.map(ApplicationMapper::mapToDto)
-				.collect(Collectors.toList());
+				.toList();
+		
+		return new PageResponse<>(content, page.getNumber()
+				,page.getSize(), page.getTotalElements()
+				, page.getTotalPages(), page.isLast());
 	}
 
 	@Override
@@ -75,28 +92,6 @@ public class ApplicationServiceImpl implements ApplicationService{
 	}
 	
 	
-	
-	@Override
-	public List<ApplicationDto> getApplicationsByJob(Long jobId) {
-
-	    return applicationRepository.findByJobId(jobId)
-	            .stream()
-	            .map(ApplicationMapper::mapToDto)
-	            .toList();
-
-	}
-	
-	
-	
-	@Override
-	public List<ApplicationDto> getApplicationsByCandidate(Long candidateId) {
-
-	    return applicationRepository.findByCandidateId(candidateId)
-	            .stream()
-	            .map(ApplicationMapper::mapToDto)
-	            .toList();
-
-	}
 	
 	@Override
 	public ApplicationDto updateStatus(Long id, ApplicationStatus status) {
@@ -148,6 +143,99 @@ public class ApplicationServiceImpl implements ApplicationService{
 				new ResourceNotFoundException("Application not found with id : "+id));
 
 		applicationRepository.delete(application);
+	}
+
+	
+
+	@Override
+	public PageResponse<ApplicationDto> getApplicationsByCandidateId(Long candidateId, int pageNo, int pageSize) {
+		Sort sort = Sort.by("id").ascending();
+		
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		
+		Page<Application> page = applicationRepository.findByCandidateId(candidateId, pageable);
+		
+		List<ApplicationDto> content = page.getContent()
+				.stream()
+				.map(ApplicationMapper::mapToDto)
+				.toList();
+		
+		return new PageResponse<>(content, page.getNumber()
+				,page.getSize(), page.getTotalElements()
+				, page.getTotalPages(), page.isLast());
+	}
+
+	@Override
+	public PageResponse<ApplicationDto> getApplicationsByJobId(Long jobId, int pageNo, int pageSize) {
+		Sort sort = Sort.by("id").ascending();
+		
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		
+		Page<Application> page = applicationRepository.findByJobId(jobId, pageable);
+		
+		List<ApplicationDto> content = page.getContent()
+				.stream()
+				.map(ApplicationMapper::mapToDto)
+				.toList();
+		
+		return new PageResponse<>(content, page.getNumber()
+				,page.getSize(), page.getTotalElements()
+				, page.getTotalPages(), page.isLast());
+	}
+
+	@Override
+	public PageResponse<ApplicationDto> getApplicationByStatus(ApplicationStatus status, int pageNo, int pageSize) {
+		
+		Sort sort = Sort.by("id").ascending();
+		
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		
+		Page<Application> page = applicationRepository.findByStatus(status, pageable);
+		
+		List<ApplicationDto> content = page.getContent()
+				.stream()
+				.map(ApplicationMapper::mapToDto)
+				.toList();
+		
+		return new PageResponse<>(content, page.getNumber()
+				,page.getSize(), page.getTotalElements()
+				, page.getTotalPages(), page.isLast());
+	}
+
+	@Override
+	public PageResponse<ApplicationDto> getApplicationByCandidateName(String keyword, int pageNo, int pageSize) {
+Sort sort = Sort.by("id").ascending();
+		
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		
+		Page<Application> page = applicationRepository.findByCandidateNameContainingIgnoreCase(keyword, pageable);
+		
+		List<ApplicationDto> content = page.getContent()
+				.stream()
+				.map(ApplicationMapper::mapToDto)
+				.toList();
+		
+		return new PageResponse<>(content, page.getNumber()
+				,page.getSize(), page.getTotalElements()
+				, page.getTotalPages(), page.isLast());
+	}
+
+	@Override
+	public PageResponse<ApplicationDto> getApplicationByJobTitle(String keyword, int pageNo, int pageSize) {
+Sort sort = Sort.by("id").ascending();
+		
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		
+		Page<Application> page = applicationRepository.findByJobTitleContainingIgnoreCase(keyword, pageable);
+		
+		List<ApplicationDto> content = page.getContent()
+				.stream()
+				.map(ApplicationMapper::mapToDto)
+				.toList();
+		
+		return new PageResponse<>(content, page.getNumber()
+				,page.getSize(), page.getTotalElements()
+				, page.getTotalPages(), page.isLast());
 	}
 
 }

@@ -1,26 +1,31 @@
 package com.amritan.backend.service;
 
-import java.util.List;
-
 import com.amritan.backend.dto.ApplicationDto;
+import com.amritan.backend.dto.PageResponse;
 import com.amritan.backend.enums.ApplicationStatus;
 
 public interface ApplicationService {
 
 	ApplicationDto createApplication(ApplicationDto dto);
 
-	List<ApplicationDto> getAllApplications();
+	PageResponse<ApplicationDto> getAllApplications(int pageNo, int pageSize,
+			String sortBy, String sortDir);
 
 	ApplicationDto getApplicationById(Long id);
 	
-	List<ApplicationDto> getApplicationsByJob(Long jobId);
-	
-	List<ApplicationDto> getApplicationsByCandidate(Long candidateId);
-	
 	ApplicationDto updateStatus(Long id, ApplicationStatus status);
+	
+	ApplicationDto updateApplication(Long id, ApplicationDto dto);
+	
+	void deleteApplication(Long id);
 
-    ApplicationDto updateApplication(Long id,
-                                     ApplicationDto dto);
+	PageResponse<ApplicationDto> getApplicationsByCandidateId(Long candidateId, int pageNo, int pageSize);
 
-    void deleteApplication(Long id);
+    PageResponse<ApplicationDto> getApplicationsByJobId(Long jobId, int pageNo, int pageSize);
+    
+    PageResponse<ApplicationDto> getApplicationByStatus(ApplicationStatus status, int pageNo, int pageSize);
+    
+    PageResponse<ApplicationDto> getApplicationByCandidateName(String keyword, int pageNo, int pageSize);
+    
+    PageResponse<ApplicationDto> getApplicationByJobTitle(String keyword, int pageNo, int pageSize);    
 }
