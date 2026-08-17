@@ -22,7 +22,8 @@ public interface ApplicationRepository extends JpaRepository<Application	, Long>
 
 	Page<Application> findByStatus(ApplicationStatus status, Pageable pageable);
 
-	Page<Application> findByCandidateNameContainingIgnoreCase(String keyword, Pageable pageable);
+	Page<Application> findByCandidateFirstNameContainingIgnoreCaseOrCandidateLastNameContainingIgnoreCase(
+						String firstName, String lastName, Pageable pageable);
 
 	Page<Application> findByJobTitleContainingIgnoreCase(String keyword, Pageable pageable);
 	

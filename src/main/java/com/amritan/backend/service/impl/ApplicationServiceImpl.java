@@ -208,7 +208,8 @@ public class ApplicationServiceImpl implements ApplicationService{
 		
 		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 		
-		Page<Application> page = applicationRepository.findByCandidateNameContainingIgnoreCase(keyword, pageable);
+		Page<Application> page = applicationRepository
+								.findByCandidateFirstNameContainingIgnoreCaseOrCandidateLastNameContainingIgnoreCase(keyword, keyword, pageable);
 		
 		List<ApplicationDto> content = page.getContent()
 				.stream()
