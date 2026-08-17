@@ -69,29 +69,32 @@ public class ApplicationController {
 	
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<ApplicationDto> updateApplication(@PathVariable Long id, @RequestBody ApplicationDto dto){
+	public ResponseEntity<ApiResponse<ApplicationDto>> updateApplication(@PathVariable Long id, @RequestBody ApplicationDto dto){
 		ApplicationDto applicationDto = applicationService.updateApplication(id, dto);
 		
-		return ResponseEntity.ok(applicationDto);
+		return ResponseEntity.ok(new ApiResponse<>(true, "Application updated successfully"
+				,applicationDto, LocalDateTime.now()));
 	}
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<String> deleteApplication(@PathVariable Long id){
+	public ResponseEntity<ApiResponse<String>> deleteApplication(@PathVariable Long id){
 		applicationService.deleteApplication(id);
 		
-		return ResponseEntity.ok("Application deleted Successfully");
+		return ResponseEntity.ok(new ApiResponse<>(true, "Application deleted Successfully",
+							null, LocalDateTime.now()));
 	}
 	
 	
 
 	@PutMapping("/{id}/status")
-	public ResponseEntity<ApplicationDto> updateStatus(
+	public ResponseEntity<ApiResponse<ApplicationDto>> updateStatus(
 	        @PathVariable Long id,
 	        @RequestParam ApplicationStatus status) {
 
 	    ApplicationDto applicationDto = applicationService.updateStatus(id, status);
 	    
-	    return ResponseEntity.ok(applicationDto);
+	    return ResponseEntity.ok(new ApiResponse<>(true, "Application updated successfully"
+				,applicationDto, LocalDateTime.now()));
 	}
 
 	

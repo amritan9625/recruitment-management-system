@@ -36,7 +36,7 @@ public class CandidateController {
 	public ResponseEntity<ApiResponse<CandidateDto>> createCandidate(@Valid @RequestBody CandidateDto dto){
 		CandidateDto candidateDto = candidateService.createCandidate(dto);
 		
-		return new ResponseEntity<>( new ApiResponse<>(true, "Candidate fetched successfully", 
+		return new ResponseEntity<>( new ApiResponse<>(true, "Candidate created successfully", 
 									candidateDto,
 									LocalDateTime.now()) , HttpStatus.CREATED);
 	}
@@ -135,10 +135,3 @@ public class CandidateController {
 	}
 	
 }
-
-
-
-
-
-
-

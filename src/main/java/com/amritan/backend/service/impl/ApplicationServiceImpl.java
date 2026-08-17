@@ -204,7 +204,7 @@ public class ApplicationServiceImpl implements ApplicationService{
 
 	@Override
 	public PageResponse<ApplicationDto> getApplicationByCandidateName(String keyword, int pageNo, int pageSize) {
-Sort sort = Sort.by("id").ascending();
+		Sort sort = Sort.by("id").ascending();
 		
 		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 		
@@ -222,7 +222,7 @@ Sort sort = Sort.by("id").ascending();
 
 	@Override
 	public PageResponse<ApplicationDto> getApplicationByJobTitle(String keyword, int pageNo, int pageSize) {
-Sort sort = Sort.by("id").ascending();
+		Sort sort = Sort.by("id").ascending();
 		
 		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 		
