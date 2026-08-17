@@ -164,7 +164,7 @@ public class ApplicationController {
 		ApiResponse<PageResponse<ApplicationDto>> response = new ApiResponse<>();
 
 		response.setSuccess(true);
-		response.setMessage("Users fetched successfully");
+		response.setMessage("Candidate fetched successfully");
 		response.setData(pageResponse);
 		response.setTimestamp(LocalDateTime.now());
 
@@ -182,7 +182,7 @@ public class ApplicationController {
 		ApiResponse<PageResponse<ApplicationDto>> response = new ApiResponse<>();
 
 		response.setSuccess(true);
-		response.setMessage("Users fetched successfully");
+		response.setMessage("Job fetched successfully");
 		response.setData(pageResponse);
 		response.setTimestamp(LocalDateTime.now());
 

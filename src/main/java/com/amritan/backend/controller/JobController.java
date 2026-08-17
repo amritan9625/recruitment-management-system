@@ -83,23 +83,6 @@ public class JobController {
 	}
 	
 	
-	 @GetMapping("/search")
-	    public ResponseEntity<ApiResponse<PageResponse<JobDto>>> searchJobs( @RequestParam String keyword,
-	    													@RequestParam(defaultValue = "0") int pageNo,
-	    													@RequestParam(defaultValue = "10") int pageSize) {
-
-		 	PageResponse<JobDto> pageResponse = 
-					jobService.searchJobs(keyword, pageNo, pageSize);
-			ApiResponse<PageResponse<JobDto>> response = new ApiResponse<>();
-		
-			response.setSuccess(true);
-			response.setMessage("User fetched successfully");
-			response.setData(pageResponse);
-			response.setTimestamp(LocalDateTime.now());
-		
-			return ResponseEntity.ok(response);
-		
-	    }
 
 	    @GetMapping("/status/{status}")
 	    public ResponseEntity<ApiResponse<PageResponse<JobDto>>> getJobsByStatus( @PathVariable String status,

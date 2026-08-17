@@ -94,26 +94,7 @@ public class JobServiceImpl implements JobService{
 		jobRepository.delete(job);
 	}
 
-	@Override
-	public PageResponse<JobDto> searchJobs(String keyword, int pageNo, int pageSize) {
-		Sort sort = Sort.by("id").ascending();
-		
-		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
-
-	    Page<Job> page = jobRepository.findAll(pageable);
-
-	    List<JobDto> content = page.getContent()
-	    		.stream()
-	    		.map(JobMapper::mapToDto)
-	    		.toList();
-
-	    return new PageResponse<>( content,
-	    		page.getNumber(),
-	    		page.getSize(),
-	    		page.getTotalElements(),
-	    		page.getTotalPages(),
-	    		page.isLast() );
-	}
+	
 
 	@Override
 	public PageResponse<JobDto> getJobsByStatus(String status, int pageNo, int pageSize) {

@@ -18,7 +18,6 @@ public interface JobService {
 
     void deleteJob(Long id);
     
-    PageResponse<JobDto> searchJobs( String keyword, int pageNo, int pageSize );
 
     PageResponse<JobDto> getJobsByStatus( String status, int pageNo, int pageSize );
 
