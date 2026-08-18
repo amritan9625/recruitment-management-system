@@ -90,7 +90,7 @@ public class RoleController {
 				, null, LocalDateTime.now()));
 	}
 	
-	@GetMapping("role_name")
+	@GetMapping("/search")
 	public ResponseEntity<ApiResponse<PageResponse<RoleDto>> > getByRoleName(@RequestParam String roleName
 			, @RequestParam(defaultValue = "0") int pageNo
 			, @RequestParam(defaultValue = "10") int pageSize){

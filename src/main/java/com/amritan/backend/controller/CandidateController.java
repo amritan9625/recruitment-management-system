@@ -115,9 +115,9 @@ public class CandidateController {
 	}
 	
 	
-	@GetMapping("/status/{status}")
+	@GetMapping("/status")
 	public ResponseEntity<ApiResponse<PageResponse<CandidateDto>>> getCandidatesByStatus(
-	        @PathVariable CandidateStatus status,
+	        @RequestParam CandidateStatus status,
 	        @RequestParam(defaultValue = "0") int pageNo,
 	        @RequestParam(defaultValue = "10") int pageSize) {
 

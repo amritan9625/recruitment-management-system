@@ -12,7 +12,7 @@ import com.amritan.backend.enums.InterviewStatus;
 public interface InterviewRepository extends JpaRepository<Interview, Long>{
 	Page<Interview> findAll(Pageable pageable);
 	
-	Page<Interview> findByStatus(InterviewStatus interviewStatus, Pageable pageable);
+	Page<Interview> findByStatus(InterviewStatus status, Pageable pageable);
 	
 	
 	Page<Interview> findByInterviewerContainingIgnoreCase(String keyword, Pageable pageable);

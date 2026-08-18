@@ -2,6 +2,8 @@ package com.amritan.backend.dto;
 
 import java.time.LocalDateTime;
 
+import com.amritan.backend.enums.InterviewStatus;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -21,7 +23,7 @@ public class InterviewDto {
 	private String mode;
 
 	@NotBlank(message = "Status is required")
-	private String status;
+	private InterviewStatus status;
 
 	@NotNull(message = "Application Id is must")
 	private Long applicationId;

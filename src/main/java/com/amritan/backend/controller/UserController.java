@@ -112,7 +112,7 @@ public class UserController {
 										@RequestParam(defaultValue = "10") int pageSize){
 		
 		PageResponse<UserDto> pageResponse = 
-				userService.getUsersByName(keyword, pageNo, pageSize);
+				userService.getUsersByEmail(keyword, pageNo, pageSize);
 		ApiResponse<PageResponse<UserDto>> response = new ApiResponse<>();
 	
 		response.setSuccess(true);

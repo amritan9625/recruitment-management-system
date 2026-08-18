@@ -2,7 +2,11 @@ package com.amritan.backend.entity;
 
 import java.time.LocalDateTime;
 
+import com.amritan.backend.enums.InterviewStatus;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,7 +34,8 @@ public class Interview {
 
     private String interviewer;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private InterviewStatus status;
     
     @ManyToOne
     @JoinColumn(name="application_id")

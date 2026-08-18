@@ -85,9 +85,9 @@ public class InterviewServiceImpl implements InterviewService{
 				.orElseThrow(() ->
 				new ResourceNotFoundException("Interview not found with id : "+id));
 		
-		Application application = applicationRepository.findById(id)
+		Application application = applicationRepository.findById(dto.getApplicationId())
 				.orElseThrow(() ->
-				new ResourceNotFoundException("Application not found with id : "+id));
+				new ResourceNotFoundException("Application not found with id : "+dto.getApplicationId()));
 		
 		interview.setInterviewDate(dto.getInterviewDate());
 		interview.setMode(dto.getMode());

@@ -99,7 +99,8 @@ public class ApplicationController {
 
 	
 	@GetMapping("/candidate/{candidateId}")
-	public ResponseEntity<ApiResponse<PageResponse<ApplicationDto>> > getApplicationsByCandidateId(@RequestParam Long candidateId,
+	public ResponseEntity<ApiResponse<PageResponse<ApplicationDto>> > getApplicationsByCandidateId(
+					@PathVariable Long candidateId,
 					@RequestParam(defaultValue = "0") int pageNo,
 					@RequestParam(defaultValue = "10") int pageSize) {
 	    
@@ -118,7 +119,8 @@ public class ApplicationController {
 	
 
 	@GetMapping("/job/{jobId}")
-	public ResponseEntity<ApiResponse<PageResponse<ApplicationDto>>> getApplicationsByJobId(@RequestParam Long jobId,
+	public ResponseEntity<ApiResponse<PageResponse<ApplicationDto>>> getApplicationsByJobId(
+					@PathVariable Long jobId,
 					@RequestParam(defaultValue = "0") int pageNo,
 					@RequestParam(defaultValue = "10") int pageSize) {
 		
@@ -154,7 +156,7 @@ public class ApplicationController {
 	}
 	
 	
-	@GetMapping("/candidate_name")
+	@GetMapping("/search/candidate")
 	public ResponseEntity<ApiResponse<PageResponse<ApplicationDto>> > getApplicationByCandidateName(@RequestParam String keyword,
 					@RequestParam(defaultValue = "0") int pageNo,
 					@RequestParam(defaultValue = "10") int pageSize){
@@ -172,7 +174,7 @@ public class ApplicationController {
 	}
 	
 	
-	@GetMapping("/job_title")
+	@GetMapping("/search/job")
 	public ResponseEntity<ApiResponse<PageResponse<ApplicationDto>> > getApplicationByJobTitle(@RequestParam String keyword,
 					@RequestParam(defaultValue = "0") int pageNo,
 					@RequestParam(defaultValue = "10") int pageSize){

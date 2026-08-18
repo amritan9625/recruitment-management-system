@@ -71,7 +71,7 @@ public class InterviewController {
 	public ResponseEntity<ApiResponse<InterviewDto>> updateInterview(@PathVariable Long id, @RequestBody InterviewDto dto){
 		InterviewDto interviewDto = interviewService.updateInterview(id, dto);
 		
-		return ResponseEntity.ok(new ApiResponse<>(true, "Interview fetched successfully",
+		return ResponseEntity.ok(new ApiResponse<>(true, "Interview updated successfully",
 				interviewDto, LocalDateTime.now()) );
 	}
 	
@@ -79,14 +79,15 @@ public class InterviewController {
 	public ResponseEntity<ApiResponse<String>> deleteInterview(@PathVariable Long id){
 		interviewService.deleteInterview(id);
 		
-		return ResponseEntity.ok(new ApiResponse<>(true, "Interview fetched successfully",
+		return ResponseEntity.ok(new ApiResponse<>(true, "Interview deleted successfully",
 				null, LocalDateTime.now()) );
 	}
 	
 	
 	
-	@GetMapping("/status")
-	public ResponseEntity<ApiResponse<PageResponse<InterviewDto>> >getInterviewByStatus(@RequestParam InterviewStatus status,
+	@GetMapping("/status/{status}")
+	public ResponseEntity<ApiResponse<PageResponse<InterviewDto>> >getInterviewByStatus(
+					@PathVariable InterviewStatus status,
 					@RequestParam(defaultValue = "0") int pageNo,
 					@RequestParam(defaultValue = "10") int pageSize){
 		
@@ -103,8 +104,9 @@ public class InterviewController {
 	}
 	
 	
-	@GetMapping("/candidate_name")
-	public ResponseEntity<ApiResponse<PageResponse<InterviewDto>> >getInterviewer(@RequestParam String keyword,
+	@GetMapping("/search")
+	public ResponseEntity<ApiResponse<PageResponse<InterviewDto>> >getInterviewer(
+					@RequestParam String keyword,
 					@RequestParam(defaultValue = "0") int pageNo,
 					@RequestParam(defaultValue = "10") int pageSize){
 		
