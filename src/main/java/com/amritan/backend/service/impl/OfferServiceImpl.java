@@ -2,9 +2,14 @@ package com.amritan.backend.service.impl;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.amritan.backend.dto.OfferDto;
+import com.amritan.backend.dto.PageResponse;
 import com.amritan.backend.entity.Candidate;
 import com.amritan.backend.entity.Job;
 import com.amritan.backend.entity.Offer;
@@ -37,12 +42,25 @@ public class OfferServiceImpl implements OfferService{
 	}
 
 	@Override
-	public List<OfferDto> getAllOffers() {
-		List<Offer> offers = offerRepository.findAll();
+	public PageResponse<OfferDto> getAllOffers(int pageNo, int pageSize,
+			String sortBy, String sortDir) {
 		
-		return offers.stream()
+		Sort sort = sortDir.equalsIgnoreCase("asc")
+					? Sort.by(sortBy).ascending()
+							: Sort.by(sortBy).descending();
+		
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		
+		Page<Offer> page = offerRepository.findAll(pageable);
+		
+		List<OfferDto> content = page.getContent()
+				.stream()
 				.map(OfferMapper::mapToDto)
 				.toList();
+		
+		return new PageResponse<>(content, page.getNumber()
+				, page.getSize(), page.getTotalElements()
+				, page.getTotalPages(), page.isLast());
 	}
 	
 	@Override
@@ -87,5 +105,62 @@ public class OfferServiceImpl implements OfferService{
 				.orElseThrow(() -> new RuntimeException("Offer not found with id: " + id));;
 		
 		offerRepository.delete(offer);
+	}
+	
+
+	@Override
+	public PageResponse<OfferDto> getOfferBySalary(Double salary, int pageNo, int pageSize) {
+		Sort sort = Sort.by("id").ascending();
+		
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		
+		Page<Offer> page = offerRepository.findBySalary(salary, pageable);
+		
+		List<OfferDto> content = page.getContent()
+				.stream()
+				.map(OfferMapper::mapToDto)
+				.toList();
+		
+		return new PageResponse<>(content, page.getNumber()
+				, page.getSize(), page.getTotalElements()
+				, page.getTotalPages(), page.isLast());
+	}
+
+	@Override
+	public PageResponse<OfferDto> getOfferByCandidateName(String keyword, int pageNo, int pageSize) {
+		Sort sort = Sort.by("id").ascending();
+		
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		
+		Page<Offer> page = offerRepository.findByCandidateFirstNameContainingIgnoreCaseOrCandidateLastNameContainingIgnoreCase
+						(keyword, keyword, pageable);
+		
+		List<OfferDto> content = page.getContent()
+				.stream()
+				.map(OfferMapper::mapToDto)
+				.toList();
+		
+		return new PageResponse<>(content, page.getNumber()
+				,page.getSize(), page.getTotalElements()
+				, page.getTotalPages(), page.isLast());
+	}
+
+	@Override
+	public PageResponse<OfferDto> getOfferByJobTitle(String keyword, int pageNo, int pageSize) {
+		
+		Sort sort = Sort.by("id").ascending();
+		
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+		
+		Page<Offer> page = offerRepository.findByJobTitleContainingIgnoreCase(keyword, pageable);
+		
+		List<OfferDto> content = page.getContent()
+				.stream()
+				.map(OfferMapper::mapToDto)
+				.toList();
+		
+		return new PageResponse<>(content, page.getNumber()
+				,page.getSize(), page.getTotalElements()
+				, page.getTotalPages(), page.isLast());
 	}
 }
