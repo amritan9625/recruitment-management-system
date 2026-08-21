@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.amritan.backend.dto.PageResponse;
@@ -26,12 +27,14 @@ public class UserServiceImpl implements UserService {
 
 	private final UserRepository userRepository;
 	private final RoleRepository roleRepository;
-	
+	private final PasswordEncoder passwordEncoder;
 	
 	
 	@Override
 	public UserDto createUserDto(UserDto dto) {
 		User user = UserMapper.mapToEntity(dto);
+		
+		user.setPassword(passwordEncoder.encode(dto.getPassword()));
 		
 		Role role = roleRepository.findById(dto.getRoleId())
 		        .orElseThrow(() ->

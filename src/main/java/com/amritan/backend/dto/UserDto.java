@@ -28,4 +28,9 @@ public class UserDto {
 	
 	@NotNull(message = "Role ID is required")
 	private Long roleId;
+	
+	
+	@NotBlank(message = "Password is required")
+	@Size(min = 6, message = "Password must be at least 6 characters")
+	private String password;
 }
