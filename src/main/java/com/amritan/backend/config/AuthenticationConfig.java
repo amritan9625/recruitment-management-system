@@ -14,4 +14,5 @@ public class AuthenticationConfig {
 		
 		return configuration.getAuthenticationManager();
 	}
+	
 }

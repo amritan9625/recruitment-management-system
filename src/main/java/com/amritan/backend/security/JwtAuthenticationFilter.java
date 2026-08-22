@@ -40,7 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 			try {
 				email = jwtService.extractEmail(jwt);
 			} catch (Exception e) {
-				// TODO: handle exception
+				// handle exception
 			}
 		}
 		
