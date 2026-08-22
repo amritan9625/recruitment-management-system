@@ -22,7 +22,6 @@ public class InterviewDto {
 	@NotBlank(message = "Mode of interview is required")
 	private String mode;
 
-	@NotBlank(message = "Status is required")
 	private InterviewStatus status;
 
 	@NotNull(message = "Application Id is must")

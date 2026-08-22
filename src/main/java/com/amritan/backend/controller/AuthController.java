@@ -24,8 +24,6 @@ public class AuthController {
 	public ResponseEntity<LoginResponse> login(
 			@Valid @RequestBody LoginRequest request){
 		
-		System.out.println("LOGIN CONTROLLER HIT");
-		
 		LoginResponse response = authService.login(request);
 		
 		return ResponseEntity.ok(response);

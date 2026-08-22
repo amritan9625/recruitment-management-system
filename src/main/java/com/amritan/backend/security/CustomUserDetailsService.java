@@ -1,5 +1,6 @@
 package com.amritan.backend.security;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,7 +27,11 @@ public class CustomUserDetailsService implements UserDetailsService{
 		return org.springframework.security.core.userdetails.User
 				.withUsername(user.getEmail())
 				.password(user.getPassword())
-				.roles(user.getRole().getRoleName())
+				.authorities(
+						new SimpleGrantedAuthority(
+								"ROLE_" +user.getRole().getRoleName()
+								)
+						)
 				.build();
 	}
 }

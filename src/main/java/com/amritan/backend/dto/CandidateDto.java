@@ -37,6 +37,6 @@ public class CandidateDto {
 	@NotBlank(message = "Resume URL must be required")
 	private String resumeUrl;
 	
-	@NotBlank(message = "Status is required")
+	@NotNull(message = "Status is required")
 	private CandidateStatus status;
 }
