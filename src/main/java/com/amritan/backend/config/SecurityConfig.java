@@ -2,6 +2,7 @@ package com.amritan.backend.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -26,12 +27,42 @@ public class SecurityConfig {
 			.sessionManagement(session ->
 				session.sessionCreationPolicy(SessionCreationPolicy.STATELESS) )
 			.authorizeHttpRequests(auth -> auth
+					// Auth
 					.requestMatchers("/api/auth/**").permitAll()
+					
+					// Users
+					// Temporary: allow creating users
+					.requestMatchers(HttpMethod.POST, "/api/users").permitAll()
 					
 					.requestMatchers("/api/users/**").hasRole("ADMIN")
 					
-					.requestMatchers("/api/jobs/**").hasAnyRole("ADMIN", "RECRUITER")
+					// Roles
+					.requestMatchers("/api/roles/**").hasRole("ADMIN")
 					
+					// Jobs
+					.requestMatchers(HttpMethod.GET, "/api/jobs/**")
+					.hasAnyRole("ADMIN", "RECRUITER", "INTERVIEWER", "CANDIDATE")
+					
+					.requestMatchers("/api/jobs/**")
+	                .hasAnyRole("ADMIN", "RECRUITER")
+					
+	                // Candidates
+	                .requestMatchers("/api/candidates/**")
+					.hasAnyRole("ADMIN", "RECRUITER", "INTERVIEWER")
+					
+					// Applications
+					.requestMatchers("/api/applications/**")
+					.hasAnyRole("ADMIN", "RECRUITER", "INTERVIEWER", "CANDIDATE")
+					
+					// Interviews
+					.requestMatchers("/api/interviews/**")
+					.hasAnyRole("ADMIN", "RECRUITER", "INTERVIEWER", "CANDIDATE")
+					
+					// Offers
+					.requestMatchers("/api/offers/**")
+					.hasAnyRole("ADMIN", "RECRUITER", "CANDIDATE")
+					
+	                
 					.anyRequest().authenticated()
 				)
 			.addFilterBefore(

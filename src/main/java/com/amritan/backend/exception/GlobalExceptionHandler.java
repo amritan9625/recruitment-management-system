@@ -10,6 +10,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.amritan.backend.dto.ApiResponse;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -60,6 +64,23 @@ public class GlobalExceptionHandler {
 	    return new ResponseEntity<>(
 	            errors,
 	            HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(AccessDeniedException.class)
+	@ResponseStatus(HttpStatus.FORBIDDEN)
+	public ResponseEntity<ApiResponse<String>> handleAccessDeniedException(
+	        AccessDeniedException ex) {
+
+	    ApiResponse<String> response = new ApiResponse<>();
+
+	    response.setSuccess(false);
+	    response.setMessage(ex.getMessage());
+	    response.setData(null);
+	    response.setTimestamp(LocalDateTime.now());
+
+	    return ResponseEntity
+	            .status(HttpStatus.FORBIDDEN)
+	            .body(response);
 	}
 	
 	

@@ -14,7 +14,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Entity
-@Table(name = "candidate")
+@Table(name = "candidates")
 @Data
 public class Candidate {
 

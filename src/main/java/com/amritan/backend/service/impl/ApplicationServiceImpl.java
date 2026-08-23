@@ -6,6 +6,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.amritan.backend.dto.ApplicationDto;
@@ -35,6 +37,45 @@ public class ApplicationServiceImpl implements ApplicationService{
 	private final JobRepository jobRepository;
 	
 	
+	private String getLoggedInEmail() {
+
+	    Authentication authentication =
+	            SecurityContextHolder.getContext().getAuthentication();
+
+	    return authentication.getName();
+	}
+	
+	private boolean isCandidate() {
+
+	    Authentication authentication =
+	            SecurityContextHolder.getContext().getAuthentication();
+
+	    return authentication.getAuthorities()
+	            .stream()
+	            .anyMatch(authority ->
+	                    authority.getAuthority().equals("ROLE_CANDIDATE"));
+	}
+	
+	private void validateCandidateOwnership(Long candidateId) {
+
+	    if (!isCandidate()) {
+	        return;
+	    }
+
+	    Candidate candidate = candidateRepository.findById(candidateId)
+	            .orElseThrow(() ->
+	                    new ResourceNotFoundException(
+	                            "Candidate not found with id : " + candidateId));
+
+	    String loggedInEmail = getLoggedInEmail();
+
+	    if (!loggedInEmail.equalsIgnoreCase(candidate.getEmail())) {
+
+	        throw new org.springframework.security.access.AccessDeniedException(
+	                "You are not allowed to access another candidate's data");
+	    }
+	}
+	
 	
 	@Override
 	public ApplicationDto createApplication(ApplicationDto dto) {
@@ -43,6 +84,16 @@ public class ApplicationServiceImpl implements ApplicationService{
 				.orElseThrow(() ->
 							new ResourceNotFoundException("Candidate not found with id : "
 									+dto.getCandidateId()));
+		
+		// Protecting createApplication
+		if (isCandidate()) {
+		    String loggedInEmail = getLoggedInEmail();
+
+		    if (!loggedInEmail.equalsIgnoreCase(candidate.getEmail())) {
+		        throw new org.springframework.security.access.AccessDeniedException(
+		                "You cannot create an application for another candidate");
+		    }
+		}
 		
 		Job job = jobRepository.findById(dto.getJobId())
 				.orElseThrow(() ->
@@ -87,6 +138,17 @@ public class ApplicationServiceImpl implements ApplicationService{
 		Application application = applicationRepository.findById(id)
 								.orElseThrow(() ->
 								new ResourceNotFoundException("Application not found with id : "+id));
+		
+		if (isCandidate()) {
+	        String loggedInEmail = getLoggedInEmail();
+
+	        String candidateEmail = application.getCandidate().getEmail();
+
+	        if (!loggedInEmail.equalsIgnoreCase(candidateEmail)) {
+	            throw new org.springframework.security.access.AccessDeniedException(
+	                    "You are not allowed to access this application");
+	        }
+	    }
 		
 		return ApplicationMapper.mapToDto(application);
 	}
@@ -149,6 +211,9 @@ public class ApplicationServiceImpl implements ApplicationService{
 
 	@Override
 	public PageResponse<ApplicationDto> getApplicationsByCandidateId(Long candidateId, int pageNo, int pageSize) {
+		
+		validateCandidateOwnership(candidateId);
+		
 		Sort sort = Sort.by("id").ascending();
 		
 		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
