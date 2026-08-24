@@ -19,6 +19,9 @@ import com.amritan.backend.repository.CandidateRepository;
 import com.amritan.backend.repository.JobRepository;
 import com.amritan.backend.repository.OfferRepository;
 import com.amritan.backend.service.OfferService;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,8 +35,39 @@ public class OfferServiceImpl implements OfferService{
 	
 	private final JobRepository jobRepository;
 	
+	private String getLoggedInEmail() {
+	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+	    return authentication.getName();
+	}
 	
+	private boolean isCandidate() {
+	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+	    return authentication.getAuthorities()
+	            .stream()
+	            .anyMatch(authority -> authority.getAuthority().equals("ROLE_CANDIDATE"));
+	}
+	
+	private void validateOfferOwnership(Offer offer) {
+	    if (!isCandidate()) return;
+
+	    String loggedInEmail = getLoggedInEmail();
+
+	    String candidateEmail = offer.getCandidate().getEmail();
+
+	    if (!loggedInEmail.equalsIgnoreCase(candidateEmail)) {
+	        throw new AccessDeniedException("You are not allowed to access this offer");
+	    }
+	}
+	
+	
+	@Override
 	public OfferDto createOffer(OfferDto offerDto) {
+		if (isCandidate()) {
+		    throw new AccessDeniedException("Candidates are not allowed to create offers");
+		}
+		
 		Offer offer = OfferMapper.mapToEntity(offerDto);
 
         Offer savedOffer = offerRepository.save(offer);
@@ -51,7 +85,17 @@ public class OfferServiceImpl implements OfferService{
 		
 		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 		
-		Page<Offer> page = offerRepository.findAll(pageable);
+		Authentication authentication = SecurityContextHolder.getContext()
+		                .getAuthentication();
+		String email = authentication.getName();
+
+		Page<Offer> page;
+
+		if (isCandidate()) {
+		    page = offerRepository.findByCandidateEmailIgnoreCase(email,pageable);
+		} else {
+		    page = offerRepository.findAll(pageable);
+		}
 		
 		List<OfferDto> content = page.getContent()
 				.stream()
@@ -68,11 +112,16 @@ public class OfferServiceImpl implements OfferService{
 		Offer offer = offerRepository.findById(id)
 				.orElseThrow(() -> new RuntimeException("Offer not found with id: " + id));
 		
+		validateOfferOwnership(offer);
+		
 		return OfferMapper.mapToDto(offer);
 	}
 
 	@Override
 	public OfferDto updateOffer(Long id, OfferDto offerDto) {
+		if (isCandidate()) {
+		    throw new AccessDeniedException("Candidates are not allowed to update offers");
+		}
 		Candidate candidate = candidateRepository.findById(offerDto.getCandidateId())
 				.orElseThrow(() ->
 				new ResourceNotFoundException("Candidate not found with id : "
@@ -101,6 +150,10 @@ public class OfferServiceImpl implements OfferService{
 
 	@Override
 	public void deleteOffer(Long id) {
+		if (isCandidate()) {
+	        throw new AccessDeniedException("Candidates are not allowed to delete offers");
+	    }
+		
 		Offer offer = offerRepository.findById(id)
 				.orElseThrow(() -> new RuntimeException("Offer not found with id: " + id));;
 		
@@ -114,7 +167,17 @@ public class OfferServiceImpl implements OfferService{
 		
 		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 		
-		Page<Offer> page = offerRepository.findBySalary(salary, pageable);
+		Authentication authentication =SecurityContextHolder.getContext()
+		                .getAuthentication();
+		String email = authentication.getName();
+
+		Page<Offer> page;
+
+		if (isCandidate()) {
+			page = offerRepository.findBySalaryAndCandidateEmailIgnoreCase(salary, email, pageable);
+		} else {
+		    page = offerRepository.findBySalary(salary, pageable);
+		}
 		
 		List<OfferDto> content = page.getContent()
 				.stream()
@@ -132,8 +195,18 @@ public class OfferServiceImpl implements OfferService{
 		
 		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 		
-		Page<Offer> page = offerRepository.findByCandidateFirstNameContainingIgnoreCaseOrCandidateLastNameContainingIgnoreCase
-						(keyword, keyword, pageable);
+		Authentication authentication =SecurityContextHolder.getContext()
+                .getAuthentication();
+		String email = authentication.getName();
+
+		Page<Offer> page;
+		
+		if (isCandidate()) {
+		    page = offerRepository.findByCandidateEmailIgnoreCase(email, pageable);
+		} else {
+		    page = offerRepository.findByCandidateFirstNameContainingIgnoreCaseOrCandidateLastNameContainingIgnoreCase(
+		                    keyword, keyword, pageable);
+		}
 		
 		List<OfferDto> content = page.getContent()
 				.stream()
@@ -152,7 +225,18 @@ public class OfferServiceImpl implements OfferService{
 		
 		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 		
-		Page<Offer> page = offerRepository.findByJobTitleContainingIgnoreCase(keyword, pageable);
+		Authentication authentication =SecurityContextHolder.getContext()
+                .getAuthentication();
+		String email = authentication.getName();
+
+		Page<Offer> page;
+		
+		if (isCandidate()) {
+		    page = offerRepository.findByJobTitleContainingIgnoreCaseAndCandidateEmailIgnoreCase(
+		                    keyword, email, pageable);
+		} else {
+		    page = offerRepository.findByJobTitleContainingIgnoreCase(keyword, pageable);
+		}
 		
 		List<OfferDto> content = page.getContent()
 				.stream()

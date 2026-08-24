@@ -104,9 +104,9 @@ public class InterviewController {
 	}
 	
 	
-	@GetMapping("/search")
+	@GetMapping("/search/{keyword}")
 	public ResponseEntity<ApiResponse<PageResponse<InterviewDto>> >getInterviewer(
-					@RequestParam String keyword,
+					@PathVariable String keyword,
 					@RequestParam(defaultValue = "0") int pageNo,
 					@RequestParam(defaultValue = "10") int pageSize){
 		

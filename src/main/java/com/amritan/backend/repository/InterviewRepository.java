@@ -16,4 +16,12 @@ public interface InterviewRepository extends JpaRepository<Interview, Long>{
 	
 	
 	Page<Interview> findByInterviewerContainingIgnoreCase(String keyword, Pageable pageable);
+	
+	Page<Interview> findByApplicationCandidateEmailIgnoreCase(String email, Pageable pageable);
+	
+	Page<Interview> findByStatusAndApplicationCandidateEmailIgnoreCase(InterviewStatus status,
+	        String email, Pageable pageable);
+	
+	Page<Interview> findByInterviewerContainingIgnoreCaseAndApplicationCandidateEmailIgnoreCase(
+	        String keyword, String email, Pageable pageable);
 }

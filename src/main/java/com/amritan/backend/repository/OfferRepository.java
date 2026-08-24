@@ -11,10 +11,16 @@ import com.amritan.backend.entity.Offer;
 public interface OfferRepository extends JpaRepository<Offer, Long>{
 	Page<Offer> findAll(Pageable pageable);
 	
+	
 	Page<Offer> findBySalary(Double salary, Pageable pageable);
+	Page<Offer> findBySalaryAndCandidateEmailIgnoreCase(Double salary, String email, Pageable pageable);
 	
-	Page<Offer> findByCandidateFirstNameContainingIgnoreCaseOrCandidateLastNameContainingIgnoreCase
-								(String firstname, String lastName, Pageable pageable);
-	
+	Page<Offer> findByCandidateFirstNameContainingIgnoreCaseOrCandidateLastNameContainingIgnoreCase(
+			String firstname, String lastName, Pageable pageable);
+	Page<Offer> findByCandidateEmailIgnoreCase(String email, Pageable pageable);
+
 	Page<Offer> findByJobTitleContainingIgnoreCase(String keyword, Pageable pageable);
+	Page<Offer> findByJobTitleContainingIgnoreCaseAndCandidateEmailIgnoreCase(
+			String keyword, String email, Pageable pageable);
+	
 }

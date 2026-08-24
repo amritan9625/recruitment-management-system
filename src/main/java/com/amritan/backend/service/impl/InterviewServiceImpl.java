@@ -18,6 +18,9 @@ import com.amritan.backend.mapper.InterviewMapper;
 import com.amritan.backend.repository.ApplicationRepository;
 import com.amritan.backend.repository.InterviewRepository;
 import com.amritan.backend.service.InterviewService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.AccessDeniedException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,9 +35,45 @@ public class InterviewServiceImpl implements InterviewService{
 	private final InterviewMapper interviewMapper;
 
 
+	private String getLoggedInEmail() {
+	    Authentication authentication = SecurityContextHolder.getContext()
+	                    .getAuthentication();
+
+	    return authentication.getName();
+	}
+	
+	private boolean isCandidate() {
+	    Authentication authentication = SecurityContextHolder.getContext()
+	                    .getAuthentication();
+
+	    return authentication.getAuthorities()
+	            .stream()
+	            .anyMatch(authority -> authority.getAuthority()
+	                            .equals("ROLE_CANDIDATE"));
+	}
+	
+	private void validateInterviewOwnership(Interview interview) {
+	    if (!isCandidate()) return;
+	    
+	    String loggedInEmail = getLoggedInEmail();
+
+	    String candidateEmail = interview.getApplication()
+	                    .getCandidate()
+	                    .getEmail();
+
+	    if (!loggedInEmail.equalsIgnoreCase(candidateEmail)) {
+	        throw new AccessDeniedException("You are not allowed to access this interview");
+	    }
+	}
+	
+	
 	
 	@Override
 	public InterviewDto createInterview(InterviewDto dto) {
+		if (isCandidate()) {
+		    throw new AccessDeniedException("Candidates are not allowed to create interviews");
+		}
+		
 		Application application = applicationRepository.findById(dto.getApplicationId())
 		        .orElseThrow(() -> new ResourceNotFoundException("Application not found"));
 
@@ -54,7 +93,19 @@ public class InterviewServiceImpl implements InterviewService{
 		
 		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 		
-		Page<Interview> page = interviewRepository.findAll(pageable);
+		Authentication authentication = SecurityContextHolder.getContext()
+	                    .getAuthentication();
+
+	    String email = authentication.getName();
+
+	    Page<Interview> page;
+
+	    if (isCandidate()) {
+	        page = interviewRepository.findByApplicationCandidateEmailIgnoreCase(
+	                        email, pageable);
+	    } else {
+	        page = interviewRepository.findAll(pageable);
+	    }
 		
 		List<InterviewDto> content = page.getContent()
 								.stream()
@@ -76,11 +127,16 @@ public class InterviewServiceImpl implements InterviewService{
 							.orElseThrow(() ->
 							new ResourceNotFoundException("Interview not found with id : "+id));
 		
+		validateInterviewOwnership(interview);
 		return interviewMapper.mapToDto(interview);
 	}
 
 	@Override
 	public InterviewDto updateInterview(Long id, InterviewDto dto) {
+		if (isCandidate()) {
+		    throw new AccessDeniedException("Candidates are not allowed to update interviews");
+		}
+		
 		Interview interview = interviewRepository.findById(id)
 				.orElseThrow(() ->
 				new ResourceNotFoundException("Interview not found with id : "+id));
@@ -103,6 +159,10 @@ public class InterviewServiceImpl implements InterviewService{
 
 	@Override
 	public void deleteInterview(Long id) {
+		if (isCandidate()) {
+		    throw new AccessDeniedException("Candidates are not allowed to delete interviews");
+		}
+		
 		Interview interview = interviewRepository.findById(id)
 				.orElseThrow(() ->
 				new ResourceNotFoundException("Interview not found with id : "+id));
@@ -118,8 +178,20 @@ public class InterviewServiceImpl implements InterviewService{
 		
 		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 		
-		Page<Interview> page = interviewRepository.findByStatus(status, pageable);
-		
+		Authentication authentication = SecurityContextHolder.getContext()
+		                .getAuthentication();
+
+		String email = authentication.getName();
+
+		Page<Interview> page;
+
+		if (isCandidate()) {
+		    page = interviewRepository.findByStatusAndApplicationCandidateEmailIgnoreCase(
+		                    status, email, pageable);
+		} else {
+		    page = interviewRepository.findByStatus(status, pageable);
+		}
+
 		List<InterviewDto> content = page.getContent()
 								.stream()
 								.map(interviewMapper::mapToDto)
@@ -139,7 +211,21 @@ public class InterviewServiceImpl implements InterviewService{
 		
 		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 		
-		Page<Interview> page = interviewRepository.findByInterviewerContainingIgnoreCase(keyword, pageable);
+		Authentication authentication = SecurityContextHolder.getContext()
+		                .getAuthentication();
+
+		String email = authentication.getName();
+
+		Page<Interview> page;
+
+		if (isCandidate()) {
+		    page = interviewRepository
+		            .findByInterviewerContainingIgnoreCaseAndApplicationCandidateEmailIgnoreCase(
+		                    keyword, email, pageable);
+		} else {
+		    page = interviewRepository.findByInterviewerContainingIgnoreCase(
+		                    keyword, pageable);
+		}
 		
 		List<InterviewDto> content = page.getContent()
 								.stream()
