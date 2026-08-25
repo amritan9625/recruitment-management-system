@@ -61,9 +61,7 @@ public class GlobalExceptionHandler {
 	                            error.getField(),
 	                            error.getDefaultMessage()));
 
-	    return new ResponseEntity<>(
-	            errors,
-	            HttpStatus.BAD_REQUEST);
+	    return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(AccessDeniedException.class)
@@ -78,9 +76,20 @@ public class GlobalExceptionHandler {
 	    response.setData(null);
 	    response.setTimestamp(LocalDateTime.now());
 
-	    return ResponseEntity
-	            .status(HttpStatus.FORBIDDEN)
-	            .body(response);
+	    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+	}
+	
+	@ExceptionHandler(DuplicateResourceException.class)
+	public ResponseEntity<ApiResponse<Void>> handleDuplicateResource(DuplicateResourceException ex) {
+
+	    ApiResponse<Void> response = new ApiResponse<>();
+
+	    response.setSuccess(false);
+	    response.setMessage(ex.getMessage());
+	    response.setData(null);
+	    response.setTimestamp(LocalDateTime.now());
+
+	    return new ResponseEntity<>(response, HttpStatus.CONFLICT);
 	}
 	
 	

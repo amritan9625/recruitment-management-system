@@ -9,6 +9,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.amritan.backend.security.CustomAccessDeniedHandler;
+import com.amritan.backend.security.CustomAuthenticationEntryPoint;
 import com.amritan.backend.security.JwtAuthenticationFilter;
 
 import lombok.RequiredArgsConstructor;
@@ -30,10 +32,7 @@ public class SecurityConfig {
 					// Auth
 					.requestMatchers("/api/auth/**").permitAll()
 					
-					// Users
-					// Temporary: allow creating users
-					.requestMatchers(HttpMethod.POST, "/api/users").permitAll()
-					
+					// Users					
 					.requestMatchers("/api/users/**").hasRole("ADMIN")
 					
 					// Roles
@@ -65,6 +64,10 @@ public class SecurityConfig {
 	                
 					.anyRequest().authenticated()
 				)
+			.exceptionHandling(exception -> exception
+		            .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+		            .accessDeniedHandler(new CustomAccessDeniedHandler())
+		        )
 			.addFilterBefore(
 					jwtAuthenticationFilter, 
 					UsernamePasswordAuthenticationFilter.class);
