@@ -66,7 +66,8 @@ public class JobController {
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<ApiResponse<JobDto>> updateJob(@PathVariable Long id, @RequestBody JobDto dto){
+	public ResponseEntity<ApiResponse<JobDto>> updateJob(
+			@PathVariable Long id, @Valid @RequestBody JobDto dto){
 		JobDto updateDto = jobService.updateJob(id, dto);
 		
 		return ResponseEntity.ok(new ApiResponse<>(true, "Job updated successfully", 
@@ -94,7 +95,7 @@ public class JobController {
 			ApiResponse<PageResponse<JobDto>> response = new ApiResponse<>();
 		
 			response.setSuccess(true);
-			response.setMessage("User fetched successfully");
+			response.setMessage("Jobs fetched successfully");
 			response.setData(pageResponse);
 			response.setTimestamp(LocalDateTime.now());
 		
@@ -102,8 +103,8 @@ public class JobController {
 			
 	    }
 
-	    @GetMapping("/location")
-	    public ResponseEntity<ApiResponse<PageResponse<JobDto>>> getJobsByLocation( @RequestParam String location,
+	    @GetMapping("/location/{location}")
+	    public ResponseEntity<ApiResponse<PageResponse<JobDto>>> getJobsByLocation( @PathVariable String location,
 	    														@RequestParam(defaultValue = "0") int pageNo,
 	    														@RequestParam(defaultValue = "10") int pageSize) {
 
@@ -113,7 +114,7 @@ public class JobController {
 			ApiResponse<PageResponse<JobDto>> response = new ApiResponse<>();
 		
 			response.setSuccess(true);
-			response.setMessage("User fetched successfully");
+			response.setMessage("Jobs fetched successfully");
 			response.setData(pageResponse);
 			response.setTimestamp(LocalDateTime.now());
 			

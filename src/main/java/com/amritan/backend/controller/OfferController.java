@@ -31,11 +31,11 @@ public class OfferController {
 	
 	
 	@PostMapping
-	public ResponseEntity<OfferDto> createOffer(@Valid @RequestBody OfferDto dto){
+	public ResponseEntity<ApiResponse<OfferDto>> createOffer(@Valid @RequestBody OfferDto dto){
 		OfferDto offerDto = offerService.createOffer(dto);
 		
-		return new ResponseEntity<>(
-				offerDto, HttpStatus.CREATED);
+		return new ResponseEntity<>(new ApiResponse<>(true, "Offer created successfully"
+				, offerDto, LocalDateTime.now()) , HttpStatus.CREATED);
 	}
 	
 	@GetMapping
@@ -59,24 +59,29 @@ public class OfferController {
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<OfferDto> getOfferById(@PathVariable Long id){
+	public ResponseEntity<ApiResponse<OfferDto>> getOfferById(@PathVariable Long id){
 		OfferDto offerDto = offerService.getOfferById(id);
 		
-		return ResponseEntity.ok(offerDto);
+		return ResponseEntity.ok(new ApiResponse<>(true, "Offer fetched successfully"
+				, offerDto, LocalDateTime.now()));
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<OfferDto> updateOffer(@PathVariable Long id, @RequestBody OfferDto dto){
+	public ResponseEntity<ApiResponse<OfferDto>> updateOffer(
+			@PathVariable Long id, @Valid @RequestBody OfferDto dto){
 		OfferDto offerDto = offerService.updateOffer(id, dto);
 		
-		return ResponseEntity.ok(offerDto);
+		
+		return ResponseEntity.ok(new ApiResponse<>(true, "Offer updated successfully"
+				, offerDto, LocalDateTime.now()));
 	}
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<String> deleteOffer(@PathVariable Long id){
+	public ResponseEntity<ApiResponse<String>> deleteOffer(@PathVariable Long id){
 		offerService.deleteOffer(id);
 		
-		return ResponseEntity.ok("Offer deleted successfully");
+		return ResponseEntity.ok(new ApiResponse<>(true, "Offer deleted successfully"
+				, null, LocalDateTime.now()));
 	}
 	
 	
@@ -92,7 +97,7 @@ public class OfferController {
 		ApiResponse<PageResponse<OfferDto>> response = new ApiResponse<>();
 		
 		response.setSuccess(true);
-		response.setMessage("Offers fetched successfully");
+		response.setMessage("Offer fetched successfully");
 		response.setData(pageResponse);
 		response.setTimestamp(LocalDateTime.now());
 		
@@ -100,36 +105,36 @@ public class OfferController {
 	}
 	
 	
-	@GetMapping("/search/candidate")
+	@GetMapping("/candidateName/{candidateName}")
 	public ResponseEntity<ApiResponse<PageResponse<OfferDto>>> getOfferByCandidateName(
-			@RequestParam String keyword,
+			@PathVariable String candidateName,
 			@RequestParam(defaultValue = "0") int pageNo,
 			@RequestParam(defaultValue = "10") int pageSize){
 		
-		PageResponse<OfferDto> pageResponse = offerService.getOfferByCandidateName(keyword, pageNo, pageSize);
+		PageResponse<OfferDto> pageResponse = offerService.getOfferByCandidateName(candidateName, pageNo, pageSize);
 		
 		ApiResponse<PageResponse<OfferDto>> response = new ApiResponse<>();
 		
 		response.setSuccess(true);
-		response.setMessage("Offers fetched successfully");
+		response.setMessage("Offer fetched successfully");
 		response.setData(pageResponse);
 		response.setTimestamp(LocalDateTime.now());
 		
 		return ResponseEntity.ok(response);
 	}
 	
-	@GetMapping("/search/job")
+	@GetMapping("/jobTitle/{jobTitle}")
 	public ResponseEntity<ApiResponse<PageResponse<OfferDto>>> getOfferByJobTitle(
-			@RequestParam String keyword,
+			@PathVariable String jobTitle,
 			@RequestParam(defaultValue = "0") int pageNo,
 			@RequestParam(defaultValue = "10") int pageSize){
 		
-		PageResponse<OfferDto> pageResponse = offerService.getOfferByJobTitle(keyword, pageNo, pageSize);
+		PageResponse<OfferDto> pageResponse = offerService.getOfferByJobTitle(jobTitle, pageNo, pageSize);
 		
 		ApiResponse<PageResponse<OfferDto>> response = new ApiResponse<>();
 		
 		response.setSuccess(true);
-		response.setMessage("Offers fetched successfully");
+		response.setMessage("Offer fetched successfully");
 		response.setData(pageResponse);
 		response.setTimestamp(LocalDateTime.now());
 		

@@ -21,19 +21,16 @@ import com.amritan.backend.dto.RoleDto;
 import com.amritan.backend.service.RoleService;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/roles")
+@RequiredArgsConstructor
 public class RoleController {
 
-	private RoleService roleService;
+	private final RoleService roleService;
 	
-	@Autowired
-	public void setRoleService(RoleService roleService) {
-		this.roleService = roleService;
-	}
 	
-	// create role
 	@PostMapping
 	public ResponseEntity<ApiResponse<RoleDto>> createRole(@Valid @RequestBody RoleDto roleDto){
 		RoleDto saveRoledDto = roleService.createRole(roleDto);
@@ -42,7 +39,6 @@ public class RoleController {
 				, saveRoledDto, LocalDateTime.now()), HttpStatus.CREATED);
 	}
 	
-	// get all roles
 	@GetMapping
 	public ResponseEntity<ApiResponse<PageResponse<RoleDto>> > getAllRoles(
 			@RequestParam(defaultValue = "0") int pageNo,
@@ -56,14 +52,13 @@ public class RoleController {
 		ApiResponse<PageResponse<RoleDto>> response = new ApiResponse<>();
 		
 		response.setSuccess(true);
-		response.setMessage("Role fetched successfully");
+		response.setMessage("Roles fetched successfully");
 		response.setData(pageResponse);
 		response.setTimestamp(LocalDateTime.now());
 		
 		return ResponseEntity.ok(response);		
 	}
 	
-	// get role by id
 	@GetMapping("/{id}")
 	public ResponseEntity<ApiResponse<RoleDto>> getRoleById(@PathVariable Long id){
 		RoleDto roleDto = roleService.getRoleById(id);
@@ -72,16 +67,15 @@ public class RoleController {
 				, roleDto, LocalDateTime.now()));
 	}
 	
-	// update role
 	@PutMapping("/{id}")
-	public ResponseEntity<ApiResponse<RoleDto>> updateRole(@PathVariable Long id, @RequestBody RoleDto roleDto){
+	public ResponseEntity<ApiResponse<RoleDto>> updateRole(
+			@PathVariable Long id, @Valid @RequestBody RoleDto roleDto){
 		RoleDto updateDto  = roleService.updateRole(id, roleDto);
 		
 		return ResponseEntity.ok(new ApiResponse<>(true, "Role updated successfully"
 				, updateDto, LocalDateTime.now()));
 	}
 	
-	// delete role
 	@DeleteMapping("/{id}")
 	public ResponseEntity<ApiResponse<String>> deleteRole(@PathVariable Long id){
 		roleService.deleteRole(id);
@@ -90,17 +84,18 @@ public class RoleController {
 				, null, LocalDateTime.now()));
 	}
 	
-	@GetMapping("/search")
-	public ResponseEntity<ApiResponse<PageResponse<RoleDto>> > getByRoleName(@RequestParam String roleName
-			, @RequestParam(defaultValue = "0") int pageNo
-			, @RequestParam(defaultValue = "10") int pageSize){
+	@GetMapping("/roleName/{roleName}")
+	public ResponseEntity<ApiResponse<PageResponse<RoleDto>> > getByRoleName(
+			@PathVariable String roleName,
+			@RequestParam(defaultValue = "0") int pageNo,
+			@RequestParam(defaultValue = "10") int pageSize){
 		
 		PageResponse<RoleDto> pageResponse = roleService.getByRoleName(roleName, pageNo, pageSize);
 		
 		ApiResponse<PageResponse<RoleDto>> response = new ApiResponse<>();
 		
 		response.setSuccess(true);
-		response.setMessage("Roles fetched successfully");
+		response.setMessage("Role fetched successfully");
 		response.setData(pageResponse);
 		response.setTimestamp(LocalDateTime.now());
 		

@@ -45,7 +45,7 @@ public class AuthController {
 		ApiResponse<UserDto> response = new ApiResponse<>();
 		
 		response.setSuccess(true);
-		response.setMessage("Candidate registered successfully");
+		response.setMessage("User registered successfully");
 		response.setData(userDto);
 		response.setTimestamp(LocalDateTime.now());
 		

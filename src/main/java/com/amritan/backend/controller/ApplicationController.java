@@ -69,7 +69,8 @@ public class ApplicationController {
 	
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<ApiResponse<ApplicationDto>> updateApplication(@PathVariable Long id, @RequestBody ApplicationDto dto){
+	public ResponseEntity<ApiResponse<ApplicationDto>> updateApplication(
+			@PathVariable Long id, @Valid @RequestBody ApplicationDto dto){
 		ApplicationDto applicationDto = applicationService.updateApplication(id, dto);
 		
 		return ResponseEntity.ok(new ApiResponse<>(true, "Application updated successfully"
@@ -86,10 +87,10 @@ public class ApplicationController {
 	
 	
 
-	@PutMapping("/{id}/status")
+	@PutMapping("/{id}/{status}")
 	public ResponseEntity<ApiResponse<ApplicationDto>> updateStatus(
 	        @PathVariable Long id,
-	        @RequestParam ApplicationStatus status) {
+	        @PathVariable ApplicationStatus status) {
 
 	    ApplicationDto applicationDto = applicationService.updateStatus(id, status);
 	    
@@ -110,7 +111,7 @@ public class ApplicationController {
 		ApiResponse<PageResponse<ApplicationDto>> response = new ApiResponse<>();
 
 		response.setSuccess(true);
-		response.setMessage("Users fetched successfully");
+		response.setMessage("Application fetched successfully");
 		response.setData(pageResponse);
 		response.setTimestamp(LocalDateTime.now());
 
@@ -130,15 +131,16 @@ public class ApplicationController {
 	    ApiResponse<PageResponse<ApplicationDto>> response = new ApiResponse<>();
 	    
 	    response.setSuccess(true);
-		response.setMessage("Users fetched successfully");
+		response.setMessage("Application fetched successfully");
 		response.setData(pageResponse);
 		response.setTimestamp(LocalDateTime.now());
 	
 		return ResponseEntity.ok(response);
 	}
 	
-	@GetMapping("/status")
-	public ResponseEntity<ApiResponse<PageResponse<ApplicationDto>> > getApplicationByStatus(@RequestParam ApplicationStatus status,
+	@GetMapping("/status/{status}")
+	public ResponseEntity<ApiResponse<PageResponse<ApplicationDto>> > getApplicationByStatus(
+					@PathVariable ApplicationStatus status,
 					@RequestParam(defaultValue = "0") int pageNo,
 					@RequestParam(defaultValue = "10") int pageSize){
 		
@@ -148,7 +150,7 @@ public class ApplicationController {
 		ApiResponse<PageResponse<ApplicationDto>> response = new ApiResponse<>();
 
 		response.setSuccess(true);
-		response.setMessage("Users fetched successfully");
+		response.setMessage("Application fetched successfully");
 		response.setData(pageResponse);
 		response.setTimestamp(LocalDateTime.now());
 
@@ -156,17 +158,18 @@ public class ApplicationController {
 	}
 	
 	
-	@GetMapping("/search/candidate")
-	public ResponseEntity<ApiResponse<PageResponse<ApplicationDto>> > getApplicationByCandidateName(@RequestParam String keyword,
+	@GetMapping("/candidateName/{candidateName}")
+	public ResponseEntity<ApiResponse<PageResponse<ApplicationDto>> > getApplicationByCandidateName(
+					@PathVariable String candidateName,
 					@RequestParam(defaultValue = "0") int pageNo,
 					@RequestParam(defaultValue = "10") int pageSize){
 		PageResponse<ApplicationDto> pageResponse = 
-				applicationService.getApplicationByCandidateName(keyword, pageNo, pageSize);
+				applicationService.getApplicationByCandidateName(candidateName, pageNo, pageSize);
 
 		ApiResponse<PageResponse<ApplicationDto>> response = new ApiResponse<>();
 
 		response.setSuccess(true);
-		response.setMessage("Candidate fetched successfully");
+		response.setMessage("Application fetched successfully");
 		response.setData(pageResponse);
 		response.setTimestamp(LocalDateTime.now());
 
@@ -174,17 +177,18 @@ public class ApplicationController {
 	}
 	
 	
-	@GetMapping("/search/job")
-	public ResponseEntity<ApiResponse<PageResponse<ApplicationDto>> > getApplicationByJobTitle(@RequestParam String keyword,
+	@GetMapping("/jobTitle/{jobTitle}")
+	public ResponseEntity<ApiResponse<PageResponse<ApplicationDto>> > getApplicationByJobTitle(
+					@PathVariable String jobTitle,
 					@RequestParam(defaultValue = "0") int pageNo,
 					@RequestParam(defaultValue = "10") int pageSize){
 		PageResponse<ApplicationDto> pageResponse = 
-				applicationService.getApplicationByJobTitle(keyword, pageNo, pageSize);
+				applicationService.getApplicationByJobTitle(jobTitle, pageNo, pageSize);
 
 		ApiResponse<PageResponse<ApplicationDto>> response = new ApiResponse<>();
 
 		response.setSuccess(true);
-		response.setMessage("Job fetched successfully");
+		response.setMessage("Application fetched successfully");
 		response.setData(pageResponse);
 		response.setTimestamp(LocalDateTime.now());
 

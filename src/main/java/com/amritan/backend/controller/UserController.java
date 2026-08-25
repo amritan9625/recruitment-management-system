@@ -71,7 +71,8 @@ public class UserController {
 	
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<ApiResponse<UserDto>> updateUser(@PathVariable Long id, @RequestBody UserDto dto){
+	public ResponseEntity<ApiResponse<UserDto>> updateUser(
+			@PathVariable Long id, @Valid @RequestBody UserDto dto){
 		UserDto userDto = userService.updateUser(id, dto);
 		
 		return ResponseEntity.ok(new ApiResponse<>(true, "User updated successfully",
@@ -88,17 +89,18 @@ public class UserController {
 	}
 	
 	
-	@GetMapping("/name")
-	public ResponseEntity<ApiResponse<PageResponse<UserDto>>> getUserByName(@RequestParam String keyword, 
-									@RequestParam(defaultValue = "0") int pageNo,
-									@RequestParam(defaultValue = "10") int pageSize){
+	@GetMapping("/name/{name}")
+	public ResponseEntity<ApiResponse<PageResponse<UserDto>>> getUserByName(
+			@PathVariable String name, 
+			@RequestParam(defaultValue = "0") int pageNo,
+			@RequestParam(defaultValue = "10") int pageSize){
 		
 		PageResponse<UserDto> pageResponse = 
-					userService.getUsersByName(keyword, pageNo, pageSize);
+					userService.getUsersByName(name, pageNo, pageSize);
 		ApiResponse<PageResponse<UserDto>> response = new ApiResponse<>();
 		
 		response.setSuccess(true);
-		response.setMessage("Users fetched successfully");
+		response.setMessage("User fetched successfully");
 		response.setData(pageResponse);
 		response.setTimestamp(LocalDateTime.now());
 		
@@ -106,17 +108,18 @@ public class UserController {
 	}
 	
 	
-	@GetMapping("/email")
-	public ResponseEntity<ApiResponse<PageResponse<UserDto>>> getUserByEmail(@RequestParam String keyword,
-										@RequestParam(defaultValue = "0") int pageNo,
-										@RequestParam(defaultValue = "10") int pageSize){
+	@GetMapping("/email/{email}")
+	public ResponseEntity<ApiResponse<PageResponse<UserDto>>> getUserByEmail(
+			@PathVariable String email,
+			@RequestParam(defaultValue = "0") int pageNo,
+			@RequestParam(defaultValue = "10") int pageSize){
 		
 		PageResponse<UserDto> pageResponse = 
-				userService.getUsersByEmail(keyword, pageNo, pageSize);
+				userService.getUsersByEmail(email, pageNo, pageSize);
 		ApiResponse<PageResponse<UserDto>> response = new ApiResponse<>();
 	
 		response.setSuccess(true);
-		response.setMessage("Users fetched successfully");
+		response.setMessage("User fetched successfully");
 		response.setData(pageResponse);
 		response.setTimestamp(LocalDateTime.now());
 	

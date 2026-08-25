@@ -56,7 +56,7 @@ public class CandidateController {
 		ApiResponse<PageResponse<CandidateDto>> response = new ApiResponse<>();
 		
 		response.setSuccess(true);
-		response.setMessage("Candidates created successfully");
+		response.setMessage("Candidates fetched successfully");
 		response.setData(pageResponse);
 		response.setTimestamp(LocalDateTime.now());
 		
@@ -75,7 +75,8 @@ public class CandidateController {
 	
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<ApiResponse<CandidateDto>> updateCandidate(@PathVariable Long id, @RequestBody CandidateDto dto){
+	public ResponseEntity<ApiResponse<CandidateDto>> updateCandidate(
+			@PathVariable Long id, @Valid @RequestBody CandidateDto dto){
 		CandidateDto candidate = candidateService.updateCandidate(id, dto);
 		
 		return ResponseEntity.ok(new ApiResponse<>(true, "Candidate updated successfully",
@@ -95,14 +96,14 @@ public class CandidateController {
 	}
 	
 	
-	@GetMapping("/search")
+	@GetMapping("/candidateName/{candidateName}")
 	public ResponseEntity<ApiResponse<PageResponse<CandidateDto>> > searchCandidates(
-	        									@RequestParam String keyword,
+	        									@PathVariable String candidateName,
 	        									@RequestParam(defaultValue="0") int pageNo,
 	        									@RequestParam(defaultValue="10") int pageSize){
 		
 		 PageResponse<CandidateDto> pageResponse =
-		            candidateService.searchCandidates(keyword, pageNo, pageSize);
+		            candidateService.searchCandidates(candidateName, pageNo, pageSize);
 
 		    ApiResponse<PageResponse<CandidateDto>> response = new ApiResponse<>();
 
@@ -115,9 +116,9 @@ public class CandidateController {
 	}
 	
 	
-	@GetMapping("/status")
+	@GetMapping("/status/{status}")
 	public ResponseEntity<ApiResponse<PageResponse<CandidateDto>>> getCandidatesByStatus(
-	        @RequestParam CandidateStatus status,
+	        @PathVariable CandidateStatus status,
 	        @RequestParam(defaultValue = "0") int pageNo,
 	        @RequestParam(defaultValue = "10") int pageSize) {
 

@@ -51,7 +51,7 @@ public class InterviewController {
 		ApiResponse<PageResponse<InterviewDto>> response = new ApiResponse<>();
 		
 		response.setSuccess(true);
-		response.setMessage("Interview fetched successfully");
+		response.setMessage("Interviews fetched successfully");
 	    response.setData(pageResponse);
 	    response.setTimestamp(LocalDateTime.now());
 
@@ -68,7 +68,8 @@ public class InterviewController {
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<ApiResponse<InterviewDto>> updateInterview(@PathVariable Long id, @RequestBody InterviewDto dto){
+	public ResponseEntity<ApiResponse<InterviewDto>> updateInterview(
+			@PathVariable Long id, @Valid @RequestBody InterviewDto dto){
 		InterviewDto interviewDto = interviewService.updateInterview(id, dto);
 		
 		return ResponseEntity.ok(new ApiResponse<>(true, "Interview updated successfully",
@@ -104,7 +105,7 @@ public class InterviewController {
 	}
 	
 	
-	@GetMapping("/search/{keyword}")
+	@GetMapping("/interviewer/{keyword}")
 	public ResponseEntity<ApiResponse<PageResponse<InterviewDto>> >getInterviewer(
 					@PathVariable String keyword,
 					@RequestParam(defaultValue = "0") int pageNo,
