@@ -2,39 +2,44 @@ package com.amritan.backend.mapper;
 
 import org.springframework.stereotype.Component;
 
-import com.amritan.backend.dto.UserDto;
+import com.amritan.backend.dto.CreateUserRequest;
+import com.amritan.backend.dto.UpdateUserRequest;
+import com.amritan.backend.dto.UserResponseDto;
 import com.amritan.backend.entity.User;
 
 @Component
 public class UserMapper {
-	
-	private UserMapper() {}
 
-	public static User mapToEntity(UserDto dto) {
-		User user = new User();
-		
-		user.setId(dto.getId());
-		user.setName(dto.getName());
-		user.setEmail(dto.getEmail());
-		user.setPhone(dto.getPhone());
-		
-		user.setPassword(dto.getPassword());
-		
-		return user;
-	}
-	
-	public static UserDto mapToDto(User user) {
-		UserDto userDto = new UserDto();
-		
-		userDto.setId(user.getId());
-		userDto.setName(user.getName());
-		userDto.setEmail(user.getEmail());
-		userDto.setPhone(user.getPhone());
-		
-		if(user.getRole() != null) {
-			userDto.setRoleId(user.getRole().getId());
-		}
-		
-		return userDto;
-	}
+    private UserMapper() {}
+
+    public static User mapToEntity(CreateUserRequest dto) {
+        User user = new User();
+
+        user.setName(dto.getName());
+        user.setEmail(dto.getEmail());
+        user.setPhone(dto.getPhone());
+
+        return user;
+    }
+
+    public static void updateEntity(User user, UpdateUserRequest dto) {
+        user.setName(dto.getName());
+        user.setEmail(dto.getEmail());
+        user.setPhone(dto.getPhone());
+    }
+
+    public static UserResponseDto mapToDto(User user) {
+        UserResponseDto dto = new UserResponseDto();
+
+        dto.setId(user.getId());
+        dto.setName(user.getName());
+        dto.setEmail(user.getEmail());
+        dto.setPhone(user.getPhone());
+
+        if (user.getRole() != null) {
+            dto.setRoleId(user.getRole().getId());
+        }
+
+        return dto;
+    }
 }

@@ -9,8 +9,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.amritan.backend.dto.CreateUserRequest;
 import com.amritan.backend.dto.PageResponse;
-import com.amritan.backend.dto.UserDto;
+import com.amritan.backend.dto.UpdateUserRequest;
+import com.amritan.backend.dto.UserResponseDto;
 import com.amritan.backend.entity.Role;
 import com.amritan.backend.entity.User;
 import com.amritan.backend.exception.ResourceNotFoundException;
@@ -31,24 +33,25 @@ public class UserServiceImpl implements UserService {
 	
 	
 	@Override
-	public UserDto createUserDto(UserDto dto) {
-		User user = UserMapper.mapToEntity(dto);
-		
-		user.setPassword(passwordEncoder.encode(dto.getPassword()));
-		
-		Role role = roleRepository.findById(dto.getRoleId())
-		        .orElseThrow(() ->
-		                new ResourceNotFoundException(
-		                        "Role not found with id : " + dto.getRoleId()));
-		user.setRole(role);
-		User savedUser = userRepository.save(user);
-		
-		return UserMapper.mapToDto(savedUser);
+	public UserResponseDto createUser(CreateUserRequest request) {
+		User user = UserMapper.mapToEntity(request);
+
+	    user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+	    Role role = roleRepository.findById(request.getRoleId())
+	            .orElseThrow(() ->
+	                    new ResourceNotFoundException("Role not found with id : "+request.getRoleId()));
+
+	    user.setRole(role);
+
+	    User savedUser = userRepository.save(user);
+
+	    return UserMapper.mapToDto(savedUser);
 	}
 
 	
 	@Override
-	public PageResponse<UserDto> getAllUsers(int pageNo, int pageSize, String sortBy, String sortDir) {
+	public PageResponse<UserResponseDto> getAllUsers(int pageNo, int pageSize, String sortBy, String sortDir) {
 		Sort sort = sortDir.equalsIgnoreCase("asc")
 				? Sort.by(sortBy).ascending()
 						: Sort.by(sortBy).descending();
@@ -57,7 +60,7 @@ public class UserServiceImpl implements UserService {
 		
 		Page<User> page = userRepository.findAll(pageable);
 		
-		List<UserDto> content = page.getContent()
+		List<UserResponseDto> content = page.getContent()
 				.stream()
 				.map(UserMapper::mapToDto)
 				.toList();
@@ -69,29 +72,25 @@ public class UserServiceImpl implements UserService {
 	
 
 	@Override
-	public UserDto getUserById(Long id) {
+	public UserResponseDto getUserById(Long id) {
 		User user = userRepository.findById(id)
 				.orElseThrow(() ->
-						new ResourceNotFoundException(
-								"User not found with id : "+id));
+						new ResourceNotFoundException("User not found with id : "+id));
 		
 		return UserMapper.mapToDto(user);
 	}
 
 	@Override
-	public UserDto updateUser(Long id, UserDto dto) {
+	public UserResponseDto updateUser(Long id, UpdateUserRequest request) {
 		User user = userRepository.findById(id)
 				.orElseThrow(() ->
-						new ResourceNotFoundException(
-								"User not found with id : "+id));
-		user.setName(dto.getName());
-		user.setEmail(dto.getEmail());
-		user.setPhone(dto.getPhone());
+						new ResourceNotFoundException("User not found with id : "+id));
 		
-		Role role = roleRepository.findById(dto.getRoleId())
+		UserMapper.updateEntity(user, request);
+		
+		Role role = roleRepository.findById(request.getRoleId())
 		        .orElseThrow(() ->
-		                new ResourceNotFoundException(
-		                        "Role not found with id : " + dto.getRoleId()));
+		                new ResourceNotFoundException("Role not found with id : " + request.getRoleId()));
 
 		user.setRole(role);
 		
@@ -113,7 +112,7 @@ public class UserServiceImpl implements UserService {
 
 
 	@Override
-	public PageResponse<UserDto> getUsersByName(String keyword, int pageNo, int pageSize) {
+	public PageResponse<UserResponseDto> getUsersByName(String keyword, int pageNo, int pageSize) {
 		Sort sort = Sort.by("id").ascending();
 		
 		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
@@ -121,7 +120,7 @@ public class UserServiceImpl implements UserService {
 		Page<User> page = userRepository.findByNameContainingIgnoreCase(
 				keyword, pageable);
 		
-		List<UserDto> content = page.getContent()
+		List<UserResponseDto> content = page.getContent()
 				.stream()
 				.map(UserMapper::mapToDto)
 				.toList();
@@ -132,14 +131,14 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public PageResponse<UserDto> getUsersByEmail(String keyword, int pageNo, int pageSize) {
+	public PageResponse<UserResponseDto> getUsersByEmail(String keyword, int pageNo, int pageSize) {
 		Sort sort = Sort.by("id").ascending();
 		
 		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
 		
 		Page<User> page = userRepository.findByEmailContainingIgnoreCase(keyword, pageable);
 		
-		List<UserDto> content = page.getContent()
+		List<UserResponseDto> content = page.getContent()
 				.stream()
 				.map(UserMapper::mapToDto)
 				.toList();

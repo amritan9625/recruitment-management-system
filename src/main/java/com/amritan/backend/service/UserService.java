@@ -1,24 +1,26 @@
 package com.amritan.backend.service;
 
 
+import com.amritan.backend.dto.CreateUserRequest;
 import com.amritan.backend.dto.PageResponse;
-import com.amritan.backend.dto.UserDto;
+import com.amritan.backend.dto.UpdateUserRequest;
+import com.amritan.backend.dto.UserResponseDto;
 
 public interface UserService {
 
-	UserDto createUserDto(UserDto dto);
+	UserResponseDto createUser(CreateUserRequest request);
 	
-	PageResponse<UserDto> getAllUsers(int pageNo, int pageSize,
+	PageResponse<UserResponseDto> getAllUsers(int pageNo, int pageSize,
 								String sortBy, String sortDir);
 	
-	UserDto getUserById(Long id);
+	UserResponseDto getUserById(Long id);
 	
-	UserDto updateUser(Long id, UserDto dto);
+	UserResponseDto updateUser(Long id, UpdateUserRequest request);
 	
 	void deleteUser(Long id);
 	
-	PageResponse<UserDto> getUsersByName(String keyword, int pageNo, int pageSize );
+	PageResponse<UserResponseDto> getUsersByName(String keyword, int pageNo, int pageSize );
 	
 	
-	PageResponse<UserDto> getUsersByEmail(String keyword, int pageNo, int pageSize );
+	PageResponse<UserResponseDto> getUsersByEmail(String keyword, int pageNo, int pageSize );
 }

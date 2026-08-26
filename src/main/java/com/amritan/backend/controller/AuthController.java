@@ -13,7 +13,7 @@ import com.amritan.backend.dto.ApiResponse;
 import com.amritan.backend.dto.LoginRequest;
 import com.amritan.backend.dto.LoginResponse;
 import com.amritan.backend.dto.RegisterRequest;
-import com.amritan.backend.dto.UserDto;
+import com.amritan.backend.dto.UserResponseDto;
 import com.amritan.backend.service.AuthService;
 
 import jakarta.validation.Valid;
@@ -37,16 +37,16 @@ public class AuthController {
 	
 	
 	@PostMapping("/register")
-	public ResponseEntity<ApiResponse<UserDto>> register(
+	public ResponseEntity<ApiResponse<UserResponseDto>> register(
 			@Valid @RequestBody RegisterRequest request){
 		
-		UserDto userDto = authService.register(request);
+		UserResponseDto userResponse = authService.register(request);
 		
-		ApiResponse<UserDto> response = new ApiResponse<>();
+		ApiResponse<UserResponseDto> response = new ApiResponse<>();
 		
 		response.setSuccess(true);
 		response.setMessage("User registered successfully");
-		response.setData(userDto);
+		response.setData(userResponse);
 		response.setTimestamp(LocalDateTime.now());
 		
 		return new ResponseEntity<>(response, HttpStatus.CREATED);

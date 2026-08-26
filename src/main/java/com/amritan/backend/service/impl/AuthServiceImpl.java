@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import com.amritan.backend.dto.LoginRequest;
 import com.amritan.backend.dto.LoginResponse;
 import com.amritan.backend.dto.RegisterRequest;
-import com.amritan.backend.dto.UserDto;
+import com.amritan.backend.dto.UserResponseDto;
 import com.amritan.backend.entity.Role;
 import com.amritan.backend.entity.User;
 import com.amritan.backend.exception.DuplicateResourceException;
@@ -49,7 +49,7 @@ public class AuthServiceImpl implements AuthService{
 
 
 	@Override
-	public UserDto register(RegisterRequest request) {
+	public UserResponseDto register(RegisterRequest request) {
 		if (userRepository.findByEmail(request.getEmail()).isPresent()) {
 	        throw new DuplicateResourceException("User already exists with email: "
 	                        + request.getEmail());
