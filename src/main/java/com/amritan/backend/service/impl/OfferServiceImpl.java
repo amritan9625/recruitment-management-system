@@ -13,6 +13,7 @@ import com.amritan.backend.dto.PageResponse;
 import com.amritan.backend.entity.Candidate;
 import com.amritan.backend.entity.Job;
 import com.amritan.backend.entity.Offer;
+import com.amritan.backend.enums.OfferStatus;
 import com.amritan.backend.exception.ResourceNotFoundException;
 import com.amritan.backend.mapper.OfferMapper;
 import com.amritan.backend.repository.CandidateRepository;
@@ -236,6 +237,34 @@ public class OfferServiceImpl implements OfferService{
 		                    keyword, email, pageable);
 		} else {
 		    page = offerRepository.findByJobTitleContainingIgnoreCase(keyword, pageable);
+		}
+		
+		List<OfferDto> content = page.getContent()
+				.stream()
+				.map(OfferMapper::mapToDto)
+				.toList();
+		
+		return new PageResponse<>(content, page.getNumber()
+				,page.getSize(), page.getTotalElements()
+				, page.getTotalPages(), page.isLast());
+	}
+
+	@Override
+	public PageResponse<OfferDto> getOfferByStatus(OfferStatus status, int pageNo, int pageSize) {
+		Sort sort = Sort.by("id").ascending();
+		
+		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);
+
+		Authentication authentication =SecurityContextHolder.getContext()
+                .getAuthentication();
+		String email = authentication.getName();
+		
+		Page<Offer> page;
+		
+		if (isCandidate()) {
+		    page = offerRepository.findByStatusAndCandidateEmailIgnoreCase(status, email, pageable);
+		} else {
+		    page = offerRepository.findByStatus(status, pageable);
 		}
 		
 		List<OfferDto> content = page.getContent()

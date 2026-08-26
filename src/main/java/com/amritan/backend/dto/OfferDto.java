@@ -2,7 +2,7 @@ package com.amritan.backend.dto;
 
 import java.time.LocalDate;
 
-import jakarta.validation.constraints.NotBlank;
+import com.amritan.backend.enums.OfferStatus;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
@@ -19,8 +19,8 @@ public class OfferDto {
 	@NotNull(message = "Joining date is required")
 	private LocalDate joiningDate;
 
-	@NotBlank(message = "Status is required")
-	private String status;
+	@NotNull(message = "Status is required")
+	private OfferStatus status;
 
 	@NotNull(message = "Candidate Id is required")
 	private Long candidateId;

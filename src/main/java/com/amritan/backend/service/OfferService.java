@@ -2,6 +2,7 @@ package com.amritan.backend.service;
 
 import com.amritan.backend.dto.OfferDto;
 import com.amritan.backend.dto.PageResponse;
+import com.amritan.backend.enums.OfferStatus;
 
 public interface OfferService {
 
@@ -22,4 +23,5 @@ public interface OfferService {
 	
 	PageResponse<OfferDto> getOfferByJobTitle(String keyword, int pageNo, int pageSize);
 	
+	PageResponse<OfferDto> getOfferByStatus(OfferStatus status, int pageNo, int pageSize);
 }

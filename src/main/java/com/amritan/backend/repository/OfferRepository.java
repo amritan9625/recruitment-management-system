@@ -6,6 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.amritan.backend.entity.Offer;
+import java.util.List;
+import com.amritan.backend.enums.OfferStatus;
+
 
 @Repository
 public interface OfferRepository extends JpaRepository<Offer, Long>{
@@ -23,4 +26,6 @@ public interface OfferRepository extends JpaRepository<Offer, Long>{
 	Page<Offer> findByJobTitleContainingIgnoreCaseAndCandidateEmailIgnoreCase(
 			String keyword, String email, Pageable pageable);
 	
+	Page<Offer> findByStatus(OfferStatus status, Pageable pageable);
+	Page<Offer> findByStatusAndCandidateEmailIgnoreCase(OfferStatus status, String email, Pageable pageable);
 }

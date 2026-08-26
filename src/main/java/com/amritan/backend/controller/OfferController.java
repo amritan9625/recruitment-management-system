@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amritan.backend.dto.ApiResponse;
 import com.amritan.backend.dto.OfferDto;
 import com.amritan.backend.dto.PageResponse;
+import com.amritan.backend.enums.OfferStatus;
 import com.amritan.backend.service.OfferService;
 
 import jakarta.validation.Valid;
@@ -130,6 +131,24 @@ public class OfferController {
 			@RequestParam(defaultValue = "10") int pageSize){
 		
 		PageResponse<OfferDto> pageResponse = offerService.getOfferByJobTitle(jobTitle, pageNo, pageSize);
+		
+		ApiResponse<PageResponse<OfferDto>> response = new ApiResponse<>();
+		
+		response.setSuccess(true);
+		response.setMessage("Offer fetched successfully");
+		response.setData(pageResponse);
+		response.setTimestamp(LocalDateTime.now());
+		
+		return ResponseEntity.ok(response);
+	}
+	
+	@GetMapping("/status/{status}")
+	public ResponseEntity<ApiResponse<PageResponse<OfferDto>>> getOfferByStatus(
+			@PathVariable OfferStatus status,
+			@RequestParam(defaultValue = "0") int pageNo,
+			@RequestParam(defaultValue = "10") int pageSize){
+		
+		PageResponse<OfferDto> pageResponse = offerService.getOfferByStatus(status, pageNo, pageSize);
 		
 		ApiResponse<PageResponse<OfferDto>> response = new ApiResponse<>();
 		

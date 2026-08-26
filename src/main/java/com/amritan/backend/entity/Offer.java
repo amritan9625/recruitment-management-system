@@ -2,7 +2,11 @@ package com.amritan.backend.entity;
 
 import java.time.LocalDate;
 
+import com.amritan.backend.enums.OfferStatus;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,7 +28,8 @@ public class Offer {
 
     private LocalDate joiningDate;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private OfferStatus status;
 
     @ManyToOne
     @JoinColumn(name = "candidate_id")
