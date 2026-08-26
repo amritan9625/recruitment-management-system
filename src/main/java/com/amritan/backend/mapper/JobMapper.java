@@ -29,7 +29,7 @@ public class JobMapper {
 		dto.setId(job.getId());
 		dto.setTitle(job.getTitle());
 		dto.setDescription(job.getDescription());
-		dto.setLocation(dto.getLocation());
+		dto.setLocation(job.getLocation());
 		dto.setSalary(job.getSalary());
 		dto.setJobType(job.getJobType());
 		dto.setStatus(job.getStatus());
