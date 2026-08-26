@@ -1,7 +1,11 @@
 package com.amritan.backend.entity;
 
 
+import com.amritan.backend.enums.JobStatus;
+
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -27,5 +31,6 @@ public class Job {
 	
 	private String jobType;
 	
-	private String status;
+	@Enumerated(EnumType.STRING)
+	private JobStatus status;
 }

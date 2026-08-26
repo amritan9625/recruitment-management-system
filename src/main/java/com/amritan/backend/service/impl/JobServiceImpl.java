@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.amritan.backend.dto.JobDto;
 import com.amritan.backend.dto.PageResponse;
 import com.amritan.backend.entity.Job;
+import com.amritan.backend.enums.JobStatus;
 import com.amritan.backend.exception.ResourceNotFoundException;
 import com.amritan.backend.mapper.JobMapper;
 import com.amritan.backend.repository.JobRepository;
@@ -97,7 +98,7 @@ public class JobServiceImpl implements JobService{
 	
 
 	@Override
-	public PageResponse<JobDto> getJobsByStatus(String status, int pageNo, int pageSize) {
+	public PageResponse<JobDto> getJobsByStatus(JobStatus status, int pageNo, int pageSize) {
 		Sort sort = Sort.by("id").ascending();
 		
 		Pageable pageable = PageRequest.of(pageNo, pageSize, sort);

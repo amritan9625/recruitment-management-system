@@ -20,5 +20,6 @@ public class ApplicationDto {
 	@NotNull(message = "Job Id is must")
 	private Long jobId;
 	
+	@NotNull(message = "Status is required")
 	private ApplicationStatus status;	// ApplicationStatus will automatically converts the JSON string into the enum
 }

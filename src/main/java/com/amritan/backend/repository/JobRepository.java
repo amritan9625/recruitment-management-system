@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.amritan.backend.entity.Job;
+import com.amritan.backend.enums.JobStatus;
 
 @Repository
 public interface JobRepository extends JpaRepository<Job, Long> {
@@ -22,7 +23,7 @@ public interface JobRepository extends JpaRepository<Job, Long> {
 	);
 	
 	Page<Job> findByStatus(
-	        String status,
+	        JobStatus status,
 	        Pageable pageable
 	);
 	

@@ -1,5 +1,7 @@
 package com.amritan.backend.dto;
 
+import com.amritan.backend.enums.JobStatus;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -34,6 +36,6 @@ public class JobDto {
 	@NotBlank(message = "Job type is required")
 	private String jobType;
 	
-	@NotBlank(message = "Job status is required")
-	private String status;
+	@NotNull(message = "Job status is required")
+	private JobStatus status;
 }

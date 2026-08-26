@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amritan.backend.dto.ApiResponse;
 import com.amritan.backend.dto.JobDto;
 import com.amritan.backend.dto.PageResponse;
+import com.amritan.backend.enums.JobStatus;
 import com.amritan.backend.service.JobService;
 
 import jakarta.validation.Valid;
@@ -86,7 +87,7 @@ public class JobController {
 	
 
 	    @GetMapping("/status/{status}")
-	    public ResponseEntity<ApiResponse<PageResponse<JobDto>>> getJobsByStatus( @PathVariable String status,
+	    public ResponseEntity<ApiResponse<PageResponse<JobDto>>> getJobsByStatus(@PathVariable JobStatus status,
 	    													@RequestParam(defaultValue = "0") int pageNo,
 	    													@RequestParam(defaultValue = "10") int pageSize) {
 

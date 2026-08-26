@@ -4,6 +4,7 @@ package com.amritan.backend.service;
 
 import com.amritan.backend.dto.JobDto;
 import com.amritan.backend.dto.PageResponse;
+import com.amritan.backend.enums.JobStatus;
 
 public interface JobService {
 
@@ -19,7 +20,7 @@ public interface JobService {
     void deleteJob(Long id);
     
 
-    PageResponse<JobDto> getJobsByStatus( String status, int pageNo, int pageSize );
+    PageResponse<JobDto> getJobsByStatus( JobStatus status, int pageNo, int pageSize );
 
     PageResponse<JobDto> getJobsByLocation( String location, int pageNo, int pageSize );
 }
