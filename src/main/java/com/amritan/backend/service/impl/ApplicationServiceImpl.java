@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -70,9 +71,7 @@ public class ApplicationServiceImpl implements ApplicationService{
 	    String loggedInEmail = getLoggedInEmail();
 
 	    if (!loggedInEmail.equalsIgnoreCase(candidate.getEmail())) {
-
-	        throw new org.springframework.security.access.AccessDeniedException(
-	                "You are not allowed to access another candidate's data");
+	        throw new AccessDeniedException("You are not allowed to access another candidate's data");
 	    }
 	}
 	
@@ -90,8 +89,7 @@ public class ApplicationServiceImpl implements ApplicationService{
 		    String loggedInEmail = getLoggedInEmail();
 
 		    if (!loggedInEmail.equalsIgnoreCase(candidate.getEmail())) {
-		        throw new org.springframework.security.access.AccessDeniedException(
-		                "You cannot create an application for another candidate");
+		        throw new AccessDeniedException("You cannot create an application for another candidate");
 		    }
 		}
 		
@@ -145,8 +143,7 @@ public class ApplicationServiceImpl implements ApplicationService{
 	        String candidateEmail = application.getCandidate().getEmail();
 
 	        if (!loggedInEmail.equalsIgnoreCase(candidateEmail)) {
-	            throw new org.springframework.security.access.AccessDeniedException(
-	                    "You are not allowed to access this application");
+	            throw new AccessDeniedException("You are not allowed to access this application");
 	        }
 	    }
 		
@@ -157,9 +154,16 @@ public class ApplicationServiceImpl implements ApplicationService{
 	
 	@Override
 	public ApplicationDto updateStatus(Long id, ApplicationStatus status) {
-
 	    Application application = applicationRepository.findById(id)
-	            .orElseThrow(() -> new RuntimeException("Application not found"));
+	            .orElseThrow(() -> new ResourceNotFoundException("Application not found with id:"+id));
+	    
+	    if (isCandidate()) {
+	        String loggedInEmail = getLoggedInEmail();
+
+	        if (!loggedInEmail.equalsIgnoreCase(application.getCandidate().getEmail())) {
+	            throw new AccessDeniedException("You are not allowed to update this application");
+	        }
+	    }
 
 	    application.setStatus(status);
 
@@ -185,6 +189,13 @@ public class ApplicationServiceImpl implements ApplicationService{
 				.orElseThrow(() ->
 				new ResourceNotFoundException("Job not found with id : "
 					+dto.getJobId()));
+		if (isCandidate()) {
+		    String loggedInEmail = getLoggedInEmail();
+		    if (!loggedInEmail.equalsIgnoreCase(
+		            application.getCandidate().getEmail())) {
+		        throw new AccessDeniedException("You are not allowed to delete this application");
+		    }
+		}
 		
 		application.setCandidate(candidate);
 		application.setJob(job);

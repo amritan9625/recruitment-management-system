@@ -110,7 +110,7 @@ public class OfferServiceImpl implements OfferService{
 	@Override
 	public OfferDto getOfferById(Long id) {
 		Offer offer = offerRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Offer not found with id: " + id));
+				.orElseThrow(() -> new ResourceNotFoundException("Offer not found with id: " + id));
 		
 		validateOfferOwnership(offer);
 		
@@ -122,6 +122,9 @@ public class OfferServiceImpl implements OfferService{
 		if (isCandidate()) {
 		    throw new AccessDeniedException("Candidates are not allowed to update offers");
 		}
+		Offer offer = offerRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Offer not found with id: " + id));
+		
 		Candidate candidate = candidateRepository.findById(offerDto.getCandidateId())
 				.orElseThrow(() ->
 				new ResourceNotFoundException("Candidate not found with id : "
@@ -131,9 +134,6 @@ public class OfferServiceImpl implements OfferService{
 				.orElseThrow(() ->
 				new ResourceNotFoundException("Job not found with id : "
 						+offerDto.getJobId()));
-		
-		Offer offer = offerRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Offer not found with id: " + id));
 		
 		offer.setSalary(offerDto.getSalary());
 		offer.setJoiningDate(offerDto.getJoiningDate());
@@ -155,7 +155,7 @@ public class OfferServiceImpl implements OfferService{
 	    }
 		
 		Offer offer = offerRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Offer not found with id: " + id));;
+				.orElseThrow(() -> new ResourceNotFoundException("Offer not found with id: " + id));
 		
 		offerRepository.delete(offer);
 	}
