@@ -21,6 +21,7 @@ public class CandidateDto {
 	
 	private String lastName;
 	
+	@NotBlank(message = "Email is required")
 	@Email(message = "Email is reuired")
 	private String email;
 	

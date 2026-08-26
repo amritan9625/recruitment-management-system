@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class RoleDto {
 
-	private long id;
+	private Long id;
 	
 	@NotBlank(message = "Role name is required")
 	private String roleName;
