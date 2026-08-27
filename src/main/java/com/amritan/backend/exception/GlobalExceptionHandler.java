@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -125,6 +126,20 @@ public class GlobalExceptionHandler {
 	    response.setTimestamp(LocalDateTime.now());
 
 	    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	public ResponseEntity<ApiResponse<Void>> handleDataIntegrityViolation(
+	        DataIntegrityViolationException ex) {
+
+	    ApiResponse<Void> response = new ApiResponse<>();
+
+	    response.setSuccess(false);
+	    response.setMessage("Database constraint violation. The requested operation could not be completed.");
+	    response.setData(null);
+	    response.setTimestamp(LocalDateTime.now());
+
+	    return new ResponseEntity<>(response, HttpStatus.CONFLICT);
 	}
 	
 }
