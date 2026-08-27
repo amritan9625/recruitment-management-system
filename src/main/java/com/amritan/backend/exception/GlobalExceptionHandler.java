@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +22,10 @@ import com.amritan.backend.dto.ApiResponse;
 import org.springframework.security.access.AccessDeniedException;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler {	
+public class GlobalExceptionHandler {
+	
+	private static final Logger logger =
+	        LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<ApiResponse<Void>> handleResourceNotFound(ResourceNotFoundException ex) {
@@ -37,6 +43,8 @@ public class GlobalExceptionHandler {
 	
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ApiResponse<Void>> handleException(Exception ex) {
+		logger.error("Unexpected error occurred", ex);
+		
 		ApiResponse<Void> response = new ApiResponse<>();
 		
 		response.setSuccess(false);
@@ -121,7 +129,12 @@ public class GlobalExceptionHandler {
 	    ApiResponse<Void> response = new ApiResponse<>();
 
 	    response.setSuccess(false);
-	    response.setMessage("Invalid request body");
+	    String message = "Invalid request body";
+	    if (ex.getMessage() != null && ex.getMessage().contains("not one of the values accepted for Enum")) {
+	        message = "Invalid enum value provided in request";
+	    }
+
+	    response.setMessage(message);
 	    response.setData(null);
 	    response.setTimestamp(LocalDateTime.now());
 
