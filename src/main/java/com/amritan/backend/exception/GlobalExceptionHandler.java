@@ -10,6 +10,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+
 import com.amritan.backend.dto.ApiResponse;
 import org.springframework.security.access.AccessDeniedException;
 
@@ -77,7 +81,6 @@ public class GlobalExceptionHandler {
 	
 	@ExceptionHandler(DuplicateResourceException.class)
 	public ResponseEntity<ApiResponse<Void>> handleDuplicateResource(DuplicateResourceException ex) {
-
 	    ApiResponse<Void> response = new ApiResponse<>();
 
 	    response.setSuccess(false);
@@ -88,5 +91,40 @@ public class GlobalExceptionHandler {
 	    return new ResponseEntity<>(response, HttpStatus.CONFLICT);
 	}
 	
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	public ResponseEntity<ApiResponse<Void>> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+	    ApiResponse<Void> response = new ApiResponse<>();
+
+	    response.setSuccess(false);
+	    response.setMessage("Invalid value for parameter: " + ex.getName());
+	    response.setData(null);
+	    response.setTimestamp(LocalDateTime.now());
+
+	    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(MissingServletRequestParameterException.class)
+	public ResponseEntity<ApiResponse<Void>> handleMissingParameter(MissingServletRequestParameterException ex) {
+	    ApiResponse<Void> response = new ApiResponse<>();
+
+	    response.setSuccess(false);
+	    response.setMessage("Required parameter is missing: " + ex.getParameterName());
+	    response.setData(null);
+	    response.setTimestamp(LocalDateTime.now());
+
+	    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler(HttpMessageNotReadableException.class)
+	public ResponseEntity<ApiResponse<Void>> handleUnreadableMessage(HttpMessageNotReadableException ex) {
+	    ApiResponse<Void> response = new ApiResponse<>();
+
+	    response.setSuccess(false);
+	    response.setMessage("Invalid request body");
+	    response.setData(null);
+	    response.setTimestamp(LocalDateTime.now());
+
+	    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+	}
 	
 }
