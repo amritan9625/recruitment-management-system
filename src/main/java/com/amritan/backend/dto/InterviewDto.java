@@ -6,6 +6,7 @@ import com.amritan.backend.enums.InterviewStatus;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
 @Data
@@ -25,5 +26,6 @@ public class InterviewDto {
 	private InterviewStatus status;
 
 	@NotNull(message = "Application Id is must")
+	@Positive(message = "Application Id must be positive")
 	private Long applicationId;
 }

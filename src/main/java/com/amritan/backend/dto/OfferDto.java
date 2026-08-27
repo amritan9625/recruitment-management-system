@@ -23,8 +23,10 @@ public class OfferDto {
 	private OfferStatus status;
 
 	@NotNull(message = "Candidate Id is required")
+	@Positive(message = "Candidate Id must be positive")
 	private Long candidateId;
 
 	@NotNull(message = "Job Id is required")
+	@Positive(message = "Job Id must be positive")
 	private Long jobId;
 }

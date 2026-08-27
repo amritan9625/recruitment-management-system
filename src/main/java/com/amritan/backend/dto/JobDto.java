@@ -20,10 +20,11 @@ public class JobDto {
 	private Long id;
 	
 	@NotBlank(message = "Job title is required")
+	@Size(min = 5, max = 20)
 	private String title;
 	
 	@NotBlank(message = "Job description is required")
-	@Size(min=10,max=100)
+	@Size(min=20,max=300)
 	private String description;
 	
 	@NotBlank(message = "Job location is required")
