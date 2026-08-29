@@ -13,16 +13,26 @@ import com.amritan.backend.dto.DashboardDto;
 import com.amritan.backend.dto.JobDto;
 import com.amritan.backend.service.DashboardService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/dashboard")
+@Tag(
+        name = "Dashboard APIs",
+        description = "APIs for recruitment dashboard data"
+)
 public class DashboardController {
 
 	private final DashboardService dashboardService;
 	
 	@GetMapping
+	@Operation(
+	        summary = "Get dashboard data",
+	        description = "Fetches aggregated recruitment dashboard information"
+	)
 	public ResponseEntity<DashboardDto> getDashboard(){
 		
 		return ResponseEntity.ok(dashboardService.getDashboard());
@@ -30,6 +40,10 @@ public class DashboardController {
 	
 	
 	@GetMapping("/recent-candidates")
+	@Operation(
+	        summary = "Get recent candidates",
+	        description = "Fetches recently added candidates"
+	)
 	public ResponseEntity<List<CandidateDto>> getRecentCandidates() {
 
 	    return ResponseEntity.ok(dashboardService.getRecentCandidates());
@@ -37,6 +51,10 @@ public class DashboardController {
 	
 	
 	@GetMapping("/recent-jobs")
+	@Operation(
+	        summary = "Get recent jobs",
+	        description = "Fetches recently added jobs"
+	)
 	public ResponseEntity<List<JobDto>> getRecentJobs() {
 
 	    return ResponseEntity.ok(dashboardService.getRecentJobs());
@@ -44,6 +62,10 @@ public class DashboardController {
 	
 	
 	@GetMapping("/recent-applications")
+	@Operation(
+	        summary = "Get recent applications",
+	        description = "Fetches recently created applications"
+	)
 	public ResponseEntity<List<ApplicationDto>> getRecentApplications() {
 
 	    return ResponseEntity.ok(dashboardService.getRecentApplications());

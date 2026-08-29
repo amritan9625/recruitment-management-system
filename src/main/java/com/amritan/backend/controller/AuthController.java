@@ -16,17 +16,33 @@ import com.amritan.backend.dto.RegisterRequest;
 import com.amritan.backend.dto.UserResponseDto;
 import com.amritan.backend.service.AuthService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Tag(
+        name = "Authentication APIs",
+        description = "APIs for user authentication and registration"
+)
+@SecurityRequirements
 public class AuthController {
 
 	private final AuthService authService;
 	
 	@PostMapping("/login")
+	@Operation(
+	        summary = "Login user",
+	        description = "Authenticates a user and returns a JWT token",
+	        	requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+	        					description = "User login credentials",
+	        					required = true
+	                )
+	)
 	public ResponseEntity<LoginResponse> login(
 			@Valid @RequestBody LoginRequest request){
 		
@@ -37,6 +53,14 @@ public class AuthController {
 	
 	
 	@PostMapping("/register")
+	@Operation(
+	        summary = "Register user",
+	        description = "Registers a new user in the system",
+	        	requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+	        					description = "User registration details",
+	        					required = true
+	                )
+	)
 	public ResponseEntity<ApiResponse<UserResponseDto>> register(
 			@Valid @RequestBody RegisterRequest request){
 		
