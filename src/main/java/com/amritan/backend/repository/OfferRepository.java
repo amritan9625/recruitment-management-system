@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.amritan.backend.entity.Offer;
-import java.util.List;
 import com.amritan.backend.enums.OfferStatus;
 
 
