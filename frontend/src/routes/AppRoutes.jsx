@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
+import Login from "../pages/auth/Login";
 
 function AppRoutes() {
   return (
@@ -7,7 +8,7 @@ function AppRoutes() {
       <Routes>
         {/* public routes */}
         <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="/login" element={<h1>Login Page</h1>} />
+        <Route path="/login" element={<Login />} />
 
         {/* Protected Application Routes - temporary */}
         <Route path="/dashboard" element={<MainLayout><h1>Dashboard</h1></MainLayout>} />
