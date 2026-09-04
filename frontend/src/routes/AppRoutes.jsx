@@ -1,12 +1,18 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<h1>Recruitment Management System</h1>} />
+        {/* public routes */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<h1>Login Page</h1>} />
+
+        {/* Protected Application Routes - temporary */}
         <Route path="/dashboard" element={<h1>Dashboard</h1>} />
+
+        {/* Fallback Route (url doesn't exist)*/}
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );
