@@ -34,12 +34,22 @@ public class AuthServiceImpl implements AuthService{
 	
 	@Override
 	public LoginResponse login(LoginRequest request) {
-	    authenticationManager.authenticate(
+	    var authentication = authenticationManager.authenticate(
 	            new UsernamePasswordAuthenticationToken(
 	                    request.getEmail(),
 	                    request.getPassword() )
 	    );
-	    String token = jwtService.generateToken(request.getEmail());
+	    
+	    String authority = authentication.getAuthorities()
+	            .iterator()
+	            .next()
+	            .getAuthority();
+	    
+	    String role = authority.startsWith("ROLE_")
+	            ? authority.substring(5)
+	            : authority;
+	    
+	    String token = jwtService.generateToken(request.getEmail(), role);
 
 	    return new LoginResponse(
 	            token,

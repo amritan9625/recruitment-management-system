@@ -2,6 +2,7 @@ package com.amritan.backend.security;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -41,19 +42,19 @@ public class JwtService {
 				.build();
 	}
 	
-	public String generateToken(String email) {
+	public String generateToken(String email, String role) {
 		Instant now = Instant.now();
 		
 		JwtClaimsSet claims = JwtClaimsSet.builder()
 				.subject(email)
+				.claim("authorities", List.of("ROLE_" + role))
 				.issuedAt(now)
 				.expiresAt(now.plus(1, ChronoUnit.HOURS))
 				.build();
 		
 		JwtEncoderParameters parameters = JwtEncoderParameters
-				.from(JwsHeader.with(MacAlgorithm.HS256)
-				.build(),
-			claims);
+				.from(JwsHeader.with(MacAlgorithm.HS256).build(),
+						claims);
 		
 		Jwt jwt = jwtEncoder.encode(parameters);
 		
