@@ -1,7 +1,10 @@
-import { useState } from "react";
-import { createCandidate } from "../../services/candidateService";
+import { useEffect, useState } from "react";
+import {
+  createCandidate,
+  updateCandidate,
+} from "../../services/candidateService";
 
-function CandidateForm({ onSuccess, onCancel }) {
+function CandidateForm({ candidate = null, onSuccess, onCancel }) {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -15,6 +18,23 @@ function CandidateForm({ onSuccess, onCancel }) {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const isEditMode = Boolean(candidate);
+
+  useEffect(() => {
+    if (candidate) {
+      setFormData({
+        firstName: candidate.firstName || "",
+        lastName: candidate.lastName || "",
+        email: candidate.email || "",
+        phone: candidate.phone || "",
+        skills: candidate.skills || "",
+        experience: candidate.experience ?? "",
+        resumeUrl: candidate.resumeUrl || "",
+        status: candidate.status || "APPLIED",
+      });
+    }
+  }, [candidate]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -37,11 +57,18 @@ function CandidateForm({ onSuccess, onCancel }) {
         experience: Number(formData.experience),
       };
 
-      await createCandidate(candidateData);
+      if (isEditMode) {
+        await updateCandidate(candidate.id, candidateData);
+      } else {
+        await createCandidate(candidateData);
+      }
 
       onSuccess();
     } catch (err) {
-      setError(err.message || "Failed to create candidate.");
+      setError(
+        err.message ||
+          `Failed to ${isEditMode ? "update" : "create"} candidate.`,
+      );
     } finally {
       setLoading(false);
     }
@@ -49,7 +76,7 @@ function CandidateForm({ onSuccess, onCancel }) {
 
   return (
     <div className="candidate-form-container">
-      <h2>Add Candidate</h2>
+      <h2>{isEditMode ? "Edit Candidate" : "Add Candidate"}</h2>
 
       {error && <p className="candidate-error">{error}</p>}
 
@@ -104,7 +131,6 @@ function CandidateForm({ onSuccess, onCancel }) {
             name="skills"
             value={formData.skills}
             onChange={handleChange}
-            placeholder="Java, Spring Boot, MySQL"
           />
         </div>
 
@@ -145,7 +171,11 @@ function CandidateForm({ onSuccess, onCancel }) {
 
         <div className="candidate-form-actions">
           <button type="submit" disabled={loading}>
-            {loading ? "Saving..." : "Save Candidate"}
+            {loading
+              ? "Saving..."
+              : isEditMode
+                ? "Update Candidate"
+                : "Save Candidate"}
           </button>
 
           <button type="button" onClick={onCancel} disabled={loading}>

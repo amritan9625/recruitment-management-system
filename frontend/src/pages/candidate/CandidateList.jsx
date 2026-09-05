@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { getAllCandidates } from "../../services/candidateService";
+import {
+  getAllCandidates,
+  deleteCandidate,
+} from "../../services/candidateService";
 import CandidateForm from "./CandidateForm";
 
 function CandidateList() {
@@ -7,6 +10,7 @@ function CandidateList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(false);
+  const [editingCandidate, setEditingCandidate] = useState(null);
 
   const fetchCandidates = async () => {
     try {
@@ -45,6 +49,26 @@ function CandidateList() {
     );
   }
 
+  const handleDelete = async (id) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this candidate?",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setError("");
+
+      await deleteCandidate(id);
+
+      await fetchCandidates();
+    } catch (err) {
+      setError(err.message || "Failed to delete candidate.");
+    }
+  };
+
   return (
     <div className="candidate-page">
       <div className="candidate-page-header">
@@ -54,7 +78,10 @@ function CandidateList() {
         </div>
         <button
           className="candidate-add-button"
-          onClick={() => setShowForm(true)}
+          onClick={() => {
+            setEditingCandidate(null);
+            setShowForm(true);
+          }}
         >
           Add Candidate
         </button>
@@ -62,11 +89,16 @@ function CandidateList() {
 
       {showForm && (
         <CandidateForm
+          candidate={editingCandidate}
           onSuccess={() => {
             setShowForm(false);
+            setEditingCandidate(null);
             fetchCandidates();
           }}
-          onCancel={() => setShowForm(false)}
+          onCancel={() => {
+            setShowForm(false);
+            setEditingCandidate(null);
+          }}
         />
       )}
 
@@ -122,9 +154,18 @@ function CandidateList() {
                   <td>
                     <button>View</button>
 
-                    <button>Edit</button>
+                    <button
+                      onClick={() => {
+                        setEditingCandidate(candidate);
+                        setShowForm(true);
+                      }}
+                    >
+                      Edit
+                    </button>
 
-                    <button>Delete</button>
+                    <button onClick={() => handleDelete(candidate.id)}>
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}
