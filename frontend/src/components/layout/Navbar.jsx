@@ -2,29 +2,34 @@ import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 function Navbar() {
-    const { logout } = useAuth();
-    const navigate = useNavigate();
+  const { role, logout } = useAuth();
 
-    const handleLogout = () => {
-        logout();
-        navigate("/login");
-    };
+  const navigate = useNavigate();
 
-    return (
-        <header className="navbar">
-            <div className="navbar-brand">
-                Recruitment Management System
-            </div>
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
-            <div className="navbar-actions">
-                <span>Welcome</span>
+  const roleName = role ? role.charAt(0) + role.slice(1).toLowerCase() : "User";
 
-                <button onClick={handleLogout}>
-                    Logout
-                </button>
-            </div>
-        </header>
-    );
+  return (
+    <header className="navbar">
+      <div className="navbar-brand">Recruitment Management System</div>
+
+      <div className="navbar-actions">
+        <div className="navbar-user">
+          <span className="navbar-welcome">Welcome, {roleName}</span>
+
+          <span className="navbar-role">{role}</span>
+        </div>
+
+        <button className="logout-button" onClick={handleLogout}>
+          Logout
+        </button>
+      </div>
+    </header>
+  );
 }
 
 export default Navbar;
