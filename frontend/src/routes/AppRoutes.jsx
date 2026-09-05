@@ -5,6 +5,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import RoleProtectedRoute from "./RoleProtectedRoute";
 
 import { PERMISSIONS } from "../utils/permissions";
+import Dashboard from "../pages/Dashboard";
 
 function AppRoutes() {
   return (
@@ -18,7 +19,7 @@ function AppRoutes() {
         <Route element={<ProtectedRoute />}>
           {/* Dashboard */}
           <Route element={<RoleProtectedRoute allowedRoles={PERMISSIONS.DASHBOARD} />} >
-            <Route path="/dashboard" element={<MainLayout><h1>Dashboard</h1></MainLayout>} />
+            <Route path="/dashboard" element={<MainLayout><Dashboard /></MainLayout>} />
           </Route>
 
           {/* Users */}
