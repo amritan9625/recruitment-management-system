@@ -1,15 +1,65 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { PERMISSIONS } from "../../utils/permissions";
 
 function Sidebar() {
+  const { role } = useAuth();
+
+  const navigationItems = [
+    {
+      label: "Dashboard",
+      path: "/dashboard",
+      permission: PERMISSIONS.DASHBOARD,
+    },
+    {
+      label: "Users",
+      path: "/users",
+      permission: PERMISSIONS.USERS,
+    },
+    {
+      label: "Roles",
+      path: "/roles",
+      permission: PERMISSIONS.ROLES,
+    },
+    {
+      label: "Jobs",
+      path: "/jobs",
+      permission: PERMISSIONS.JOBS,
+    },
+    {
+      label: "Candidates",
+      path: "/candidates",
+      permission: PERMISSIONS.CANDIDATES,
+    },
+    {
+      label: "Applications",
+      path: "/applications",
+      permission: PERMISSIONS.APPLICATIONS,
+    },
+    {
+      label: "Interviews",
+      path: "/interviews",
+      permission: PERMISSIONS.INTERVIEWS,
+    },
+    {
+      label: "Offers",
+      path: "/offers",
+      permission: PERMISSIONS.OFFERS,
+    },
+  ];
+
+  const visibleItems = navigationItems.filter((item) =>
+    item.permission.includes(role),
+  );
+
   return (
     <aside className="sidebar">
       <nav>
-        <Link to="/dashboard">Dashboard</Link>
-        <Link to="/jobs">Jobs</Link>
-        <Link to="/candidates">Candidates</Link>
-        <Link to="/applications">Applications</Link>
-        <Link to="/interviews">Interviews</Link>
-        <Link to="/offers">Offers</Link>
+        {visibleItems.map((item) => (
+          <NavLink key={item.path} to={item.path}>
+            {item.label}
+          </NavLink>
+        ))}
       </nav>
     </aside>
   );

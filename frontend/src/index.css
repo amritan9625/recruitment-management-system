@@ -152,3 +152,7 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+.sidebar a.active {
+    font-weight: 600;
+}
