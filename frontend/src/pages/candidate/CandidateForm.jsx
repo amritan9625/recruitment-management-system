@@ -1,0 +1,160 @@
+import { useState } from "react";
+import { createCandidate } from "../../services/candidateService";
+
+function CandidateForm({ onSuccess, onCancel }) {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    skills: "",
+    experience: "",
+    resumeUrl: "",
+    status: "APPLIED",
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+
+    setFormData((previous) => ({
+      ...previous,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      setLoading(true);
+      setError("");
+
+      const candidateData = {
+        ...formData,
+        experience: Number(formData.experience),
+      };
+
+      await createCandidate(candidateData);
+
+      onSuccess();
+    } catch (err) {
+      setError(err.message || "Failed to create candidate.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="candidate-form-container">
+      <h2>Add Candidate</h2>
+
+      {error && <p className="candidate-error">{error}</p>}
+
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label>First Name</label>
+          <input
+            type="text"
+            name="firstName"
+            value={formData.firstName}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Last Name</label>
+          <input
+            type="text"
+            name="lastName"
+            value={formData.lastName}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Email</label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Phone</label>
+          <input
+            type="text"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Skills</label>
+          <input
+            type="text"
+            name="skills"
+            value={formData.skills}
+            onChange={handleChange}
+            placeholder="Java, Spring Boot, MySQL"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Experience (Years)</label>
+          <input
+            type="number"
+            name="experience"
+            value={formData.experience}
+            onChange={handleChange}
+            min="0"
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Resume URL</label>
+          <input
+            type="url"
+            name="resumeUrl"
+            value={formData.resumeUrl}
+            onChange={handleChange}
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Status</label>
+
+          <select name="status" value={formData.status} onChange={handleChange}>
+            <option value="APPLIED">APPLIED</option>
+            <option value="SCREENING">SCREENING</option>
+            <option value="SHORTLISTED">SHORTLISTED</option>
+            <option value="INTERVIEW_SCHEDULED">INTERVIEW SCHEDULED</option>
+            <option value="OFFERED">OFFERED</option>
+            <option value="REJECTED">REJECTED</option>
+          </select>
+        </div>
+
+        <div className="candidate-form-actions">
+          <button type="submit" disabled={loading}>
+            {loading ? "Saving..." : "Save Candidate"}
+          </button>
+
+          <button type="button" onClick={onCancel} disabled={loading}>
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+export default CandidateForm;
