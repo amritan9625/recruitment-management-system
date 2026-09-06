@@ -4,6 +4,7 @@ import {
   deleteCandidate,
 } from "../../services/candidateService";
 import CandidateForm from "./CandidateForm";
+import CandidateDetails from "./CandidateDetails";
 
 function CandidateList() {
   const [candidates, setCandidates] = useState([]);
@@ -11,6 +12,8 @@ function CandidateList() {
   const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editingCandidate, setEditingCandidate] = useState(null);
+  const [viewingCandidate, setViewingCandidate] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
   const fetchCandidates = async () => {
     try {
@@ -60,12 +63,15 @@ function CandidateList() {
 
     try {
       setError("");
+      setDeletingId(id);
 
       await deleteCandidate(id);
 
       await fetchCandidates();
     } catch (err) {
       setError(err.message || "Failed to delete candidate.");
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -99,6 +105,13 @@ function CandidateList() {
             setShowForm(false);
             setEditingCandidate(null);
           }}
+        />
+      )}
+
+      {viewingCandidate && (
+        <CandidateDetails
+          candidate={viewingCandidate}
+          onClose={() => setViewingCandidate(null)}
         />
       )}
 
@@ -152,7 +165,9 @@ function CandidateList() {
                   <td>{candidate.status}</td>
 
                   <td>
-                    <button>View</button>
+                    <button onClick={() => setViewingCandidate(candidate)}>
+                      View
+                    </button>
 
                     <button
                       onClick={() => {
@@ -163,8 +178,11 @@ function CandidateList() {
                       Edit
                     </button>
 
-                    <button onClick={() => handleDelete(candidate.id)}>
-                      Delete
+                    <button
+                      onClick={() => handleDelete(candidate.id)}
+                      disabled={deletingId === candidate.id}
+                    >
+                      {deletingId === candidate.id ? "Deleting..." : "Delete"}
                     </button>
                   </td>
                 </tr>

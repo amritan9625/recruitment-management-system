@@ -48,6 +48,19 @@ function CandidateForm({ candidate = null, onSuccess, onCancel }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    if (formData.experience === "") {
+        setError("Experience is required.");
+        return;
+    }
+    if (Number(formData.experience) < 0) {
+        setError("Experience cannot be negative.");
+        return;
+    }
+    if (formData.phone.length < 10) {
+        setError("Phone number must contain at least 10 digits.");
+        return;
+    }
+
     try {
       setLoading(true);
       setError("");
@@ -116,10 +129,11 @@ function CandidateForm({ candidate = null, onSuccess, onCancel }) {
         <div className="form-group">
           <label>Phone</label>
           <input
-            type="text"
+            type="tel"
             name="phone"
             value={formData.phone}
             onChange={handleChange}
+            minLength="10"
             required
           />
         </div>
