@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
-import { getAllJobs } from "../../services/jobService";
+import { getAllJobs, getJobById, deleteJob } from "../../services/jobService";
 import JobForm from "./JobForm";
+import JobDetails from "./JobDetails";
 
 function JobList() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(false);
+  const [editingJob, setEditingJob] = useState(null);
+  const [viewingJobId, setViewingJobId] = useState(null);
 
   const fetchJobs = async () => {
     try {
@@ -23,9 +26,47 @@ function JobList() {
     }
   };
 
+  const handleEdit = async (id) => {
+    try {
+      setError("");
+
+      const response = await getJobById(id);
+
+      setEditingJob(response.data);
+      setShowForm(true);
+    } catch (err) {
+      setError(err.message || "Failed to load job details.");
+    }
+  };
+
+  const handleDelete = async (id) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this job?",
+    );
+    if (!confirmed) return;
+
+    try {
+      setError("");
+      await deleteJob(id);
+      await fetchJobs();
+
+    } catch (err) {
+      setError(err.message || "Failed to delete job.");
+    }
+  };
+
   useEffect(() => {
     fetchJobs();
   }, []);
+
+  if (viewingJobId) {
+    return (
+        <JobDetails
+            jobId={viewingJobId}
+            onBack={() => setViewingJobId(null)}
+        />
+    );
+}
 
   if (loading) {
     return (
@@ -60,11 +101,16 @@ function JobList() {
 
       {showForm && (
         <JobForm
+          job={editingJob}
           onSuccess={() => {
             setShowForm(false);
+            setEditingJob(null);
             fetchJobs();
           }}
-          onCancel={() => setShowForm(false)}
+          onCancel={() => {
+            setShowForm(false);
+            setEditingJob(null);
+          }}
         />
       )}
 
@@ -101,11 +147,11 @@ function JobList() {
                   <td>{job.status}</td>
 
                   <td>
-                    <button>View</button>
+                    <button onClick={() => setViewingJobId(job.id)}>View</button>
 
-                    <button>Edit</button>
+                    <button onClick={() => handleEdit(job.id)}>Edit</button>
 
-                    <button>Delete</button>
+                    <button onClick={() => handleDelete(job.id)}>Delete</button>
                   </td>
                 </tr>
               ))}

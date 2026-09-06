@@ -108,7 +108,7 @@ function JobForm({ job = null, onSuccess, onCancel }) {
             name="description"
             value={formData.description}
             onChange={handleChange}
-            rows="4"
+            rows="3"
             minLength="10"
             maxLength="100"
             required
