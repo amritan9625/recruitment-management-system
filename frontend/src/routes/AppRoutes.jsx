@@ -7,6 +7,7 @@ import RoleProtectedRoute from "./RoleProtectedRoute";
 import { PERMISSIONS } from "../utils/permissions";
 import Dashboard from "../pages/Dashboard";
 import CandidateList from "../pages/candidate/CandidateList";
+import JobList from "../pages/recruiter/JobList";
 
 function AppRoutes() {
   return (
@@ -40,7 +41,7 @@ function AppRoutes() {
 
           {/* Jobs */}
           <Route element={<RoleProtectedRoute allowedRoles={PERMISSIONS.JOBS} />} >
-            <Route path="/jobs" element={<MainLayout><h1>Jobs</h1></MainLayout>} />
+            <Route path="/jobs" element={<MainLayout><JobList /></MainLayout>} />
           </Route>
 
           {/* Applications */}
