@@ -8,6 +8,7 @@ import { PERMISSIONS } from "../utils/permissions";
 import Dashboard from "../pages/Dashboard";
 import CandidateList from "../pages/candidate/CandidateList";
 import JobList from "../pages/recruiter/JobList";
+import ApplicationList from "../pages/recruiter/ApplicationList";
 
 function AppRoutes() {
   return (
@@ -46,7 +47,7 @@ function AppRoutes() {
 
           {/* Applications */}
           <Route element={<RoleProtectedRoute allowedRoles={PERMISSIONS.APPLICATIONS} />} >
-            <Route path="/applications" element={<MainLayout><h1>Applications</h1></MainLayout>} />
+            <Route path="/applications" element={<MainLayout><ApplicationList /></MainLayout>} />
           </Route>
 
           {/* Interviews */}
