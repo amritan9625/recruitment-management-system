@@ -49,16 +49,16 @@ function CandidateForm({ candidate = null, onSuccess, onCancel }) {
     event.preventDefault();
 
     if (formData.experience === "") {
-        setError("Experience is required.");
-        return;
+      setError("Experience is required.");
+      return;
     }
     if (Number(formData.experience) < 0) {
-        setError("Experience cannot be negative.");
-        return;
+      setError("Experience cannot be negative.");
+      return;
     }
     if (formData.phone.length < 10) {
-        setError("Phone number must contain at least 10 digits.");
-        return;
+      setError("Phone number must contain at least 10 digits.");
+      return;
     }
 
     try {
@@ -178,7 +178,9 @@ function CandidateForm({ candidate = null, onSuccess, onCancel }) {
             <option value="SCREENING">SCREENING</option>
             <option value="SHORTLISTED">SHORTLISTED</option>
             <option value="INTERVIEW_SCHEDULED">INTERVIEW SCHEDULED</option>
+            <option value="INTERVIEWED">INTERVIEWED</option>
             <option value="OFFERED">OFFERED</option>
+            <option value="HIRED">HIRED</option>
             <option value="REJECTED">REJECTED</option>
           </select>
         </div>
