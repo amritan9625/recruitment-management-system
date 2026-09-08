@@ -9,6 +9,7 @@ import Dashboard from "../pages/Dashboard";
 import CandidateList from "../pages/candidate/CandidateList";
 import JobList from "../pages/recruiter/JobList";
 import ApplicationList from "../pages/recruiter/ApplicationList";
+import InterviewList from "../pages/interviewer/InterviewList";
 
 function AppRoutes() {
   return (
@@ -52,7 +53,7 @@ function AppRoutes() {
 
           {/* Interviews */}
           <Route element={<RoleProtectedRoute allowedRoles={PERMISSIONS.INTERVIEWS} />} >
-            <Route path="/interviews" element={<MainLayout><h1>Interviews</h1></MainLayout>} />
+            <Route path="/interviews" element={<MainLayout><InterviewList /></MainLayout>} />
           </Route>
 
           {/* Offers */}
