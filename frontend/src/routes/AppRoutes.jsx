@@ -10,6 +10,7 @@ import CandidateList from "../pages/candidate/CandidateList";
 import JobList from "../pages/recruiter/JobList";
 import ApplicationList from "../pages/recruiter/ApplicationList";
 import InterviewList from "../pages/interviewer/InterviewList";
+import OfferList from "../pages/recruiter/OfferList";
 
 function AppRoutes() {
   return (
@@ -58,7 +59,7 @@ function AppRoutes() {
 
           {/* Offers */}
           <Route element={<RoleProtectedRoute allowedRoles={PERMISSIONS.OFFERS}/>} >
-            <Route path="/offers" element={<MainLayout><h1>Offers</h1></MainLayout>}/>
+            <Route path="/offers" element={<MainLayout><OfferList /></MainLayout>}/>
           </Route>
 
         </Route>
