@@ -10,6 +10,7 @@ function JobList() {
   const [showForm, setShowForm] = useState(false);
   const [editingJob, setEditingJob] = useState(null);
   const [viewingJobId, setViewingJobId] = useState(null);
+  const [updatingStatusId, setUpdatingStatusId] = useState(null);
 
   const fetchJobs = async () => {
     try {
@@ -49,7 +50,6 @@ function JobList() {
       setError("");
       await deleteJob(id);
       await fetchJobs();
-
     } catch (err) {
       setError(err.message || "Failed to delete job.");
     }
@@ -61,12 +61,9 @@ function JobList() {
 
   if (viewingJobId) {
     return (
-        <JobDetails
-            jobId={viewingJobId}
-            onBack={() => setViewingJobId(null)}
-        />
+      <JobDetails jobId={viewingJobId} onBack={() => setViewingJobId(null)} />
     );
-}
+  }
 
   if (loading) {
     return (
@@ -85,6 +82,30 @@ function JobList() {
       </div>
     );
   }
+
+  const handleStatusChange = async (job, status) => {
+    try {
+      setError("");
+      setUpdatingStatusId(job.id);
+
+      const jobData = {
+        title: job.title,
+        description: job.description,
+        location: job.location,
+        salary: job.salary,
+        jobType: job.jobType,
+        status,
+      };
+
+      await updateJob(job.id, jobData);
+
+      await fetchJobs();
+    } catch (err) {
+      setError(err.message || "Failed to update job status.");
+    } finally {
+      setUpdatingStatusId(null);
+    }
+  };
 
   return (
     <div className="job-page">
@@ -144,10 +165,23 @@ function JobList() {
 
                   <td>{job.jobType}</td>
 
-                  <td>{job.status}</td>
+                  <td>
+                    <select
+                      value={job.status || "OPEN"}
+                      onChange={(event) =>
+                        handleStatusChange(job, event.target.value)
+                      }
+                      disabled={updatingStatusId === job.id}
+                    >
+                      <option value="OPEN">OPEN</option>
+                      <option value="CLOSED">CLOSED</option>
+                    </select>
+                  </td>
 
                   <td>
-                    <button onClick={() => setViewingJobId(job.id)}>View</button>
+                    <button onClick={() => setViewingJobId(job.id)}>
+                      View
+                    </button>
 
                     <button onClick={() => handleEdit(job.id)}>Edit</button>
 
