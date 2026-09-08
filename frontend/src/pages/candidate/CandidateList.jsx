@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
   getAllCandidates,
   deleteCandidate,
+  updateCandidate,
 } from "../../services/candidateService";
 import CandidateForm from "./CandidateForm";
 import CandidateDetails from "./CandidateDetails";
@@ -12,8 +13,9 @@ function CandidateList() {
   const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editingCandidate, setEditingCandidate] = useState(null);
-  const [viewingCandidate, setViewingCandidate] = useState(null);
+  const [viewingCandidateId, setViewingCandidateId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [updatingStatusId, setUpdatingStatusId] = useState(null);
 
   const fetchCandidates = async () => {
     try {
@@ -33,6 +35,15 @@ function CandidateList() {
   useEffect(() => {
     fetchCandidates();
   }, []);
+
+  if (viewingCandidateId) {
+    return (
+      <CandidateDetails
+        candidateId={viewingCandidateId}
+        onBack={() => setViewingCandidateId(null)}
+      />
+    );
+  }
 
   if (loading) {
     return (
@@ -75,6 +86,32 @@ function CandidateList() {
     }
   };
 
+  const handleStatusChange = async (candidate, status) => {
+    try {
+      setError("");
+      setUpdatingStatusId(candidate.id);
+
+      const candidateData = {
+        firstName: candidate.firstName,
+        lastName: candidate.lastName,
+        email: candidate.email,
+        phone: candidate.phone,
+        skills: candidate.skills,
+        experience: candidate.experience,
+        resumeUrl: candidate.resumeUrl,
+        status,
+      };
+
+      await updateCandidate(candidate.id, candidateData);
+
+      await fetchCandidates();
+    } catch (err) {
+      setError(err.message || "Failed to update candidate status.");
+    } finally {
+      setUpdatingStatusId(null);
+    }
+  };
+
   return (
     <div className="candidate-page">
       <div className="candidate-page-header">
@@ -105,13 +142,6 @@ function CandidateList() {
             setShowForm(false);
             setEditingCandidate(null);
           }}
-        />
-      )}
-
-      {viewingCandidate && (
-        <CandidateDetails
-          candidate={viewingCandidate}
-          onClose={() => setViewingCandidate(null)}
         />
       )}
 
@@ -162,10 +192,29 @@ function CandidateList() {
                     )}
                   </td>
 
-                  <td>{candidate.status}</td>
+                  <td>
+                    <select
+                      value={candidate.status || "APPLIED"}
+                      onChange={(event) =>
+                        handleStatusChange(candidate, event.target.value)
+                      }
+                      disabled={updatingStatusId === candidate.id}
+                    >
+                      <option value="APPLIED">APPLIED</option>
+                      <option value="SCREENING">SCREENING</option>
+                      <option value="SHORTLISTED">SHORTLISTED</option>
+                      <option value="INTERVIEW_SCHEDULED">
+                        INTERVIEW SCHEDULED
+                      </option>
+                      <option value="INTERVIEWED">INTERVIEWED</option>
+                      <option value="OFFERED">OFFERED</option>
+                      <option value="HIRED">HIRED</option>
+                      <option value="REJECTED">REJECTED</option>
+                    </select>
+                  </td>
 
                   <td>
-                    <button onClick={() => setViewingCandidate(candidate)}>
+                    <button onClick={() => setViewingCandidateId(candidate.id)}>
                       View
                     </button>
 

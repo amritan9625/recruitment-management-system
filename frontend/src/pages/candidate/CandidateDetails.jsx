@@ -1,52 +1,105 @@
-function CandidateDetails({ candidate, onClose }) {
+import { useEffect, useState } from "react";
+import { getCandidateById } from "../../services/candidateService";
+
+function CandidateDetails({ candidateId, onBack }) {
+  const [candidate, setCandidate] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchCandidate = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const response = await getCandidateById(candidateId);
+
+        setCandidate(response.data);
+      } catch (err) {
+        setError(err.message || "Failed to load candidate details.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCandidate();
+  }, [candidateId]);
+
+  if (loading) {
+    return (
+      <div className="candidate-page">
+        <h1>Candidate Details</h1>
+        <p>Loading candidate details...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="candidate-page">
+        <h1>Candidate Details</h1>
+
+        <p className="candidate-error">{error}</p>
+
+        <button onClick={onBack}>Back to Candidates</button>
+      </div>
+    );
+  }
+
   if (!candidate) {
-    return null;
+    return (
+      <div className="candidate-page">
+        <h1>Candidate Details</h1>
+
+        <p>Candidate not found.</p>
+
+        <button onClick={onBack}>Back to Candidates</button>
+      </div>
+    );
   }
 
   return (
-    <div className="candidate-details">
-      <div className="candidate-details-header">
-        <h2>Candidate Details</h2>
+    <div className="candidate-page">
+      <div className="candidate-page-header">
+        <div>
+          <h1>Candidate Details</h1>
+          <p>View complete candidate information.</p>
+        </div>
 
-        <button onClick={onClose}>Close</button>
+        <button onClick={onBack}>Back to Candidates</button>
       </div>
 
-      <div className="candidate-details-content">
-        <div className="candidate-detail-item">
-          <strong>Name</strong>
-          <span>
-            {candidate.firstName} {candidate.lastName}
-          </span>
-        </div>
+      <div className="candidate-details">
+        <p>
+          <strong>Candidate ID:</strong> {candidate.id}
+        </p>
 
-        <div className="candidate-detail-item">
-          <strong>Email</strong>
-          <span>{candidate.email}</span>
-        </div>
+        <p>
+          <strong>Name:</strong> {candidate.firstName} {candidate.lastName}
+        </p>
 
-        <div className="candidate-detail-item">
-          <strong>Phone</strong>
-          <span>{candidate.phone}</span>
-        </div>
+        <p>
+          <strong>Email:</strong> {candidate.email}
+        </p>
 
-        <div className="candidate-detail-item">
-          <strong>Skills</strong>
-          <span>{candidate.skills || "N/A"}</span>
-        </div>
+        <p>
+          <strong>Phone:</strong> {candidate.phone}
+        </p>
 
-        <div className="candidate-detail-item">
-          <strong>Experience</strong>
-          <span>{candidate.experience} years</span>
-        </div>
+        <p>
+          <strong>Skills:</strong> {candidate.skills || "N/A"}
+        </p>
 
-        <div className="candidate-detail-item">
-          <strong>Status</strong>
-          <span>{candidate.status}</span>
-        </div>
+        <p>
+          <strong>Experience:</strong> {candidate.experience} years
+        </p>
 
-        <div className="candidate-detail-item">
-          <strong>Resume</strong>
+        <p>
+          <strong>Status:</strong> {candidate.status}
+        </p>
 
+        <p>
+          <strong>Resume:</strong>{" "}
           {candidate.resumeUrl ? (
             <a
               href={candidate.resumeUrl}
@@ -56,9 +109,9 @@ function CandidateDetails({ candidate, onClose }) {
               View Resume
             </a>
           ) : (
-            <span>Not Available</span>
+            "Not Available"
           )}
-        </div>
+        </p>
       </div>
     </div>
   );
