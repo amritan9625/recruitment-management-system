@@ -29,6 +29,7 @@ function JobList() {
 
   const [statusFilter, setStatusFilter] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
+  const [submittedLocationFilter, setSubmittedLocationFilter] = useState("");
 
   const fetchJobs = async () => {
     try {
@@ -39,9 +40,9 @@ function JobList() {
 
       if (statusFilter) {
         response = await getJobsByStatus(statusFilter, pageNo, pageSize);
-      } else if (locationFilter.trim()) {
+      } else if (submittedLocationFilter) {
         response = await getJobsByLocation(
-          locationFilter.trim(),
+          submittedLocationFilter,
           pageNo,
           pageSize,
         );
@@ -89,7 +90,7 @@ function JobList() {
 
   useEffect(() => {
     fetchJobs();
-  }, [pageNo, pageSize, sortBy, sortDir, statusFilter, locationFilter]);
+  }, [pageNo, pageSize, sortBy, sortDir, statusFilter, submittedLocationFilter]);
 
   if (viewingJobId) {
     return (
@@ -179,9 +180,24 @@ function JobList() {
               value={locationFilter}
               onChange={(e) => {
                 setLocationFilter(e.target.value);
-                setPageNo(0);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  setPageNo(0);
+                  setSubmittedLocationFilter(locationFilter.trim());
+                }
               }}
             />
+
+            <button
+              type="button"
+              onClick={() => {
+                setPageNo(0);
+                setSubmittedLocationFilter(locationFilter.trim());
+              }}
+            >
+              Search
+            </button>
 
             <select
               value={statusFilter}
@@ -199,6 +215,7 @@ function JobList() {
               type="button"
               onClick={() => {
                 setLocationFilter("");
+                setSubmittedLocationFilter("");
                 setStatusFilter("");
                 setPageNo(0);
               }}

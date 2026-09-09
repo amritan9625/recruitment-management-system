@@ -29,6 +29,7 @@ function CandidateList() {
 
   const [searchText, setSearchText] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [submittedSearchText, setSubmittedSearchText] = useState("");
 
   const fetchCandidates = async () => {
     try {
@@ -37,8 +38,12 @@ function CandidateList() {
 
       let response;
 
-      if (searchText.trim()) {
-        response = await searchCandidates(searchText.trim(), pageNo, pageSize);
+      if (submittedSearchText) {
+        response = await searchCandidates(
+          submittedSearchText,
+          pageNo,
+          pageSize,
+        );
       } else if (statusFilter) {
         response = await getCandidatesByStatus(statusFilter, pageNo, pageSize);
       } else {
@@ -57,7 +62,7 @@ function CandidateList() {
 
   useEffect(() => {
     fetchCandidates();
-  }, [pageNo, pageSize, sortBy, sortDir, searchText, statusFilter]);
+  }, [pageNo, pageSize, sortBy, sortDir, submittedSearchText, statusFilter]);
 
   if (viewingCandidateId) {
     return (
@@ -202,7 +207,7 @@ function CandidateList() {
             </select>
           </div>
 
-            {/* filters */}
+          {/* filters */}
           <div className="candidate-filters">
             <input
               type="text"
@@ -210,15 +215,29 @@ function CandidateList() {
               value={searchText}
               onChange={(e) => {
                 setSearchText(e.target.value);
-                setPageNo(0);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  setPageNo(0);
+                  setSubmittedSearchText(searchText.trim());
+                }
               }}
             />
+
+            <button
+              type="button"
+              onClick={() => {
+                setPageNo(0);
+                setSubmittedSearchText(searchText.trim());
+              }}
+            >
+              Search
+            </button>
 
             <select
               value={statusFilter}
               onChange={(e) => {
                 setStatusFilter(e.target.value);
-                setPageNo(0);
               }}
             >
               <option value="">All Statuses</option>
@@ -236,6 +255,7 @@ function CandidateList() {
               type="button"
               onClick={() => {
                 setSearchText("");
+                setSubmittedSearchText("");
                 setStatusFilter("");
                 setPageNo(0);
               }}
