@@ -8,6 +8,8 @@ import {
 } from "../../services/candidateService";
 import CandidateForm from "./CandidateForm";
 import CandidateDetails from "./CandidateDetails";
+import Pagination from "../../components/Pagination";
+import SearchFilterBar from "../../components/SearchFilterBar";
 
 function CandidateList() {
   const [candidates, setCandidates] = useState([]);
@@ -28,8 +30,8 @@ function CandidateList() {
   const [sortDir, setSortDir] = useState("asc");
 
   const [searchText, setSearchText] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
   const [submittedSearchText, setSubmittedSearchText] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
   const fetchCandidates = async () => {
     try {
@@ -64,32 +66,42 @@ function CandidateList() {
     fetchCandidates();
   }, [pageNo, pageSize, sortBy, sortDir, submittedSearchText, statusFilter]);
 
-  if (viewingCandidateId) {
-    return (
-      <CandidateDetails
-        candidateId={viewingCandidateId}
-        onBack={() => setViewingCandidateId(null)}
-      />
-    );
-  }
+  const handleSearch = () => {
+    setPageNo(0);
+    setSubmittedSearchText(searchText.trim());
+  };
 
-  if (loading) {
-    return (
-      <div className="candidate-page">
-        <h1>Candidates</h1>
-        <p>Loading candidates...</p>
-      </div>
-    );
-  }
+  const handleReset = () => {
+    setSearchText("");
+    setSubmittedSearchText("");
 
-  if (error) {
-    return (
-      <div className="candidate-page">
-        <h1>Candidates</h1>
-        <p className="candidate-error">{error}</p>
-      </div>
-    );
-  }
+    setStatusFilter("");
+
+    setSortBy("id");
+    setSortDir("asc");
+
+    setPageNo(0);
+  };
+
+  const handleStatusFilterChange = (event) => {
+    setPageNo(0);
+    setStatusFilter(event.target.value);
+  };
+
+  const handleSortChange = (event) => {
+    setPageNo(0);
+    setSortBy(event.target.value);
+  };
+
+  const handleSortDirectionChange = (event) => {
+    setPageNo(0);
+    setSortDir(event.target.value);
+  };
+
+  const handlePageSizeChange = (size) => {
+    setPageNo(0);
+    setPageSize(size);
+  };
 
   const handleDelete = async (id) => {
     const confirmed = window.confirm(
@@ -140,6 +152,33 @@ function CandidateList() {
     }
   };
 
+  if (viewingCandidateId) {
+    return (
+      <CandidateDetails
+        candidateId={viewingCandidateId}
+        onBack={() => setViewingCandidateId(null)}
+      />
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="candidate-page">
+        <h1>Candidates</h1>
+        <p>Loading candidates...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="candidate-page">
+        <h1>Candidates</h1>
+        <p className="candidate-error">{error}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="candidate-page">
       <div className="candidate-page-header">
@@ -173,223 +212,157 @@ function CandidateList() {
         />
       )}
 
+      {/* Search + Filter + Sort */}
+      <SearchFilterBar onReset={handleReset}>
+        {/* Candidate Name Search */}
+        <div>
+          <input
+            type="text"
+            placeholder="Search candidate name..."
+            value={searchText}
+            onChange={(event) => {
+              setSearchText(event.target.value);
+            }}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                handleSearch();
+              }
+            }}
+          />
+
+          <button type="button" onClick={handleSearch}>
+            Search
+          </button>
+        </div>
+
+        <select value={statusFilter} onChange={handleStatusFilterChange}>
+          <option value="">All Statuses</option>
+          <option value="APPLIED">APPLIED</option>
+          <option value="SCREENING">SCREENING</option>
+          <option value="SHORTLISTED">SHORTLISTED</option>
+          <option value="INTERVIEW_SCHEDULED">INTERVIEW_SCHEDULED</option>
+          <option value="INTERVIEWED">INTERVIEWED</option>
+          <option value="OFFERED">OFFERED</option>
+          <option value="HIRED">HIRED</option>
+          <option value="REJECTED">REJECTED</option>
+        </select>
+
+        <select value={sortBy} onChange={handleSortChange}>
+          <option value="id">ID</option>
+          <option value="firstName">First Name</option>
+          <option value="lastName">Last Name</option>
+          <option value="experience">Experience</option>
+          <option value="status">Status</option>
+        </select>
+
+        <select value={sortDir} onChange={handleSortDirectionChange}>
+          <option value="asc">Ascending</option>
+          <option value="desc">Descending</option>
+        </select>
+      </SearchFilterBar>
+
       {candidates.length === 0 ? (
         <div className="candidate-empty">No candidates found.</div>
       ) : (
-        <div className="candidate-table-container">
-          {/* sorting */}
-          <div className="candidate-sorting">
-            <label>Sort by: </label>
-
-            <select
-              value={sortBy}
-              onChange={(e) => {
-                setSortBy(e.target.value);
-                setPageNo(0);
-              }}
-            >
-              <option value="id">ID</option>
-              <option value="firstName">First Name</option>
-              <option value="lastName">Last Name</option>
-              <option value="experience">Experience</option>
-              <option value="status">Status</option>
-            </select>
-
-            <select
-              value={sortDir}
-              onChange={(e) => {
-                setSortDir(e.target.value);
-                setPageNo(0);
-              }}
-            >
-              <option value="asc">Ascending</option>
-              <option value="desc">Descending</option>
-            </select>
-          </div>
-
-          {/* filters */}
-          <div className="candidate-filters">
-            <input
-              type="text"
-              placeholder="Search candidate name..."
-              value={searchText}
-              onChange={(e) => {
-                setSearchText(e.target.value);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  setPageNo(0);
-                  setSubmittedSearchText(searchText.trim());
-                }
-              }}
-            />
-
-            <button
-              type="button"
-              onClick={() => {
-                setPageNo(0);
-                setSubmittedSearchText(searchText.trim());
-              }}
-            >
-              Search
-            </button>
-
-            <select
-              value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value);
-              }}
-            >
-              <option value="">All Statuses</option>
-              <option value="APPLIED">APPLIED</option>
-              <option value="SCREENING">SCREENING</option>
-              <option value="SHORTLISTED">SHORTLISTED</option>
-              <option value="INTERVIEW_SCHEDULED">INTERVIEW_SCHEDULED</option>
-              <option value="INTERVIEWED">INTERVIEWED</option>
-              <option value="OFFERED">OFFERED</option>
-              <option value="HIRED">HIRED</option>
-              <option value="REJECTED">REJECTED</option>
-            </select>
-
-            <button
-              type="button"
-              onClick={() => {
-                setSearchText("");
-                setSubmittedSearchText("");
-                setStatusFilter("");
-                setPageNo(0);
-              }}
-            >
-              Reset
-            </button>
-          </div>
-
-          <table className="candidate-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Skills</th>
-                <th>Experience</th>
-                <th>Resume</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {candidates.map((candidate) => (
-                <tr key={candidate.id}>
-                  <td>
-                    {candidate.firstName} {candidate.lastName}
-                  </td>
-
-                  <td>{candidate.email}</td>
-
-                  <td>{candidate.phone}</td>
-
-                  <td>{candidate.skills}</td>
-
-                  <td>{candidate.experience}</td>
-
-                  <td>
-                    {candidate.resumeUrl ? (
-                      <a
-                        href={candidate.resumeUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        View Resume
-                      </a>
-                    ) : (
-                      "Not Available"
-                    )}
-                  </td>
-
-                  <td>
-                    <select
-                      value={candidate.status || "APPLIED"}
-                      onChange={(event) =>
-                        handleStatusChange(candidate, event.target.value)
-                      }
-                      disabled={updatingStatusId === candidate.id}
-                    >
-                      <option value="APPLIED">APPLIED</option>
-                      <option value="SCREENING">SCREENING</option>
-                      <option value="SHORTLISTED">SHORTLISTED</option>
-                      <option value="INTERVIEW_SCHEDULED">
-                        INTERVIEW SCHEDULED
-                      </option>
-                      <option value="INTERVIEWED">INTERVIEWED</option>
-                      <option value="OFFERED">OFFERED</option>
-                      <option value="HIRED">HIRED</option>
-                      <option value="REJECTED">REJECTED</option>
-                    </select>
-                  </td>
-
-                  <td>
-                    <button onClick={() => setViewingCandidateId(candidate.id)}>
-                      View
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        setEditingCandidate(candidate);
-                        setShowForm(true);
-                      }}
-                    >
-                      Edit
-                    </button>
-
-                    <button
-                      onClick={() => handleDelete(candidate.id)}
-                      disabled={deletingId === candidate.id}
-                    >
-                      {deletingId === candidate.id ? "Deleting..." : "Delete"}
-                    </button>
-                  </td>
+        <>
+          <div className="candidate-table-container">
+            <table className="candidate-table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Skills</th>
+                  <th>Experience</th>
+                  <th>Resume</th>
+                  <th>Status</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
 
-          <div className="candidate-pagination">
-            <div className="candidate-page-size">
-              <label>Rows per page: </label>
+              <tbody>
+                {candidates.map((candidate) => (
+                  <tr key={candidate.id}>
+                    <td>
+                      {candidate.firstName} {candidate.lastName}
+                    </td>
+                    <td>{candidate.email}</td>
+                    <td>{candidate.phone}</td>
+                    <td>{candidate.skills}</td>
+                    <td>{candidate.experience}</td>
+                    <td>
+                      {candidate.resumeUrl ? (
+                        <a
+                          href={candidate.resumeUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          View Resume
+                        </a>
+                      ) : (
+                        "Not Available"
+                      )}
+                    </td>
+                    <td>
+                      <select
+                        value={candidate.status || "APPLIED"}
+                        onChange={(event) =>
+                          handleStatusChange(candidate, event.target.value)
+                        }
+                        disabled={updatingStatusId === candidate.id}
+                      >
+                        <option value="APPLIED">APPLIED</option>
+                        <option value="SCREENING">SCREENING</option>
+                        <option value="SHORTLISTED">SHORTLISTED</option>
+                        <option value="INTERVIEW_SCHEDULED">
+                          INTERVIEW SCHEDULED
+                        </option>
+                        <option value="INTERVIEWED">INTERVIEWED</option>
+                        <option value="OFFERED">OFFERED</option>
+                        <option value="HIRED">HIRED</option>
+                        <option value="REJECTED">REJECTED</option>
+                      </select>
+                    </td>
 
-              <select
-                value={pageSize}
-                onChange={(e) => {
-                  setPageSize(Number(e.target.value));
-                  setPageNo(0);
-                }}
-              >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-              </select>
-            </div>
+                    {/* Actions */}
+                    <td>
+                      <button
+                        onClick={() => setViewingCandidateId(candidate.id)}
+                      >
+                        View
+                      </button>
 
-            <button
-              onClick={() => setPageNo((prev) => prev - 1)}
-              disabled={pageNo === 0}
-            >
-              Previous
-            </button>
+                      <button
+                        onClick={() => {
+                          setEditingCandidate(candidate);
+                          setShowForm(true);
+                        }}
+                      >
+                        Edit
+                      </button>
 
-            <span>
-              Page {pageNo + 1} of {totalPages}
-            </span>
-
-            <button
-              onClick={() => setPageNo((prev) => prev + 1)}
-              disabled={pageNo >= totalPages - 1}
-            >
-              Next
-            </button>
+                      <button
+                        onClick={() => handleDelete(candidate.id)}
+                        disabled={deletingId === candidate.id}
+                      >
+                        {deletingId === candidate.id ? "Deleting..." : "Delete"}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </div>
+
+          <Pagination
+            pageNo={pageNo}
+            pageSize={pageSize}
+            totalPages={totalPages}
+            totalElements={totalElements}
+            onPageChange={setPageNo}
+            onPageSizeChange={handlePageSizeChange}
+          />
+        </>
       )}
     </div>
   );
