@@ -3,6 +3,8 @@ import {
   getAllCandidates,
   deleteCandidate,
   updateCandidate,
+  searchCandidates,
+  getCandidatesByStatus,
 } from "../../services/candidateService";
 import CandidateForm from "./CandidateForm";
 import CandidateDetails from "./CandidateDetails";
@@ -17,14 +19,35 @@ function CandidateList() {
   const [deletingId, setDeletingId] = useState(null);
   const [updatingStatusId, setUpdatingStatusId] = useState(null);
 
+  const [pageNo, setPageNo] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
+
+  const [sortBy, setSortBy] = useState("id");
+  const [sortDir, setSortDir] = useState("asc");
+
+  const [searchText, setSearchText] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+
   const fetchCandidates = async () => {
     try {
       setLoading(true);
       setError("");
 
-      const response = await getAllCandidates();
+      let response;
+
+      if (searchText.trim()) {
+        response = await searchCandidates(searchText.trim(), pageNo, pageSize);
+      } else if (statusFilter) {
+        response = await getCandidatesByStatus(statusFilter, pageNo, pageSize);
+      } else {
+        response = await getAllCandidates(pageNo, pageSize, sortBy, sortDir);
+      }
 
       setCandidates(response.data?.content || []);
+      setTotalPages(response.data?.totalPages || 0);
+      setTotalElements(response.data?.totalElements || 0);
     } catch (err) {
       setError(err.message || "Failed to load candidates.");
     } finally {
@@ -34,7 +57,7 @@ function CandidateList() {
 
   useEffect(() => {
     fetchCandidates();
-  }, []);
+  }, [pageNo, pageSize, sortBy, sortDir, searchText, statusFilter]);
 
   if (viewingCandidateId) {
     return (
@@ -149,6 +172,78 @@ function CandidateList() {
         <div className="candidate-empty">No candidates found.</div>
       ) : (
         <div className="candidate-table-container">
+          {/* sorting */}
+          <div className="candidate-sorting">
+            <label>Sort by: </label>
+
+            <select
+              value={sortBy}
+              onChange={(e) => {
+                setSortBy(e.target.value);
+                setPageNo(0);
+              }}
+            >
+              <option value="id">ID</option>
+              <option value="firstName">First Name</option>
+              <option value="lastName">Last Name</option>
+              <option value="experience">Experience</option>
+              <option value="status">Status</option>
+            </select>
+
+            <select
+              value={sortDir}
+              onChange={(e) => {
+                setSortDir(e.target.value);
+                setPageNo(0);
+              }}
+            >
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </div>
+
+            {/* filters */}
+          <div className="candidate-filters">
+            <input
+              type="text"
+              placeholder="Search candidate name..."
+              value={searchText}
+              onChange={(e) => {
+                setSearchText(e.target.value);
+                setPageNo(0);
+              }}
+            />
+
+            <select
+              value={statusFilter}
+              onChange={(e) => {
+                setStatusFilter(e.target.value);
+                setPageNo(0);
+              }}
+            >
+              <option value="">All Statuses</option>
+              <option value="APPLIED">APPLIED</option>
+              <option value="SCREENING">SCREENING</option>
+              <option value="SHORTLISTED">SHORTLISTED</option>
+              <option value="INTERVIEW_SCHEDULED">INTERVIEW_SCHEDULED</option>
+              <option value="INTERVIEWED">INTERVIEWED</option>
+              <option value="OFFERED">OFFERED</option>
+              <option value="HIRED">HIRED</option>
+              <option value="REJECTED">REJECTED</option>
+            </select>
+
+            <button
+              type="button"
+              onClick={() => {
+                setSearchText("");
+                setStatusFilter("");
+                setPageNo(0);
+              }}
+            >
+              Reset
+            </button>
+          </div>
+
           <table className="candidate-table">
             <thead>
               <tr>
@@ -238,6 +333,42 @@ function CandidateList() {
               ))}
             </tbody>
           </table>
+
+          <div className="candidate-pagination">
+            <div className="candidate-page-size">
+              <label>Rows per page: </label>
+
+              <select
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                  setPageNo(0);
+                }}
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+              </select>
+            </div>
+
+            <button
+              onClick={() => setPageNo((prev) => prev - 1)}
+              disabled={pageNo === 0}
+            >
+              Previous
+            </button>
+
+            <span>
+              Page {pageNo + 1} of {totalPages}
+            </span>
+
+            <button
+              onClick={() => setPageNo((prev) => prev + 1)}
+              disabled={pageNo >= totalPages - 1}
+            >
+              Next
+            </button>
+          </div>
         </div>
       )}
     </div>
