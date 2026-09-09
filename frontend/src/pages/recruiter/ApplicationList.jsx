@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import {
   getAllApplications,
   getApplicationById,
-  updateApplication,
   deleteApplication,
   updateApplicationStatus,
   getApplicationsByCandidateId,
@@ -13,6 +12,8 @@ import {
 } from "../../services/applicationService";
 import ApplicationForm from "./ApplicationForm";
 import ApplicationDetails from "./ApplicationDetails";
+import Pagination from "../../components/Pagination";
+import SearchFilterBar from "../../components/SearchFilterBar";
 
 function ApplicationList() {
   const [applications, setApplications] = useState([]);
@@ -30,14 +31,14 @@ function ApplicationList() {
   const [sortBy, setSortBy] = useState("id");
   const [sortDir, setSortDir] = useState("asc");
 
-  const [candidateIdFilter, setCandidateIdFilter] = useState("");
-  const [jobIdFilter, setJobIdFilter] = useState("");
+  const [candidateId, setCandidateId] = useState("");
+  const [jobId, setJobId] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
-  const [candidateNameSearch, setCandidateNameSearch] = useState("");
+  const [candidateName, setCandidateName] = useState("");
   const [submittedCandidateName, setSubmittedCandidateName] = useState("");
 
-  const [jobTitleSearch, setJobTitleSearch] = useState("");
+  const [jobTitle, setJobTitle] = useState("");
   const [submittedJobTitle, setSubmittedJobTitle] = useState("");
 
   const fetchApplications = async () => {
@@ -46,27 +47,34 @@ function ApplicationList() {
       setError("");
 
       let response;
+      //  Search/filter priority:
+      //  1. Candidate name
+      //  2. Job title
+      //  3. Candidate ID
+      //  4. Job ID
+      //  5. Status
+      //  6. Normal list
 
-      if (submittedCandidateName) {
+      if (submittedCandidateName.trim()) {
         response = await getApplicationsByCandidateName(
-          candidateNameSearch.trim(),
+          submittedCandidateName.trim(),
           pageNo,
           pageSize,
         );
-      } else if (submittedJobTitle) {
+      } else if (submittedJobTitle.trim()) {
         response = await getApplicationsByJobTitle(
-          jobTitleSearch.trim(),
+          submittedJobTitle.trim(),
           pageNo,
           pageSize,
         );
-      } else if (candidateIdFilter) {
+      } else if (candidateId.trim()) {
         response = await getApplicationsByCandidateId(
-          candidateIdFilter,
+          candidateId.trim(),
           pageNo,
           pageSize,
         );
-      } else if (jobIdFilter) {
-        response = await getApplicationsByJobId(jobIdFilter, pageNo, pageSize);
+      } else if (jobId.trim()) {
+        response = await getApplicationsByJobId(jobId.trim(), pageNo, pageSize);
       } else if (statusFilter) {
         response = await getApplicationsByStatus(
           statusFilter,
@@ -94,12 +102,112 @@ function ApplicationList() {
     pageSize,
     sortBy,
     sortDir,
-    candidateIdFilter,
-    jobIdFilter,
+    candidateId,
+    jobId,
     statusFilter,
     submittedCandidateName,
     submittedJobTitle,
   ]);
+
+  const handleCandidateNameSearch = () => {
+    setPageNo(0);
+    setSubmittedCandidateName(candidateName);
+    setSubmittedJobTitle("");
+    setCandidateId("");
+    setJobId("");
+    setStatusFilter("");
+  };
+
+  const handleJobTitleSearch = () => {
+    setPageNo(0);
+    setSubmittedJobTitle(jobTitle);
+    setSubmittedCandidateName("");
+    setCandidateId("");
+    setJobId("");
+    setStatusFilter("");
+  };
+
+  const handleCandidateIdChange = (value) => {
+    setPageNo(0);
+    setCandidateId(value);
+
+    setSubmittedCandidateName("");
+    setSubmittedJobTitle("");
+    setCandidateName("");
+    setJobTitle("");
+
+    if (value) {
+      setJobId("");
+      setStatusFilter("");
+    }
+  };
+
+  const handleJobIdChange = (value) => {
+    setPageNo(0);
+    setJobId(value);
+
+    setSubmittedCandidateName("");
+    setSubmittedJobTitle("");
+    setCandidateName("");
+    setJobTitle("");
+
+    if (value) {
+      setCandidateId("");
+      setStatusFilter("");
+    }
+  };
+
+  const handleStatusChange = (value) => {
+    setPageNo(0);
+    setStatusFilter(value);
+
+    setSubmittedCandidateName("");
+    setSubmittedJobTitle("");
+    setCandidateName("");
+    setJobTitle("");
+
+    if (value) {
+      setCandidateId("");
+      setJobId("");
+    }
+  };
+
+  const handleSortChange = (value) => {
+    setPageNo(0);
+    setSortBy(value);
+  };
+
+  const handleSortDirectionChange = (value) => {
+    setPageNo(0);
+    setSortDir(value);
+  };
+
+  const handlePageChange = (newPageNo) => {
+    setPageNo(newPageNo);
+  };
+
+  const handlePageSizeChange = (newPageSize) => {
+    setPageSize(newPageSize);
+    setPageNo(0);
+  };
+
+  const handleReset = () => {
+    setCandidateName("");
+    setSubmittedCandidateName("");
+
+    setJobTitle("");
+    setSubmittedJobTitle("");
+
+    setCandidateId("");
+    setJobId("");
+    setStatusFilter("");
+
+    setSortBy("id");
+    setSortDir("asc");
+
+    setPageSize(10);
+    setPageNo(0);
+  };
 
   const handleEdit = async (id) => {
     try {
@@ -127,24 +235,31 @@ function ApplicationList() {
       setError("");
 
       await deleteApplication(id);
-
       await fetchApplications();
     } catch (err) {
       setError(err.message || "Failed to delete application.");
     }
   };
 
-  const handleStatusChange = async (id, status) => {
+  const handleStatusUpdate = async (id, status) => {
     try {
       setError("");
 
       await updateApplicationStatus(id, status);
-
       await fetchApplications();
     } catch (err) {
       setError(err.message || "Failed to update application status.");
     }
   };
+
+  if (viewingApplicationId) {
+    return (
+      <ApplicationDetails
+        applicationId={viewingApplicationId}
+        onBack={() => setViewingApplicationId(null)}
+      />
+    );
+  }
 
   if (loading) {
     return (
@@ -161,16 +276,10 @@ function ApplicationList() {
         <h1>Applications</h1>
 
         <p className="application-error">{error}</p>
+        <button type="button" onClick={fetchApplications}>
+          Try Again
+        </button>
       </div>
-    );
-  }
-
-  if (viewingApplicationId) {
-    return (
-      <ApplicationDetails
-        applicationId={viewingApplicationId}
-        onBack={() => setViewingApplicationId(null)}
-      />
     );
   }
 
@@ -194,6 +303,114 @@ function ApplicationList() {
         </button>
       </div>
 
+      <SearchFilterBar onReset={handleReset}>
+        <div className="search-filter-group">
+          <label>Candidate Name</label>
+
+          <input
+            type="text"
+            value={candidateName}
+            placeholder="Search candidate"
+            onChange={(event) => setCandidateName(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                handleCandidateNameSearch();
+              }
+            }}
+          />
+
+          <button type="button" onClick={handleCandidateNameSearch}>
+            Search
+          </button>
+        </div>
+
+        <div className="search-filter-group">
+          <label>Job Title</label>
+
+          <input
+            type="text"
+            value={jobTitle}
+            placeholder="Search job"
+            onChange={(event) => setJobTitle(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                handleJobTitleSearch();
+              }
+            }}
+          />
+
+          <button type="button" onClick={handleJobTitleSearch}>
+            Search
+          </button>
+        </div>
+
+        <div className="search-filter-group">
+          <label>Candidate ID</label>
+
+          <input
+            type="number"
+            min="1"
+            value={candidateId}
+            placeholder="Candidate ID"
+            onChange={(event) => handleCandidateIdChange(event.target.value)}
+          />
+        </div>
+
+        <div className="search-filter-group">
+          <label>Job ID</label>
+
+          <input
+            type="number"
+            min="1"
+            value={jobId}
+            placeholder="Job ID"
+            onChange={(event) => handleJobIdChange(event.target.value)}
+          />
+        </div>
+
+        <div className="search-filter-group">
+          <label>Status</label>
+
+          <select
+            value={statusFilter}
+            onChange={(event) => handleStatusChange(event.target.value)}
+          >
+            <option value="">All Statuses</option>
+            <option value="APPLIED">APPLIED</option>
+            <option value="SHORTLISTED">SHORTLISTED</option>
+            <option value="INTERVIEW_SCHEDULED">INTERVIEW SCHEDULED</option>
+            <option value="SELECTED">SELECTED</option>
+            <option value="REJECTED">REJECTED</option>
+          </select>
+        </div>
+
+        <div className="search-filter-group">
+          <label>Sort By</label>
+
+          <select
+            value={sortBy}
+            onChange={(event) => handleSortChange(event.target.value)}
+          >
+            <option value="id">ID</option>
+            <option value="candidateId">Candidate ID</option>
+            <option value="jobId">Job ID</option>
+            <option value="status">Status</option>
+          </select>
+        </div>
+
+        <div className="search-filter-group">
+          <label>Direction</label>
+
+          <select
+            value={sortDir}
+            onChange={(event) => handleSortDirectionChange(event.target.value)}
+          >
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
+        </div>
+      </SearchFilterBar>
+
       {showForm && (
         <ApplicationForm
           application={editingApplication}
@@ -213,144 +430,6 @@ function ApplicationList() {
         <div className="application-empty">No applications found.</div>
       ) : (
         <div className="application-table-container">
-          {/* filter */}
-          <div className="application-filters">
-            {/* search candidate input */}
-            <input
-              type="text"
-              placeholder="Search candidate name..."
-              value={candidateNameSearch}
-              onChange={(e) => {
-                setCandidateNameSearch(e.target.value);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  setPageNo(0);
-                  setSubmittedCandidateName(candidateNameSearch.trim());
-                }
-              }}
-            />
-
-            <button
-              type="button"
-              onClick={() => {
-                setPageNo(0);
-                setSubmittedCandidateName(candidateNameSearch.trim());
-              }}
-            >
-              Search
-            </button>
-
-            {/* Search job title input */}
-            <input
-              type="text"
-              placeholder="Search job title..."
-              value={jobTitleSearch}
-              onChange={(e) => {
-                setJobTitleSearch(e.target.value);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  setPageNo(0);
-                  setSubmittedJobTitle(jobTitleSearch.trim());
-                }
-              }}
-            />
-
-            <button
-              type="button"
-              onClick={() => {
-                setPageNo(0);
-                setSubmittedJobTitle(jobTitleSearch.trim());
-              }}
-            >
-              Search
-            </button>
-
-            <input
-              type="number"
-              placeholder="Candidate ID"
-              value={candidateIdFilter}
-              onChange={(e) => {
-                setCandidateIdFilter(e.target.value);
-                setPageNo(0);
-              }}
-            />
-
-            <input
-              type="number"
-              placeholder="Job ID"
-              value={jobIdFilter}
-              onChange={(e) => {
-                setJobIdFilter(e.target.value);
-                setPageNo(0);
-              }}
-            />
-
-            <select
-              value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value);
-                setPageNo(0);
-              }}
-            >
-              <option value="">All Statuses</option>
-              <option value="APPLIED">APPLIED</option>
-              <option value="SHORTLISTED">SHORTLISTED</option>
-              <option value="INTERVIEW_SCHEDULED">INTERVIEW_SCHEDULED</option>
-              <option value="SELECTED">SELECTED</option>
-              <option value="REJECTED">REJECTED</option>
-            </select>
-
-            <button
-              type="button"
-              onClick={() => {
-                setCandidateNameSearch("");
-                setSubmittedCandidateName("");
-
-                setJobTitleSearch("");
-                setSubmittedJobTitle("");
-
-                setCandidateIdFilter("");
-                setJobIdFilter("");
-                setStatusFilter("");
-                
-                setPageNo(0);
-              }}
-            >
-              Reset
-            </button>
-          </div>
-
-          {/* sorting */}
-          <div className="application-sorting">
-            <label>Sort by: </label>
-
-            <select
-              value={sortBy}
-              onChange={(e) => {
-                setSortBy(e.target.value);
-                setPageNo(0);
-              }}
-            >
-              <option value="id">ID</option>
-              <option value="candidateId">Candidate ID</option>
-              <option value="jobId">Job ID</option>
-              <option value="status">Status</option>
-            </select>
-
-            <select
-              value={sortDir}
-              onChange={(e) => {
-                setSortDir(e.target.value);
-                setPageNo(0);
-              }}
-            >
-              <option value="asc">Ascending</option>
-              <option value="desc">Descending</option>
-            </select>
-          </div>
-
           <table className="application-table">
             <thead>
               <tr>
@@ -375,7 +454,7 @@ function ApplicationList() {
                     <select
                       value={application.status}
                       onChange={(event) =>
-                        handleStatusChange(application.id, event.target.value)
+                        handleStatusUpdate(application.id, event.target.value)
                       }
                     >
                       <option value="APPLIED">APPLIED</option>
@@ -394,16 +473,23 @@ function ApplicationList() {
 
                   <td>
                     <button
+                      type="button"
                       onClick={() => setViewingApplicationId(application.id)}
                     >
                       View
                     </button>
 
-                    <button onClick={() => handleEdit(application.id)}>
+                    <button
+                      type="button"
+                      onClick={() => handleEdit(application.id)}
+                    >
                       Edit
                     </button>
 
-                    <button onClick={() => handleDelete(application.id)}>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(application.id)}
+                    >
                       Delete
                     </button>
                   </td>
@@ -413,47 +499,15 @@ function ApplicationList() {
           </table>
         </div>
       )}
-      <div className="application-pagination">
-        <div className="application-page-size">
-          <label>Rows per page: </label>
 
-          <select
-            value={pageSize}
-            onChange={(e) => {
-              setPageSize(Number(e.target.value));
-              setPageNo(0);
-            }}
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-          </select>
-        </div>
-
-        <span className="application-total-records">
-          Total Applications: {totalElements}
-        </span>
-
-        <div className="application-page-navigation">
-          <button
-            onClick={() => setPageNo((prev) => prev - 1)}
-            disabled={pageNo === 0}
-          >
-            Previous
-          </button>
-
-          <span>
-            Page {pageNo + 1} of {totalPages}
-          </span>
-
-          <button
-            onClick={() => setPageNo((prev) => prev + 1)}
-            disabled={pageNo >= totalPages - 1 || totalPages === 0}
-          >
-            Next
-          </button>
-        </div>
-      </div>
+      <Pagination
+        pageNo={pageNo}
+        pageSize={pageSize}
+        totalPages={totalPages}
+        totalElements={totalElements}
+        onPageChange={handlePageChange}
+        onPageSizeChange={handlePageSizeChange}
+      />
     </div>
   );
 }

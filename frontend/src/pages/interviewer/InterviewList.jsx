@@ -9,6 +9,8 @@ import {
 } from "../../services/interviewService";
 import InterviewForm from "./InterviewForm";
 import InterviewDetails from "./InterviewDetails";
+import Pagination from "../../components/Pagination";
+import SearchFilterBar from "../../components/SearchFilterBar";
 
 function InterviewList() {
   const [interviews, setInterviews] = useState([]);
@@ -21,22 +23,18 @@ function InterviewList() {
   const [editingInterview, setEditingInterview] = useState(null);
   const [updatingStatusId, setUpdatingStatusId] = useState(null);
 
-  // Pagination
   const [pageNo, setPageNo] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
 
-  // Sorting
   const [sortBy, setSortBy] = useState("id");
   const [sortDir, setSortDir] = useState("asc");
 
-  // Search
   const [interviewerSearch, setInterviewerSearch] = useState("");
   const [submittedInterviewerSearch, setSubmittedInterviewerSearch] =
     useState("");
 
-  // Filter
   const [statusFilter, setStatusFilter] = useState("");
 
   const fetchInterviews = async () => {
@@ -45,16 +43,16 @@ function InterviewList() {
       setError("");
 
       let response;
-      
-      if (submittedInterviewerSearch) {
+
+      if (submittedInterviewerSearch.trim()) {
         response = await searchInterviewsByInterviewer(
-          submittedInterviewerSearch,
+          submittedInterviewerSearch.trim(),
           pageNo,
           pageSize,
         );
-      }else if (statusFilter) {
+      } else if (statusFilter) {
         response = await getInterviewsByStatus(statusFilter, pageNo, pageSize);
-      }else {
+      } else {
         response = await getAllInterviews(pageNo, pageSize, sortBy, sortDir);
       }
 
@@ -68,6 +66,64 @@ function InterviewList() {
     } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    fetchInterviews();
+  }, [
+    pageNo,
+    pageSize,
+    sortBy,
+    sortDir,
+    submittedInterviewerSearch,
+    statusFilter,
+  ]);
+
+  const handleSearch = () => {
+    setPageNo(0);
+    setSubmittedInterviewerSearch(interviewerSearch.trim());
+    setStatusFilter("");
+  };
+
+  const handleReset = () => {
+    setInterviewerSearch("");
+    setSubmittedInterviewerSearch("");
+
+    setStatusFilter("");
+
+    setSortBy("id");
+    setSortDir("asc");
+
+    setPageSize(10);
+    setPageNo(0);
+  };
+
+  const handleStatusFilterChange = (event) => {
+    setPageNo(0);
+
+    setStatusFilter(event.target.value);
+
+    setInterviewerSearch("");
+    setSubmittedInterviewerSearch("");
+  };
+
+  const handleSortChange = (event) => {
+    setPageNo(0);
+    setSortBy(event.target.value);
+  };
+
+  const handleSortDirectionChange = (event) => {
+    setPageNo(0);
+    setSortDir(event.target.value);
+  };
+
+  const handlePageChange = (newPageNo) => {
+    setPageNo(newPageNo);
+  };
+
+  const handlePageSizeChange = (newPageSize) => {
+    setPageSize(newPageSize);
+    setPageNo(0);
   };
 
   const handleEdit = async (id) => {
@@ -122,50 +178,14 @@ function InterviewList() {
     }
   };
 
-  const handleSearch = () => {
-    setPageNo(0);
-    setSubmittedInterviewerSearch(interviewerSearch.trim());
-  };
-
-  const handleReset = () => {
-    setInterviewerSearch("");
-    setSubmittedInterviewerSearch("");
-    setStatusFilter("");
-    setSortBy("id");
-    setSortDir("asc");
-    setPageNo(0);
-  };
-
-  const handleStatusFilterChange = (event) => {
-    setPageNo(0);
-    setStatusFilter(event.target.value);
-  };
-
-  const handleSortChange = (event) => {
-    setPageNo(0);
-    setSortBy(event.target.value);
-  };
-
-  const handleSortDirectionChange = (event) => {
-    setPageNo(0);
-    setSortDir(event.target.value);
-  };
-
-  const handlePageSizeChange = (event) => {
-    setPageNo(0);
-    setPageSize(Number(event.target.value));
-  };
-
-  useEffect(() => {
-    fetchInterviews();
-  }, [
-    pageNo,
-    pageSize,
-    sortBy,
-    sortDir,
-    submittedInterviewerSearch,
-    statusFilter,
-  ]);
+  if (viewingInterviewId) {
+    return (
+      <InterviewDetails
+        interviewId={viewingInterviewId}
+        onBack={() => setViewingInterviewId(null)}
+      />
+    );
+  }
 
   if (loading) {
     return (
@@ -185,15 +205,6 @@ function InterviewList() {
     );
   }
 
-  if (viewingInterviewId) {
-    return (
-      <InterviewDetails
-        interviewId={viewingInterviewId}
-        onBack={() => setViewingInterviewId(null)}
-      />
-    );
-  }
-
   return (
     <div className="interview-page">
       <div className="interview-page-header">
@@ -204,22 +215,23 @@ function InterviewList() {
 
         <button
           className="interview-add-button"
-          onClick={() => setShowForm(true)}
+          onClick={() => {
+            setEditingInterview(null);
+            setShowForm(true);
+          }}
         >
           Add Interview
         </button>
       </div>
 
-      {/* Search and Filters */}
-      <div className="interview-controls">
-        <div>
+      <SearchFilterBar onReset={handleReset}>
+        <div className="search-filter-group">
+          <label>Interviewer</label>
           <input
             type="text"
             placeholder="Search interviewer..."
             value={interviewerSearch}
-            onChange={(event) => {
-              setInterviewerSearch(event.target.value);
-            }}
+            onChange={(event) => setInterviewerSearch(event.target.value)}
             onKeyDown={(event) => {
               if (event.key === "Enter") {
                 handleSearch();
@@ -232,7 +244,8 @@ function InterviewList() {
           </button>
         </div>
 
-        <div>
+        <div className="search-filter-group">
+          <label>Status</label>
           <select value={statusFilter} onChange={handleStatusFilterChange}>
             <option value="">All Statuses</option>
             <option value="SCHEDULED">SCHEDULED</option>
@@ -241,7 +254,9 @@ function InterviewList() {
           </select>
         </div>
 
-        <div>
+        <div className="search-filter-group">
+          <label>Sort By</label>
+
           <select value={sortBy} onChange={handleSortChange}>
             <option value="id">ID</option>
             <option value="interviewDate">Interview Date</option>
@@ -249,17 +264,16 @@ function InterviewList() {
             <option value="mode">Mode</option>
             <option value="status">Status</option>
           </select>
+        </div>
+        <div className="search-filter-group">
+          <label>Direction</label>
 
           <select value={sortDir} onChange={handleSortDirectionChange}>
             <option value="asc">Ascending</option>
             <option value="desc">Descending</option>
           </select>
         </div>
-
-        <button type="button" onClick={handleReset}>
-          Reset
-        </button>
-      </div>
+      </SearchFilterBar>
 
       {showForm && (
         <InterviewForm
@@ -276,7 +290,6 @@ function InterviewList() {
         />
       )}
 
-      {/* Interview Table */}
       {interviews.length === 0 ? (
         <div className="interview-empty">No interviews found.</div>
       ) : (
@@ -324,16 +337,23 @@ function InterviewList() {
 
                     <td>
                       <button
+                        type="button"
                         onClick={() => setViewingInterviewId(interview.id)}
                       >
                         View
                       </button>
 
-                      <button onClick={() => handleEdit(interview.id)}>
+                      <button
+                        type="button"
+                        onClick={() => handleEdit(interview.id)}
+                      >
                         Edit
                       </button>
 
-                      <button onClick={() => handleDelete(interview.id)}>
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(interview.id)}
+                      >
                         Delete
                       </button>
                     </td>
@@ -343,44 +363,14 @@ function InterviewList() {
             </table>
           </div>
 
-          {/* Pagination */}
-          <div className="interview-pagination">
-            <div>
-              <label>Rows per page: </label>
-
-              <select value={pageSize} onChange={handlePageSizeChange}>
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-              </select>
-            </div>
-
-            <div>
-              <span>Total Interviews: {totalElements}</span>
-            </div>
-
-            <div>
-              <button
-                type="button"
-                disabled={pageNo === 0}
-                onClick={() => setPageNo(pageNo - 1)}
-              >
-                Previous
-              </button>
-
-              <span>
-                Page {totalPages === 0 ? 0 : pageNo + 1} of {totalPages}
-              </span>
-
-              <button
-                type="button"
-                disabled={totalPages === 0 || pageNo >= totalPages - 1}
-                onClick={() => setPageNo(pageNo + 1)}
-              >
-                Next
-              </button>
-            </div>
-          </div>
+          <Pagination
+            pageNo={pageNo}
+            pageSize={pageSize}
+            totalPages={totalPages}
+            totalElements={totalElements}
+            onPageChange={handlePageChange}
+            onPageSizeChange={handlePageSizeChange}
+          />
         </>
       )}
     </div>

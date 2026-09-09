@@ -3,12 +3,14 @@ import {
   getAllJobs,
   getJobById,
   deleteJob,
-  getJobsByLocation,
-  getJobsByStatus,
   updateJob,
+  getJobsByStatus,
+  getJobsByLocation,
 } from "../../services/jobService";
 import JobForm from "./JobForm";
 import JobDetails from "./JobDetails";
+import Pagination from "../../components/Pagination";
+import SearchFilterBar from "../../components/SearchFilterBar";
 
 function JobList() {
   const [jobs, setJobs] = useState([]);
@@ -17,7 +19,6 @@ function JobList() {
   const [showForm, setShowForm] = useState(false);
   const [editingJob, setEditingJob] = useState(null);
   const [viewingJobId, setViewingJobId] = useState(null);
-  const [updatingStatusId, setUpdatingStatusId] = useState(null);
 
   const [pageNo, setPageNo] = useState(0);
   const [pageSize, setPageSize] = useState(10);
@@ -27,9 +28,10 @@ function JobList() {
   const [sortBy, setSortBy] = useState("id");
   const [sortDir, setSortDir] = useState("asc");
 
-  const [statusFilter, setStatusFilter] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
   const [submittedLocationFilter, setSubmittedLocationFilter] = useState("");
+
+  const [statusFilter, setStatusFilter] = useState("");
 
   const fetchJobs = async () => {
     try {
@@ -38,14 +40,14 @@ function JobList() {
 
       let response;
 
-      if (statusFilter) {
-        response = await getJobsByStatus(statusFilter, pageNo, pageSize);
-      } else if (submittedLocationFilter) {
+      if (submittedLocationFilter) {
         response = await getJobsByLocation(
           submittedLocationFilter,
           pageNo,
           pageSize,
         );
+      } else if (statusFilter) {
+        response = await getJobsByStatus(statusFilter, pageNo, pageSize);
       } else {
         response = await getAllJobs(pageNo, pageSize, sortBy, sortDir);
       }
@@ -58,6 +60,54 @@ function JobList() {
     } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    fetchJobs();
+  }, [
+    pageNo,
+    pageSize,
+    sortBy,
+    sortDir,
+    submittedLocationFilter,
+    statusFilter,
+  ]);
+
+  const handleLocationSearch = () => {
+    setPageNo(0);
+    setSubmittedLocationFilter(locationFilter.trim());
+  };
+
+  const handleReset = () => {
+    setLocationFilter("");
+    setSubmittedLocationFilter("");
+
+    setStatusFilter("");
+
+    setSortBy("id");
+    setSortDir("asc");
+
+    setPageNo(0);
+  };
+
+  const handleStatusFilterChange = (event) => {
+    setPageNo(0);
+    setStatusFilter(event.target.value);
+  };
+
+  const handleSortChange = (event) => {
+    setPageNo(0);
+    setSortBy(event.target.value);
+  };
+
+  const handleSortDirectionChange = (event) => {
+    setPageNo(0);
+    setSortDir(event.target.value);
+  };
+
+  const handlePageSizeChange = (size) => {
+    setPageNo(0);
+    setPageSize(size);
   };
 
   const handleEdit = async (id) => {
@@ -88,9 +138,26 @@ function JobList() {
     }
   };
 
-  useEffect(() => {
-    fetchJobs();
-  }, [pageNo, pageSize, sortBy, sortDir, statusFilter, submittedLocationFilter]);
+  const handleStatusChange = async (job, status) => {
+    try {
+      setError("");
+
+      const jobData = {
+        title: job.title,
+        description: job.description,
+        location: job.location,
+        salary: job.salary,
+        jobType: job.jobType,
+        status,
+      };
+
+      await updateJob(job.id, jobData);
+
+      await fetchJobs();
+    } catch (err) {
+      setError(err.message || "Failed to update job status.");
+    }
+  };
 
   if (viewingJobId) {
     return (
@@ -116,30 +183,6 @@ function JobList() {
     );
   }
 
-  const handleStatusChange = async (job, status) => {
-    try {
-      setError("");
-      setUpdatingStatusId(job.id);
-
-      const jobData = {
-        title: job.title,
-        description: job.description,
-        location: job.location,
-        salary: job.salary,
-        jobType: job.jobType,
-        status,
-      };
-
-      await updateJob(job.id, jobData);
-
-      await fetchJobs();
-    } catch (err) {
-      setError(err.message || "Failed to update job status.");
-    } finally {
-      setUpdatingStatusId(null);
-    }
-  };
-
   return (
     <div className="job-page">
       <div className="job-page-header">
@@ -148,7 +191,13 @@ function JobList() {
           <p>Manage jobs in the recruitment system.</p>
         </div>
 
-        <button className="job-add-button" onClick={() => setShowForm(true)}>
+        <button
+          className="job-add-button"
+          onClick={() => {
+            setEditingJob(null);
+            setShowForm(true);
+          }}
+        >
           Add Job
         </button>
       </div>
@@ -168,186 +217,119 @@ function JobList() {
         />
       )}
 
+      {/* Search + Filter + Sort */}
+      <SearchFilterBar onReset={handleReset}>
+        <div>
+          <input
+            type="text"
+            placeholder="Search by location..."
+            value={locationFilter}
+            onChange={(event) => {
+              setLocationFilter(event.target.value);
+            }}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                handleLocationSearch();
+              }
+            }}
+          />
+
+          <button type="button" onClick={handleLocationSearch}>
+            Search
+          </button>
+        </div>
+
+        <select value={statusFilter} onChange={handleStatusFilterChange}>
+          <option value="">All Statuses</option>
+          <option value="OPEN">OPEN</option>
+          <option value="CLOSED">CLOSED</option>
+        </select>
+
+        <select value={sortBy} onChange={handleSortChange}>
+          <option value="id">ID</option>
+          <option value="title">Title</option>
+          <option value="location">Location</option>
+          <option value="salary">Salary</option>
+          <option value="jobType">Job Type</option>
+          <option value="status">Status</option>
+        </select>
+
+        <select value={sortDir} onChange={handleSortDirectionChange}>
+          <option value="asc">Ascending</option>
+          <option value="desc">Descending</option>
+        </select>
+      </SearchFilterBar>
+
       {jobs.length === 0 ? (
         <div className="job-empty">No jobs found.</div>
       ) : (
-        <div className="job-table-container">
-          {/* filter */}
-          <div className="job-filters">
-            <input
-              type="text"
-              placeholder="Filter by location..."
-              value={locationFilter}
-              onChange={(e) => {
-                setLocationFilter(e.target.value);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  setPageNo(0);
-                  setSubmittedLocationFilter(locationFilter.trim());
-                }
-              }}
-            />
-
-            <button
-              type="button"
-              onClick={() => {
-                setPageNo(0);
-                setSubmittedLocationFilter(locationFilter.trim());
-              }}
-            >
-              Search
-            </button>
-
-            <select
-              value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value);
-                setPageNo(0);
-              }}
-            >
-              <option value="">All Statuses</option>
-              <option value="OPEN">OPEN</option>
-              <option value="CLOSED">CLOSED</option>
-            </select>
-
-            <button
-              type="button"
-              onClick={() => {
-                setLocationFilter("");
-                setSubmittedLocationFilter("");
-                setStatusFilter("");
-                setPageNo(0);
-              }}
-            >
-              Reset
-            </button>
-          </div>
-
-          {/* sorting */}
-          <div className="job-sorting">
-            <label>Sort by: </label>
-
-            <select
-              value={sortBy}
-              onChange={(e) => {
-                setSortBy(e.target.value);
-                setPageNo(0);
-              }}
-            >
-              <option value="id">ID</option>
-              <option value="title">Title</option>
-              <option value="location">Location</option>
-              <option value="salary">Salary</option>
-              <option value="jobType">Job Type</option>
-              <option value="status">Status</option>
-            </select>
-
-            <select
-              value={sortDir}
-              onChange={(e) => {
-                setSortDir(e.target.value);
-                setPageNo(0);
-              }}
-            >
-              <option value="asc">Ascending</option>
-              <option value="desc">Descending</option>
-            </select>
-          </div>
-
-          <table className="job-table">
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Location</th>
-                <th>Salary</th>
-                <th>Job Type</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {jobs.map((job) => (
-                <tr key={job.id}>
-                  <td>{job.title}</td>
-
-                  <td>{job.description}</td>
-
-                  <td>{job.location}</td>
-
-                  <td>{job.salary}</td>
-
-                  <td>{job.jobType}</td>
-
-                  <td>
-                    <select
-                      value={job.status || "OPEN"}
-                      onChange={(event) =>
-                        handleStatusChange(job, event.target.value)
-                      }
-                      disabled={updatingStatusId === job.id}
-                    >
-                      <option value="OPEN">OPEN</option>
-                      <option value="CLOSED">CLOSED</option>
-                    </select>
-                  </td>
-
-                  <td>
-                    <button onClick={() => setViewingJobId(job.id)}>
-                      View
-                    </button>
-
-                    <button onClick={() => handleEdit(job.id)}>Edit</button>
-
-                    <button onClick={() => handleDelete(job.id)}>Delete</button>
-                  </td>
+        <>
+          <div className="job-table-container">
+            <table className="job-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Description</th>
+                  <th>Location</th>
+                  <th>Salary</th>
+                  <th>Job Type</th>
+                  <th>Status</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+
+              <tbody>
+                {jobs.map((job) => (
+                  <tr key={job.id}>
+                    <td>{job.title}</td>
+
+                    <td>{job.description}</td>
+
+                    <td>{job.location}</td>
+
+                    <td>{job.salary}</td>
+
+                    <td>{job.jobType}</td>
+
+                    <td>
+                      <select
+                        value={job.status || "OPEN"}
+                        onChange={(event) =>
+                          handleStatusChange(job, event.target.value)
+                        }
+                      >
+                        <option value="OPEN">OPEN</option>
+                        <option value="CLOSED">CLOSED</option>
+                      </select>
+                    </td>
+
+                    <td>
+                      <button onClick={() => setViewingJobId(job.id)}>
+                        View
+                      </button>
+
+                      <button onClick={() => handleEdit(job.id)}>Edit</button>
+
+                      <button onClick={() => handleDelete(job.id)}>
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <Pagination
+            pageNo={pageNo}
+            pageSize={pageSize}
+            totalPages={totalPages}
+            totalElements={totalElements}
+            onPageChange={setPageNo}
+            onPageSizeChange={handlePageSizeChange}
+          />
+        </>
       )}
-      <div className="job-pagination">
-        <div className="job-page-size">
-          <label>Rows per page: </label>
-
-          <select
-            value={pageSize}
-            onChange={(e) => {
-              setPageSize(Number(e.target.value));
-              setPageNo(0);
-            }}
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-          </select>
-        </div>
-
-        <span className="job-total-records">Total Jobs: {totalElements}</span>
-
-        <div className="job-page-navigation">
-          <button
-            onClick={() => setPageNo((prev) => prev - 1)}
-            disabled={pageNo === 0}
-          >
-            Previous
-          </button>
-
-          <span>
-            Page {pageNo + 1} of {totalPages}
-          </span>
-
-          <button
-            onClick={() => setPageNo((prev) => prev + 1)}
-            disabled={pageNo >= totalPages - 1 || totalPages === 0}
-          >
-            Next
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
