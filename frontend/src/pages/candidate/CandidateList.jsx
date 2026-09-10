@@ -10,8 +10,13 @@ import CandidateForm from "./CandidateForm";
 import CandidateDetails from "./CandidateDetails";
 import Pagination from "../../components/Pagination";
 import SearchFilterBar from "../../components/SearchFilterBar";
+import { useAuth } from "../../context/AuthContext";
+import { ROLES } from "../../utils/permissions";
 
 function CandidateList() {
+  const { role } = useAuth();
+  const canManageCandidates = role === ROLES.ADMIN || role === ROLES.RECRUITER;
+
   const [candidates, setCandidates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -186,15 +191,17 @@ function CandidateList() {
           <h1>Candidates</h1>
           <p>Manage candidates in the recruitment system.</p>
         </div>
-        <button
-          className="candidate-add-button"
-          onClick={() => {
-            setEditingCandidate(null);
-            setShowForm(true);
-          }}
-        >
-          Add Candidate
-        </button>
+        {canManageCandidates && (
+          <button
+            className="candidate-add-button"
+            onClick={() => {
+              setEditingCandidate(null);
+              setShowForm(true);
+            }}
+          >
+            Add Candidate
+          </button>
+        )}
       </div>
 
       {showForm && (
@@ -304,24 +311,28 @@ function CandidateList() {
                       )}
                     </td>
                     <td>
-                      <select
-                        value={candidate.status || "APPLIED"}
-                        onChange={(event) =>
-                          handleStatusChange(candidate, event.target.value)
-                        }
-                        disabled={updatingStatusId === candidate.id}
-                      >
-                        <option value="APPLIED">APPLIED</option>
-                        <option value="SCREENING">SCREENING</option>
-                        <option value="SHORTLISTED">SHORTLISTED</option>
-                        <option value="INTERVIEW_SCHEDULED">
-                          INTERVIEW SCHEDULED
-                        </option>
-                        <option value="INTERVIEWED">INTERVIEWED</option>
-                        <option value="OFFERED">OFFERED</option>
-                        <option value="HIRED">HIRED</option>
-                        <option value="REJECTED">REJECTED</option>
-                      </select>
+                      {canManageCandidates ? (
+                        <select
+                          value={candidate.status || "APPLIED"}
+                          onChange={(event) =>
+                            handleStatusChange(candidate, event.target.value)
+                          }
+                          disabled={updatingStatusId === candidate.id}
+                        >
+                          <option value="APPLIED">APPLIED</option>
+                          <option value="SCREENING">SCREENING</option>
+                          <option value="SHORTLISTED">SHORTLISTED</option>
+                          <option value="INTERVIEW_SCHEDULED">
+                            INTERVIEW SCHEDULED
+                          </option>
+                          <option value="INTERVIEWED">INTERVIEWED</option>
+                          <option value="OFFERED">OFFERED</option>
+                          <option value="HIRED">HIRED</option>
+                          <option value="REJECTED">REJECTED</option>
+                        </select>
+                      ) : (
+                        candidate.status
+                      )}
                     </td>
 
                     {/* Actions */}
@@ -332,21 +343,27 @@ function CandidateList() {
                         View
                       </button>
 
-                      <button
-                        onClick={() => {
-                          setEditingCandidate(candidate);
-                          setShowForm(true);
-                        }}
-                      >
-                        Edit
-                      </button>
+                      {canManageCandidates && (
+                        <>
+                          <button
+                            onClick={() => {
+                              setEditingCandidate(candidate);
+                              setShowForm(true);
+                            }}
+                          >
+                            Edit
+                          </button>
 
-                      <button
-                        onClick={() => handleDelete(candidate.id)}
-                        disabled={deletingId === candidate.id}
-                      >
-                        {deletingId === candidate.id ? "Deleting..." : "Delete"}
-                      </button>
+                          <button
+                            onClick={() => handleDelete(candidate.id)}
+                            disabled={deletingId === candidate.id}
+                          >
+                            {deletingId === candidate.id
+                              ? "Deleting..."
+                              : "Delete"}
+                          </button>
+                        </>
+                      )}
                     </td>
                   </tr>
                 ))}
