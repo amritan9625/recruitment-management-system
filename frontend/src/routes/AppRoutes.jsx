@@ -40,12 +40,12 @@ function AppRoutes() {
           </Route>
 
           {/* Candidates */}
-          <Route element={<RoleProtectedRoute allowedRoles={PERMISSIONS.CANDIDATES} />                       }>
+          <Route element={<RoleProtectedRoute allowedRoles={PERMISSIONS.CANDIDATES_VIEW} />                       }>
             <Route path="/candidates" element={<MainLayout><CandidateList /></MainLayout>} />
           </Route>
 
           {/* Jobs */}
-          <Route element={<RoleProtectedRoute allowedRoles={PERMISSIONS.JOBS} />} >
+          <Route element={<RoleProtectedRoute allowedRoles={PERMISSIONS.JOBS_VIEW} />} >
             <Route path="/jobs" element={<MainLayout><JobList /></MainLayout>} />
           </Route>
 
@@ -55,7 +55,7 @@ function AppRoutes() {
           </Route>
 
           {/* Interviews */}
-          <Route element={<RoleProtectedRoute allowedRoles={PERMISSIONS.INTERVIEWS} />} >
+          <Route element={<RoleProtectedRoute allowedRoles={PERMISSIONS.INTERVIEWS_VIEW} />} >
             <Route path="/interviews" element={<MainLayout><InterviewList /></MainLayout>} />
           </Route>
 

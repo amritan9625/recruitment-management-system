@@ -24,12 +24,12 @@ function Sidebar() {
     {
       label: "Jobs",
       path: "/jobs",
-      permission: PERMISSIONS.JOBS,
+      permission: PERMISSIONS.JOBS_VIEW,
     },
     {
       label: "Candidates",
       path: "/candidates",
-      permission: PERMISSIONS.CANDIDATES,
+      permission: PERMISSIONS.CANDIDATES_VIEW,
     },
     {
       label: "Applications",
@@ -39,7 +39,7 @@ function Sidebar() {
     {
       label: "Interviews",
       path: "/interviews",
-      permission: PERMISSIONS.INTERVIEWS,
+      permission: PERMISSIONS.INTERVIEWS_VIEW,
     },
     {
       label: "Offers",

@@ -11,8 +11,13 @@ import JobForm from "./JobForm";
 import JobDetails from "./JobDetails";
 import Pagination from "../../components/Pagination";
 import SearchFilterBar from "../../components/SearchFilterBar";
+import { useAuth } from "../../context/AuthContext";
+import { ROLES } from "../../utils/permissions";
 
 function JobList() {
+  const { role } = useAuth();
+  const canManageJobs = role === ROLES.ADMIN || role === ROLES.RECRUITER;
+
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -191,15 +196,17 @@ function JobList() {
           <p>Manage jobs in the recruitment system.</p>
         </div>
 
-        <button
-          className="job-add-button"
-          onClick={() => {
-            setEditingJob(null);
-            setShowForm(true);
-          }}
-        >
-          Add Job
-        </button>
+        {canManageJobs && (
+          <button
+            className="job-add-button"
+            onClick={() => {
+              setEditingJob(null);
+              setShowForm(true);
+            }}
+          >
+            Add Job
+          </button>
+        )}
       </div>
 
       {showForm && (
@@ -292,15 +299,19 @@ function JobList() {
                     <td>{job.jobType}</td>
 
                     <td>
-                      <select
-                        value={job.status || "OPEN"}
-                        onChange={(event) =>
-                          handleStatusChange(job, event.target.value)
-                        }
-                      >
-                        <option value="OPEN">OPEN</option>
-                        <option value="CLOSED">CLOSED</option>
-                      </select>
+                      {canManageJobs ? (
+                        <select
+                          value={job.status || "OPEN"}
+                          onChange={(event) =>
+                            handleStatusChange(job, event.target.value)
+                          }
+                        >
+                          <option value="OPEN">OPEN</option>
+                          <option value="CLOSED">CLOSED</option>
+                        </select>
+                      ) : (
+                        job.status
+                      )}
                     </td>
 
                     <td>
@@ -308,11 +319,17 @@ function JobList() {
                         View
                       </button>
 
-                      <button onClick={() => handleEdit(job.id)}>Edit</button>
+                      {canManageJobs && (
+                        <>
+                          <button onClick={() => handleEdit(job.id)}>
+                            Edit
+                          </button>
 
-                      <button onClick={() => handleDelete(job.id)}>
-                        Delete
-                      </button>
+                          <button onClick={() => handleDelete(job.id)}>
+                            Delete
+                          </button>
+                        </>
+                      )}
                     </td>
                   </tr>
                 ))}
