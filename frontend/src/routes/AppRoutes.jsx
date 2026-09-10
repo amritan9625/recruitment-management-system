@@ -11,6 +11,7 @@ import JobList from "../pages/recruiter/JobList";
 import ApplicationList from "../pages/recruiter/ApplicationList";
 import InterviewList from "../pages/interviewer/InterviewList";
 import OfferList from "../pages/recruiter/OfferList";
+import UserList from "../pages/admin/UserList";
 
 function AppRoutes() {
   return (
@@ -29,7 +30,7 @@ function AppRoutes() {
 
           {/* Users */}
           <Route element={<RoleProtectedRoute allowedRoles={PERMISSIONS.USERS} />} >
-            <Route path="/users" element={<MainLayout><h1>Users</h1></MainLayout>} />
+            <Route path="/users" element={<MainLayout><UserList /></MainLayout>} />
           </Route>
 
           {/* Roles */}
