@@ -11,8 +11,16 @@ import InterviewForm from "./InterviewForm";
 import InterviewDetails from "./InterviewDetails";
 import Pagination from "../../components/Pagination";
 import SearchFilterBar from "../../components/SearchFilterBar";
+import { ROLES } from "../../utils/permissions";
+import { useAuth } from "../../context/AuthContext";
 
 function InterviewList() {
+  const { role } = useAuth();
+  const canManageInterviews =
+    role === ROLES.ADMIN ||
+    role === ROLES.RECRUITER ||
+    role === ROLES.INTERVIEWER;
+
   const [interviews, setInterviews] = useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -213,15 +221,17 @@ function InterviewList() {
           <p>Manage interviews in the recruitment system.</p>
         </div>
 
-        <button
-          className="interview-add-button"
-          onClick={() => {
-            setEditingInterview(null);
-            setShowForm(true);
-          }}
-        >
-          Add Interview
-        </button>
+        {canManageInterviews && (
+          <button
+            className="interview-add-button"
+            onClick={() => {
+              setEditingInterview(null);
+              setShowForm(true);
+            }}
+          >
+            Add Interview
+          </button>
+        )}
       </div>
 
       <SearchFilterBar onReset={handleReset}>
@@ -322,17 +332,21 @@ function InterviewList() {
                     <td>{interview.applicationId}</td>
 
                     <td>
-                      <select
-                        value={interview.status || "SCHEDULED"}
-                        onChange={(event) =>
-                          handleStatusChange(interview, event.target.value)
-                        }
-                        disabled={updatingStatusId === interview.id}
-                      >
-                        <option value="SCHEDULED">SCHEDULED</option>
-                        <option value="COMPLETED">COMPLETED</option>
-                        <option value="CANCELLED">CANCELLED</option>
-                      </select>
+                      {canManageInterviews ? (
+                        <select
+                          value={interview.status || "SCHEDULED"}
+                          onChange={(event) =>
+                            handleStatusChange(interview, event.target.value)
+                          }
+                          disabled={updatingStatusId === interview.id}
+                        >
+                          <option value="SCHEDULED">SCHEDULED</option>
+                          <option value="COMPLETED">COMPLETED</option>
+                          <option value="CANCELLED">CANCELLED</option>
+                        </select>
+                      ) : (
+                        interview.status
+                      )}
                     </td>
 
                     <td>
