@@ -357,12 +357,14 @@ function InterviewList() {
                         View
                       </button>
 
-                      <button
-                        type="button"
-                        onClick={() => handleEdit(interview.id)}
-                      >
-                        Edit
-                      </button>
+                      {canManageInterviews && (
+                        <button
+                          type="button"
+                          onClick={() => handleEdit(interview.id)}
+                        >
+                          Edit
+                        </button>
+                      )}
 
                       <button
                         type="button"
