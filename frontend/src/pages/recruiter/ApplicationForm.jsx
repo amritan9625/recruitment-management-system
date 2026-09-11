@@ -3,6 +3,7 @@ import {
   createApplication,
   updateApplication,
 } from "../../services/applicationService";
+import ErrorMessage from "../../components/common/ErrorMessage";
 
 function ApplicationForm({ application = null, onSuccess, onCancel }) {
   const [formData, setFormData] = useState({
@@ -79,7 +80,7 @@ function ApplicationForm({ application = null, onSuccess, onCancel }) {
     <div className="application-form-container">
       <h2>{isEditMode ? "Edit Application" : "Add Application"}</h2>
 
-      {error && <p className="application-error">{error}</p>}
+      {error && <ErrorMessage message={error} />}
 
       <form onSubmit={handleSubmit}>
         <div className="form-group">

@@ -3,6 +3,7 @@ import {
   createOffer,
   updateOffer,
 } from "../../services/offerService";
+import ErrorMessage from "../../components/common/ErrorMessage";
 
 function OfferForm({ offer = null, onSuccess, onCancel }) {
   const [formData, setFormData] = useState({
@@ -110,7 +111,7 @@ function OfferForm({ offer = null, onSuccess, onCancel }) {
     <div className="offer-form-container">
       <h2>{isEditMode ? "Edit Offer" : "Add Offer"}</h2>
 
-      {error && <p className="offer-error">{error}</p>}
+      {error && <ErrorMessage message={error} />}
 
       <form onSubmit={handleSubmit}>
         <div className="form-group">

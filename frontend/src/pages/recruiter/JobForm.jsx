@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { createJob, updateJob } from "../../services/jobService";
+import ErrorMessage from "../../components/common/ErrorMessage";
 
 function JobForm({ job = null, onSuccess, onCancel }) {
   const [formData, setFormData] = useState({
@@ -86,7 +87,7 @@ function JobForm({ job = null, onSuccess, onCancel }) {
     <div className="job-form-container">
       <h2>{isEditMode ? "Edit Job" : "Add Job"}</h2>
 
-      {error && <p className="job-error">{error}</p>}
+      {error && <ErrorMessage message={error} />}
 
       <form onSubmit={handleSubmit}>
         <div className="form-group">

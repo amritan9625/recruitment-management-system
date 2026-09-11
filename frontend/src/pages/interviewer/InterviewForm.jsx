@@ -3,6 +3,7 @@ import {
   createInterview,
   updateInterview,
 } from "../../services/interviewService";
+import ErrorMessage from "../../components/common/ErrorMessage";
 
 function InterviewForm({ interview = null, onSuccess, onCancel }) {
   const [formData, setFormData] = useState({
@@ -102,7 +103,7 @@ function InterviewForm({ interview = null, onSuccess, onCancel }) {
     <div className="interview-form-container">
       <h2>{isEditMode ? "Edit Interview" : "Add Interview"}</h2>
 
-      {error && <p className="interview-error">{error}</p>}
+      {error && <ErrorMessage message={error} />}
 
       <form onSubmit={handleSubmit}>
         <div className="form-group">

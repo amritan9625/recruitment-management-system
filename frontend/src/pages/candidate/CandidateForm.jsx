@@ -3,6 +3,7 @@ import {
   createCandidate,
   updateCandidate,
 } from "../../services/candidateService";
+import ErrorMessage from "../../components/common/ErrorMessage";
 
 function CandidateForm({ candidate = null, onSuccess, onCancel }) {
   const [formData, setFormData] = useState({
@@ -91,7 +92,7 @@ function CandidateForm({ candidate = null, onSuccess, onCancel }) {
     <div className="candidate-form-container">
       <h2>{isEditMode ? "Edit Candidate" : "Add Candidate"}</h2>
 
-      {error && <p className="candidate-error">{error}</p>}
+      {error && <ErrorMessage message={error} />}
 
       <form onSubmit={handleSubmit}>
         <div className="form-group">
