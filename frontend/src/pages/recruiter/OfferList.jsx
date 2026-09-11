@@ -13,8 +13,13 @@ import OfferForm from "./OfferForm";
 import OfferDetails from "./OfferDetails";
 import Pagination from "../../components/Pagination";
 import SearchFilterBar from "../../components/SearchFilterBar";
+import { useAuth } from "../../context/AuthContext";
+import { ROLES } from "../../utils/permissions";
 
 function OfferList() {
+  const { role } = useAuth();
+  const canManageOffers = role === ROLES.ADMIN || role === ROLES.RECRUITER;
+
   const [offers, setOffers] = useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -276,15 +281,17 @@ function OfferList() {
           <p>Manage job offers in the recruitment system.</p>
         </div>
 
-        <button
-          className="offer-add-button"
-          onClick={() => {
-            setEditingOffer(null);
-            setShowForm(true);
-          }}
-        >
-          Add Offer
-        </button>
+        {canManageOffers && (
+          <button
+            className="offer-add-button"
+            onClick={() => {
+              setEditingOffer(null);
+              setShowForm(true);
+            }}
+          >
+            Add Offer
+          </button>
+        )}
       </div>
 
       <SearchFilterBar onReset={handleReset}>
@@ -416,17 +423,21 @@ function OfferList() {
                     <td>{offer.candidateId}</td>
                     <td>{offer.jobId}</td>
                     <td>
-                      <select
-                        value={offer.status || "PENDING"}
-                        onChange={(event) =>
-                          handleStatusUpdate(offer, event.target.value)
-                        }
-                        disabled={updatingStatusId === offer.id}
-                      >
-                        <option value="PENDING">PENDING</option>
-                        <option value="ACCEPTED">ACCEPTED</option>
-                        <option value="REJECTED">REJECTED</option>
-                      </select>
+                      {canManageOffers ? (
+                        <select
+                          value={offer.status || "PENDING"}
+                          onChange={(event) =>
+                            handleStatusUpdate(offer, event.target.value)
+                          }
+                          disabled={updatingStatusId === offer.id}
+                        >
+                          <option value="PENDING">PENDING</option>
+                          <option value="ACCEPTED">ACCEPTED</option>
+                          <option value="REJECTED">REJECTED</option>
+                        </select>
+                      ) : (
+                        offer.status
+                      )}
                     </td>
 
                     <td>
@@ -437,19 +448,23 @@ function OfferList() {
                         View
                       </button>
 
-                      <button
-                        type="button"
-                        onClick={() => handleEdit(offer.id)}
-                      >
-                        Edit
-                      </button>
+                      {canManageOffers && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => handleEdit(offer.id)}
+                          >
+                            Edit
+                          </button>
 
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(offer.id)}
-                      >
-                        Delete
-                      </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(offer.id)}
+                          >
+                            Delete
+                          </button>
+                        </>
+                      )}
                     </td>
                   </tr>
                 ))}
