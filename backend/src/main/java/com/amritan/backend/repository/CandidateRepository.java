@@ -26,4 +26,6 @@ public interface CandidateRepository extends JpaRepository<Candidate, Long>{
 	        CandidateStatus status,
 	        Pageable pageable
 	);
+	
+    Candidate findByEmailIgnoreCase(String email);
 }

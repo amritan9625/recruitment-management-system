@@ -10,6 +10,11 @@ public interface ApplicationService {
 
 	PageResponse<ApplicationDto> getAllApplications(int pageNo, int pageSize,
 			String sortBy, String sortDir);
+	
+	PageResponse<ApplicationDto> getMyApplications(
+	        int pageNo,
+	        int pageSize
+	);
 
 	ApplicationDto getApplicationById(Long id);
 	

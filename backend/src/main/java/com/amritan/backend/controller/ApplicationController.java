@@ -64,6 +64,29 @@ public class ApplicationController {
 
 		return ResponseEntity.ok(response);
 	}
+	
+	@GetMapping("/my")
+	@Operation(
+	        summary = "Get my applications",
+	        description = "Fetches applications belonging to the currently logged-in candidate"
+	)
+	public ResponseEntity<ApiResponse<PageResponse<ApplicationDto>>> getMyApplications(
+	        @RequestParam(defaultValue = "0") int pageNo,
+	        @RequestParam(defaultValue = "10") int pageSize) {
+
+	    PageResponse<ApplicationDto> pageResponse =
+	            applicationService.getMyApplications(pageNo, pageSize);
+
+	    ApiResponse<PageResponse<ApplicationDto>> response =
+	            new ApiResponse<>();
+
+	    response.setSuccess(true);
+	    response.setMessage("Your applications fetched successfully");
+	    response.setData(pageResponse);
+	    response.setTimestamp(LocalDateTime.now());
+
+	    return ResponseEntity.ok(response);
+	}
 
 	@GetMapping("/{id}")
 	@Operation(summary = "Get application by ID", description = "Fetches an application using its ID")

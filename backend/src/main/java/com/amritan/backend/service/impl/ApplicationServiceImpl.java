@@ -130,6 +130,47 @@ public class ApplicationServiceImpl implements ApplicationService{
 				,page.getSize(), page.getTotalElements()
 				, page.getTotalPages(), page.isLast());
 	}
+	
+	@Override
+	public PageResponse<ApplicationDto> getMyApplications(
+	        int pageNo,
+	        int pageSize) {
+
+	    String loggedInEmail = getLoggedInEmail();
+
+	    Candidate candidate = candidateRepository.findByEmailIgnoreCase(loggedInEmail);
+
+	    if (candidate == null) {
+	        throw new ResourceNotFoundException(
+	                "Candidate profile not found for logged-in user");
+	    }
+
+	    Pageable pageable = PageRequest.of(
+	            pageNo,
+	            pageSize,
+	            Sort.by("id").ascending()
+	    );
+
+	    Page<Application> page =
+	            applicationRepository.findByCandidateId(
+	                    candidate.getId(),
+	                    pageable
+	            );
+
+	    List<ApplicationDto> content = page.getContent()
+	            .stream()
+	            .map(ApplicationMapper::mapToDto)
+	            .toList();
+
+	    return new PageResponse<>(
+	            content,
+	            page.getNumber(),
+	            page.getSize(),
+	            page.getTotalElements(),
+	            page.getTotalPages(),
+	            page.isLast()
+	    );
+	}
 
 	@Override
 	public ApplicationDto getApplicationById(Long id) {
