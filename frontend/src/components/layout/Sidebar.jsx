@@ -34,7 +34,7 @@ function Sidebar() {
     {
       label: "Applications",
       path: "/applications",
-      permission: PERMISSIONS.APPLICATIONS,
+      permission: PERMISSIONS.APPLICATIONS_VIEW,
     },
     {
       label: "Interviews",
@@ -44,7 +44,7 @@ function Sidebar() {
     {
       label: "Offers",
       path: "/offers",
-      permission: PERMISSIONS.OFFERS,
+      permission: PERMISSIONS.OFFERS_VIEW,
     },
   ];
 

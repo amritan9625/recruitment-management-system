@@ -52,7 +52,7 @@ function AppRoutes() {
           </Route>
 
           {/* Applications */}
-          <Route element={<RoleProtectedRoute allowedRoles={PERMISSIONS.APPLICATIONS} />} >
+          <Route element={<RoleProtectedRoute allowedRoles={PERMISSIONS.APPLICATIONS_VIEW} />} >
             <Route path="/applications" element={<MainLayout><ApplicationList /></MainLayout>} />
           </Route>
 
@@ -62,7 +62,7 @@ function AppRoutes() {
           </Route>
 
           {/* Offers */}
-          <Route element={<RoleProtectedRoute allowedRoles={PERMISSIONS.OFFERS}/>} >
+          <Route element={<RoleProtectedRoute allowedRoles={PERMISSIONS.OFFERS_VIEW}/>} >
             <Route path="/offers" element={<MainLayout><OfferList /></MainLayout>}/>
           </Route>
 
