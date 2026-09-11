@@ -21,6 +21,8 @@ function InterviewList() {
     role === ROLES.RECRUITER ||
     role === ROLES.INTERVIEWER;
 
+  const isCandidate = ROLES.CANDIDATE;
+
   const [interviews, setInterviews] = useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -218,7 +220,11 @@ function InterviewList() {
       <div className="interview-page-header">
         <div>
           <h1>Interviews</h1>
-          <p>Manage interviews in the recruitment system.</p>
+          <p>
+            {isCandidate
+              ? "View your interviews."
+              : "Manage interviews in the recruitment system."}
+          </p>
         </div>
 
         {canManageInterviews && (
@@ -234,56 +240,58 @@ function InterviewList() {
         )}
       </div>
 
-      <SearchFilterBar onReset={handleReset}>
-        <div className="search-filter-group">
-          <label>Interviewer</label>
-          <input
-            type="text"
-            placeholder="Search interviewer..."
-            value={interviewerSearch}
-            onChange={(event) => setInterviewerSearch(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                handleSearch();
-              }
-            }}
-          />
+      {!isCandidate && (
+        <SearchFilterBar onReset={handleReset}>
+          <div className="search-filter-group">
+            <label>Interviewer</label>
+            <input
+              type="text"
+              placeholder="Search interviewer..."
+              value={interviewerSearch}
+              onChange={(event) => setInterviewerSearch(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  handleSearch();
+                }
+              }}
+            />
 
-          <button type="button" onClick={handleSearch}>
-            Search
-          </button>
-        </div>
+            <button type="button" onClick={handleSearch}>
+              Search
+            </button>
+          </div>
 
-        <div className="search-filter-group">
-          <label>Status</label>
-          <select value={statusFilter} onChange={handleStatusFilterChange}>
-            <option value="">All Statuses</option>
-            <option value="SCHEDULED">SCHEDULED</option>
-            <option value="COMPLETED">COMPLETED</option>
-            <option value="CANCELLED">CANCELLED</option>
-          </select>
-        </div>
+          <div className="search-filter-group">
+            <label>Status</label>
+            <select value={statusFilter} onChange={handleStatusFilterChange}>
+              <option value="">All Statuses</option>
+              <option value="SCHEDULED">SCHEDULED</option>
+              <option value="COMPLETED">COMPLETED</option>
+              <option value="CANCELLED">CANCELLED</option>
+            </select>
+          </div>
 
-        <div className="search-filter-group">
-          <label>Sort By</label>
+          <div className="search-filter-group">
+            <label>Sort By</label>
 
-          <select value={sortBy} onChange={handleSortChange}>
-            <option value="id">ID</option>
-            <option value="interviewDate">Interview Date</option>
-            <option value="interviewer">Interviewer</option>
-            <option value="mode">Mode</option>
-            <option value="status">Status</option>
-          </select>
-        </div>
-        <div className="search-filter-group">
-          <label>Direction</label>
+            <select value={sortBy} onChange={handleSortChange}>
+              <option value="id">ID</option>
+              <option value="interviewDate">Interview Date</option>
+              <option value="interviewer">Interviewer</option>
+              <option value="mode">Mode</option>
+              <option value="status">Status</option>
+            </select>
+          </div>
+          <div className="search-filter-group">
+            <label>Direction</label>
 
-          <select value={sortDir} onChange={handleSortDirectionChange}>
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
-          </select>
-        </div>
-      </SearchFilterBar>
+            <select value={sortDir} onChange={handleSortDirectionChange}>
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </div>
+        </SearchFilterBar>
+      )}
 
       {showForm && (
         <InterviewForm

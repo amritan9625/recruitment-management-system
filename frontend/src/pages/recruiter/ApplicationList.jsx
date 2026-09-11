@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   getAllApplications,
+  getMyApplications,
   getApplicationById,
   deleteApplication,
   updateApplicationStatus,
@@ -21,8 +22,8 @@ function ApplicationList() {
   const { role } = useAuth();
   const canManageApplications =
     role === ROLES.ADMIN || role === ROLES.RECRUITER;
+  const isCandidate = role === ROLES.CANDIDATE;
 
-  role === ROLES.ADMIN || role === ROLES.RECRUITER;
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -62,7 +63,9 @@ function ApplicationList() {
       //  5. Status
       //  6. Normal list
 
-      if (submittedCandidateName.trim()) {
+      if (isCandidate) {
+        response = await getMyApplications(pageNo, pageSize);
+      } else if (submittedCandidateName.trim()) {
         response = await getApplicationsByCandidateName(
           submittedCandidateName.trim(),
           pageNo,
@@ -296,7 +299,11 @@ function ApplicationList() {
         <div>
           <h1>Applications</h1>
 
-          <p>Manage job applications in the recruitment system.</p>
+          <p>
+            {isCandidate
+              ? "View your job applications."
+              : "Manage job applications in the recruitment system."}
+          </p>
         </div>
 
         {canManageApplications && (
@@ -312,113 +319,117 @@ function ApplicationList() {
         )}
       </div>
 
-      <SearchFilterBar onReset={handleReset}>
-        <div className="search-filter-group">
-          <label>Candidate Name</label>
+      {!isCandidate && (
+        <SearchFilterBar onReset={handleReset}>
+          <div className="search-filter-group">
+            <label>Candidate Name</label>
 
-          <input
-            type="text"
-            value={candidateName}
-            placeholder="Search candidate"
-            onChange={(event) => setCandidateName(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                handleCandidateNameSearch();
+            <input
+              type="text"
+              value={candidateName}
+              placeholder="Search candidate"
+              onChange={(event) => setCandidateName(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  handleCandidateNameSearch();
+                }
+              }}
+            />
+
+            <button type="button" onClick={handleCandidateNameSearch}>
+              Search
+            </button>
+          </div>
+
+          <div className="search-filter-group">
+            <label>Job Title</label>
+
+            <input
+              type="text"
+              value={jobTitle}
+              placeholder="Search job"
+              onChange={(event) => setJobTitle(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  handleJobTitleSearch();
+                }
+              }}
+            />
+
+            <button type="button" onClick={handleJobTitleSearch}>
+              Search
+            </button>
+          </div>
+
+          <div className="search-filter-group">
+            <label>Candidate ID</label>
+
+            <input
+              type="number"
+              min="1"
+              value={candidateId}
+              placeholder="Candidate ID"
+              onChange={(event) => handleCandidateIdChange(event.target.value)}
+            />
+          </div>
+
+          <div className="search-filter-group">
+            <label>Job ID</label>
+
+            <input
+              type="number"
+              min="1"
+              value={jobId}
+              placeholder="Job ID"
+              onChange={(event) => handleJobIdChange(event.target.value)}
+            />
+          </div>
+
+          <div className="search-filter-group">
+            <label>Status</label>
+
+            <select
+              value={statusFilter}
+              onChange={(event) => handleStatusChange(event.target.value)}
+            >
+              <option value="">All Statuses</option>
+              <option value="APPLIED">APPLIED</option>
+              <option value="SHORTLISTED">SHORTLISTED</option>
+              <option value="INTERVIEW_SCHEDULED">INTERVIEW SCHEDULED</option>
+              <option value="SELECTED">SELECTED</option>
+              <option value="REJECTED">REJECTED</option>
+            </select>
+          </div>
+
+          <div className="search-filter-group">
+            <label>Sort By</label>
+
+            <select
+              value={sortBy}
+              onChange={(event) => handleSortChange(event.target.value)}
+            >
+              <option value="id">ID</option>
+              <option value="candidateId">Candidate ID</option>
+              <option value="jobId">Job ID</option>
+              <option value="status">Status</option>
+            </select>
+          </div>
+
+          <div className="search-filter-group">
+            <label>Direction</label>
+
+            <select
+              value={sortDir}
+              onChange={(event) =>
+                handleSortDirectionChange(event.target.value)
               }
-            }}
-          />
-
-          <button type="button" onClick={handleCandidateNameSearch}>
-            Search
-          </button>
-        </div>
-
-        <div className="search-filter-group">
-          <label>Job Title</label>
-
-          <input
-            type="text"
-            value={jobTitle}
-            placeholder="Search job"
-            onChange={(event) => setJobTitle(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                handleJobTitleSearch();
-              }
-            }}
-          />
-
-          <button type="button" onClick={handleJobTitleSearch}>
-            Search
-          </button>
-        </div>
-
-        <div className="search-filter-group">
-          <label>Candidate ID</label>
-
-          <input
-            type="number"
-            min="1"
-            value={candidateId}
-            placeholder="Candidate ID"
-            onChange={(event) => handleCandidateIdChange(event.target.value)}
-          />
-        </div>
-
-        <div className="search-filter-group">
-          <label>Job ID</label>
-
-          <input
-            type="number"
-            min="1"
-            value={jobId}
-            placeholder="Job ID"
-            onChange={(event) => handleJobIdChange(event.target.value)}
-          />
-        </div>
-
-        <div className="search-filter-group">
-          <label>Status</label>
-
-          <select
-            value={statusFilter}
-            onChange={(event) => handleStatusChange(event.target.value)}
-          >
-            <option value="">All Statuses</option>
-            <option value="APPLIED">APPLIED</option>
-            <option value="SHORTLISTED">SHORTLISTED</option>
-            <option value="INTERVIEW_SCHEDULED">INTERVIEW SCHEDULED</option>
-            <option value="SELECTED">SELECTED</option>
-            <option value="REJECTED">REJECTED</option>
-          </select>
-        </div>
-
-        <div className="search-filter-group">
-          <label>Sort By</label>
-
-          <select
-            value={sortBy}
-            onChange={(event) => handleSortChange(event.target.value)}
-          >
-            <option value="id">ID</option>
-            <option value="candidateId">Candidate ID</option>
-            <option value="jobId">Job ID</option>
-            <option value="status">Status</option>
-          </select>
-        </div>
-
-        <div className="search-filter-group">
-          <label>Direction</label>
-
-          <select
-            value={sortDir}
-            onChange={(event) => handleSortDirectionChange(event.target.value)}
-          >
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
-          </select>
-        </div>
-      </SearchFilterBar>
+            >
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </div>
+        </SearchFilterBar>
+      )}
 
       {showForm && (
         <ApplicationForm

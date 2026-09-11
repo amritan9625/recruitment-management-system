@@ -19,6 +19,7 @@ import { ROLES } from "../../utils/permissions";
 function OfferList() {
   const { role } = useAuth();
   const canManageOffers = role === ROLES.ADMIN || role === ROLES.RECRUITER;
+  const isCandidate = role === ROLES.CANDIDATE;
 
   const [offers, setOffers] = useState([]);
 
@@ -278,7 +279,11 @@ function OfferList() {
       <div className="offer-page-header">
         <div>
           <h1>Offers</h1>
-          <p>Manage job offers in the recruitment system.</p>
+          <p>
+            {isCandidate
+              ? "View your Offers."
+              : "Manage offers in the recruitment system."}
+          </p>
         </div>
 
         {canManageOffers && (
@@ -294,92 +299,94 @@ function OfferList() {
         )}
       </div>
 
-      <SearchFilterBar onReset={handleReset}>
-        <div className="search-filter-group">
-          <label>Candidate Name</label>
-          <input
-            type="text"
-            placeholder="Search candidate..."
-            value={candidateName}
-            onChange={(event) => setCandidateName(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                handleCandidateNameSearch();
-              }
-            }}
-          />
+      {!isCandidate && (
+        <SearchFilterBar onReset={handleReset}>
+          <div className="search-filter-group">
+            <label>Candidate Name</label>
+            <input
+              type="text"
+              placeholder="Search candidate..."
+              value={candidateName}
+              onChange={(event) => setCandidateName(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  handleCandidateNameSearch();
+                }
+              }}
+            />
 
-          <button type="button" onClick={handleCandidateNameSearch}>
-            Search
-          </button>
-        </div>
+            <button type="button" onClick={handleCandidateNameSearch}>
+              Search
+            </button>
+          </div>
 
-        <div className="search-filter-group">
-          <label>Job Title</label>
-          <input
-            type="text"
-            placeholder="Search job..."
-            value={jobTitle}
-            onChange={(event) => setJobTitle(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                handleJobTitleSearch();
-              }
-            }}
-          />
+          <div className="search-filter-group">
+            <label>Job Title</label>
+            <input
+              type="text"
+              placeholder="Search job..."
+              value={jobTitle}
+              onChange={(event) => setJobTitle(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  handleJobTitleSearch();
+                }
+              }}
+            />
 
-          <button type="button" onClick={handleJobTitleSearch}>
-            Search
-          </button>
-        </div>
+            <button type="button" onClick={handleJobTitleSearch}>
+              Search
+            </button>
+          </div>
 
-        <div className="search-filter-group">
-          <label>Salary</label>
-          <input
-            type="number"
-            min="0"
-            placeholder="Salary"
-            value={salary}
-            onChange={(event) => setSalary(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                handleSalarySearch();
-              }
-            }}
-          />
-          <button type="button" onClick={handleSalarySearch}>
-            Search
-          </button>
-        </div>
+          <div className="search-filter-group">
+            <label>Salary</label>
+            <input
+              type="number"
+              min="0"
+              placeholder="Salary"
+              value={salary}
+              onChange={(event) => setSalary(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  handleSalarySearch();
+                }
+              }}
+            />
+            <button type="button" onClick={handleSalarySearch}>
+              Search
+            </button>
+          </div>
 
-        <div className="search-filter-group">
-          <label>Status</label>
-          <select value={statusFilter} onChange={handleStatusFilterChange}>
-            <option value="">All Statuses</option>
-            <option value="PENDING">PENDING</option>
-            <option value="ACCEPTED">ACCEPTED</option>
-            <option value="REJECTED">REJECTED</option>
-          </select>
-        </div>
+          <div className="search-filter-group">
+            <label>Status</label>
+            <select value={statusFilter} onChange={handleStatusFilterChange}>
+              <option value="">All Statuses</option>
+              <option value="PENDING">PENDING</option>
+              <option value="ACCEPTED">ACCEPTED</option>
+              <option value="REJECTED">REJECTED</option>
+            </select>
+          </div>
 
-        <div className="search-filter-group">
-          <label>Sort By</label>
-          <select value={sortBy} onChange={handleSortChange}>
-            <option value="id">ID</option>
-            <option value="salary">Salary</option>
-            <option value="joiningDate">Joining Date</option>
-            <option value="status">Status</option>
-          </select>
-        </div>
+          <div className="search-filter-group">
+            <label>Sort By</label>
+            <select value={sortBy} onChange={handleSortChange}>
+              <option value="id">ID</option>
+              <option value="salary">Salary</option>
+              <option value="joiningDate">Joining Date</option>
+              <option value="status">Status</option>
+            </select>
+          </div>
 
-        <div className="search-filter-group">
-          <label>Direction</label>
-          <select value={sortDir} onChange={handleSortDirectionChange}>
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
-          </select>
-        </div>
-      </SearchFilterBar>
+          <div className="search-filter-group">
+            <label>Direction</label>
+            <select value={sortDir} onChange={handleSortDirectionChange}>
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </div>
+        </SearchFilterBar>
+      )}
 
       {showForm && (
         <OfferForm

@@ -17,6 +17,7 @@ import { ROLES } from "../../utils/permissions";
 function JobList() {
   const { role } = useAuth();
   const canManageJobs = role === ROLES.ADMIN || role === ROLES.RECRUITER;
+  const isCandidate = role === ROLES.CANDIDATE;
 
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -193,7 +194,11 @@ function JobList() {
       <div className="job-page-header">
         <div>
           <h1>Jobs</h1>
-          <p>Manage jobs in the recruitment system.</p>
+          <p>
+            {isCandidate
+              ? "View jobs."
+              : "Manage jobs in the recruitment system."}
+          </p>
         </div>
 
         {canManageJobs && (
@@ -225,47 +230,49 @@ function JobList() {
       )}
 
       {/* Search + Filter + Sort */}
-      <SearchFilterBar onReset={handleReset}>
-        <div>
-          <input
-            type="text"
-            placeholder="Search by location..."
-            value={locationFilter}
-            onChange={(event) => {
-              setLocationFilter(event.target.value);
-            }}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                handleLocationSearch();
-              }
-            }}
-          />
+      {!isCandidate && (
+        <SearchFilterBar onReset={handleReset}>
+          <div>
+            <input
+              type="text"
+              placeholder="Search by location..."
+              value={locationFilter}
+              onChange={(event) => {
+                setLocationFilter(event.target.value);
+              }}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  handleLocationSearch();
+                }
+              }}
+            />
 
-          <button type="button" onClick={handleLocationSearch}>
-            Search
-          </button>
-        </div>
+            <button type="button" onClick={handleLocationSearch}>
+              Search
+            </button>
+          </div>
 
-        <select value={statusFilter} onChange={handleStatusFilterChange}>
-          <option value="">All Statuses</option>
-          <option value="OPEN">OPEN</option>
-          <option value="CLOSED">CLOSED</option>
-        </select>
+          <select value={statusFilter} onChange={handleStatusFilterChange}>
+            <option value="">All Statuses</option>
+            <option value="OPEN">OPEN</option>
+            <option value="CLOSED">CLOSED</option>
+          </select>
 
-        <select value={sortBy} onChange={handleSortChange}>
-          <option value="id">ID</option>
-          <option value="title">Title</option>
-          <option value="location">Location</option>
-          <option value="salary">Salary</option>
-          <option value="jobType">Job Type</option>
-          <option value="status">Status</option>
-        </select>
+          <select value={sortBy} onChange={handleSortChange}>
+            <option value="id">ID</option>
+            <option value="title">Title</option>
+            <option value="location">Location</option>
+            <option value="salary">Salary</option>
+            <option value="jobType">Job Type</option>
+            <option value="status">Status</option>
+          </select>
 
-        <select value={sortDir} onChange={handleSortDirectionChange}>
-          <option value="asc">Ascending</option>
-          <option value="desc">Descending</option>
-        </select>
-      </SearchFilterBar>
+          <select value={sortDir} onChange={handleSortDirectionChange}>
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
+        </SearchFilterBar>
+      )}
 
       {jobs.length === 0 ? (
         <div className="job-empty">No jobs found.</div>
