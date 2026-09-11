@@ -1,5 +1,18 @@
-function ErrorMessage({ message = "Something went wrong." }) {
-  return <div className="error-message">{message}</div>;
+function ErrorMessage({
+  message = "Something went wrong.",
+  onRetry,
+}) {
+  return (
+    <div className="error-message" role="alert">
+      <p>{message}</p>
+
+      {onRetry && (
+        <button type="button" onClick={onRetry}>
+          Try Again
+        </button>
+      )}
+    </div>
+  );
 }
 
 export default ErrorMessage;
