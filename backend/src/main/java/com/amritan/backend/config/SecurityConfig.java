@@ -69,19 +69,29 @@ public class SecurityConfig {
 					
 					// Candidate can access their own candidate application list
 					.requestMatchers(HttpMethod.GET, "/api/applications/candidate/**")
-					.hasAnyRole("ADMIN", "RECRUITER", "CANDIDATE")
+					.hasAnyRole("ADMIN", "RECRUITER")
 					
 					.requestMatchers("/api/applications/**")
 					.hasAnyRole("ADMIN", "RECRUITER")
 					
 					
 					// Interviews
-					.requestMatchers("/api/interviews/**")
+					// All four roles can view interviews.
+					.requestMatchers(HttpMethod.GET, "/api/interviews/**")
 					.hasAnyRole("ADMIN", "RECRUITER", "INTERVIEWER", "CANDIDATE")
+
+					// Only ADMIN, RECRUITER and INTERVIEWER can manage interviews.
+					.requestMatchers("/api/interviews/**")
+					.hasAnyRole("ADMIN", "RECRUITER", "INTERVIEWER")
+					
 					
 					// Offers
-					.requestMatchers("/api/offers/**")
+					.requestMatchers(HttpMethod.GET, "/api/offers/**")
 					.hasAnyRole("ADMIN", "RECRUITER", "CANDIDATE")
+					
+					// Only ADMIN and RECRUITER can manage offers.
+					.requestMatchers("/api/offers/**")
+					.hasAnyRole("ADMIN", "RECRUITER")
 					
 	                
 					.anyRequest().authenticated()
