@@ -169,7 +169,7 @@ function JobForm({ job = null, onSuccess, onCancel }) {
           </select>
         </div>
 
-        <div className="job-form-actions">
+        <div className="action-buttons">
           <button type="submit" disabled={loading}>
             {loading ? "Saving..." : isEditMode ? "Update Job" : "Save Job"}
           </button>

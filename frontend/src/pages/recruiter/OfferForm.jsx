@@ -179,7 +179,7 @@ function OfferForm({ offer = null, onSuccess, onCancel }) {
           </select>
         </div>
 
-        <div className="offer-form-actions">
+        <div className="action-buttons">
           <button type="submit" disabled={loading}>
             {loading
               ? "Saving..."

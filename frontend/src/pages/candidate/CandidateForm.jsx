@@ -186,7 +186,7 @@ function CandidateForm({ candidate = null, onSuccess, onCancel }) {
           </select>
         </div>
 
-        <div className="candidate-form-actions">
+        <div className="action-buttons">
           <button type="submit" disabled={loading}>
             {loading
               ? "Saving..."

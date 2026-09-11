@@ -125,7 +125,7 @@ function ApplicationForm({ application = null, onSuccess, onCancel }) {
           </select>
         </div>
 
-        <div className="application-form-actions">
+        <div className="action-buttons">
           <button type="submit" disabled={loading}>
             {loading
               ? "Saving..."
