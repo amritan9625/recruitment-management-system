@@ -358,20 +358,22 @@ function InterviewList() {
                       </button>
 
                       {canManageInterviews && (
-                        <button
-                          type="button"
-                          onClick={() => handleEdit(interview.id)}
-                        >
-                          Edit
-                        </button>
-                      )}
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => handleEdit(interview.id)}
+                          >
+                            Edit
+                          </button>
 
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(interview.id)}
-                      >
-                        Delete
-                      </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(interview.id)}
+                          >
+                            Delete
+                          </button>
+                        </>
+                      )}
                     </td>
                   </tr>
                 ))}
