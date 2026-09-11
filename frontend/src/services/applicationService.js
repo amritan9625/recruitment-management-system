@@ -23,6 +23,18 @@ export const getAllApplications = async (
   return apiRequest(`/api/applications?${params}`);
 };
 
+export const getMyApplications = async (
+  pageNo = 0,
+  pageSize = 10,
+) => {
+  const params = new URLSearchParams({
+    pageNo,
+    pageSize,
+  });
+
+  return apiRequest(`/api/applications/my?${params}`);
+};
+
 export const getApplicationById = async (id) => {
   return apiRequest(`/api/applications/${id}`);
 };

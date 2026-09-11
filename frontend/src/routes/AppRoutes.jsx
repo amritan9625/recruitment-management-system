@@ -13,6 +13,7 @@ import InterviewList from "../pages/interviewer/InterviewList";
 import OfferList from "../pages/recruiter/OfferList";
 import UserList from "../pages/admin/UserList";
 import RoleList from "../pages/admin/RoleList";
+import Register from "../pages/auth/Register";
 
 function AppRoutes() {
   return (
@@ -21,6 +22,7 @@ function AppRoutes() {
         {/* public routes */}
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
         {/* Authentication Protected Routes */}
         <Route element={<ProtectedRoute />}>
