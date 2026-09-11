@@ -277,7 +277,7 @@ function ApplicationList() {
     return (
       <div className="application-page">
         <h1>Applications</h1>
-        <loading message="Loading applications..." />
+        <Loading message="Loading applications..." />
       </div>
     );
   }

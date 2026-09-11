@@ -177,7 +177,7 @@ function JobList() {
     return (
       <div className="job-page">
         <h1>Jobs</h1>
-        <loading message="Loading jobs..." />
+        <Loading message="Loading jobs..." />
       </div>
     );
   }
