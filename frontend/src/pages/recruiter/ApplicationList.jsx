@@ -17,6 +17,8 @@ import Pagination from "../../components/Pagination";
 import SearchFilterBar from "../../components/SearchFilterBar";
 import { useAuth } from "../../context/AuthContext";
 import { ROLES } from "../../utils/permissions";
+import Loading from "../../components/common/Loading";
+import ErrorMessage from "../../components/common/ErrorMessage";
 
 function ApplicationList() {
   const { role } = useAuth();
@@ -275,7 +277,7 @@ function ApplicationList() {
     return (
       <div className="application-page">
         <h1>Applications</h1>
-        <p>Loading applications...</p>
+        <loading message="Loading applications..." />
       </div>
     );
   }
@@ -284,11 +286,7 @@ function ApplicationList() {
     return (
       <div className="application-page">
         <h1>Applications</h1>
-
-        <p className="application-error">{error}</p>
-        <button type="button" onClick={fetchApplications}>
-          Try Again
-        </button>
+        <ErrorMessage message={error} onRetry={fetchApplications} />
       </div>
     );
   }
@@ -447,7 +445,9 @@ function ApplicationList() {
       )}
 
       {applications.length === 0 ? (
-        <div className="application-empty">No applications found.</div>
+        <div className="empty-state">
+          <p>No applications found.</p>
+        </div>
       ) : (
         <div className="application-table-container">
           <table className="application-table">

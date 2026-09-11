@@ -13,6 +13,8 @@ import Pagination from "../../components/Pagination";
 import SearchFilterBar from "../../components/SearchFilterBar";
 import { useAuth } from "../../context/AuthContext";
 import { ROLES } from "../../utils/permissions";
+import Loading from "../../components/common/Loading";
+import ErrorMessage from "../../components/common/ErrorMessage";
 
 function JobList() {
   const { role } = useAuth();
@@ -175,7 +177,7 @@ function JobList() {
     return (
       <div className="job-page">
         <h1>Jobs</h1>
-        <p>Loading jobs...</p>
+        <loading message="Loading jobs..." />
       </div>
     );
   }
@@ -184,7 +186,7 @@ function JobList() {
     return (
       <div className="job-page">
         <h1>Jobs</h1>
-        <p className="job-error">{error}</p>
+        <ErrorMessage message={error} onRetry={fetchJobs} />
       </div>
     );
   }
@@ -275,7 +277,9 @@ function JobList() {
       )}
 
       {jobs.length === 0 ? (
-        <div className="job-empty">No jobs found.</div>
+        <div className="empty-state">
+          <p>No jobs found.</p>
+        </div>
       ) : (
         <>
           <div className="job-table-container">
