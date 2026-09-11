@@ -21,7 +21,7 @@ function InterviewList() {
     role === ROLES.RECRUITER ||
     role === ROLES.INTERVIEWER;
 
-  const isCandidate = ROLES.CANDIDATE;
+  const isCandidate = role === ROLES.CANDIDATE;
 
   const [interviews, setInterviews] = useState([]);
 
