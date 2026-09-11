@@ -14,8 +14,15 @@ import ApplicationForm from "./ApplicationForm";
 import ApplicationDetails from "./ApplicationDetails";
 import Pagination from "../../components/Pagination";
 import SearchFilterBar from "../../components/SearchFilterBar";
+import { useAuth } from "../../context/AuthContext";
+import { ROLES } from "../../utils/permissions";
 
 function ApplicationList() {
+  const { role } = useAuth();
+  const canManageApplications =
+    role === ROLES.ADMIN || role === ROLES.RECRUITER;
+
+  role === ROLES.ADMIN || role === ROLES.RECRUITER;
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -292,15 +299,17 @@ function ApplicationList() {
           <p>Manage job applications in the recruitment system.</p>
         </div>
 
-        <button
-          className="application-add-button"
-          onClick={() => {
-            setEditingApplication(null);
-            setShowForm(true);
-          }}
-        >
-          Add Application
-        </button>
+        {canManageApplications && (
+          <button
+            className="application-add-button"
+            onClick={() => {
+              setEditingApplication(null);
+              setShowForm(true);
+            }}
+          >
+            Add Application
+          </button>
+        )}
       </div>
 
       <SearchFilterBar onReset={handleReset}>
@@ -451,24 +460,24 @@ function ApplicationList() {
                   <td>{application.jobId}</td>
 
                   <td>
-                    <select
-                      value={application.status}
-                      onChange={(event) =>
-                        handleStatusUpdate(application.id, event.target.value)
-                      }
-                    >
-                      <option value="APPLIED">APPLIED</option>
-
-                      <option value="SHORTLISTED">SHORTLISTED</option>
-
-                      <option value="INTERVIEW_SCHEDULED">
-                        INTERVIEW SCHEDULED
-                      </option>
-
-                      <option value="SELECTED">SELECTED</option>
-
-                      <option value="REJECTED">REJECTED</option>
-                    </select>
+                    {canManageApplications ? (
+                      <select
+                        value={application.status}
+                        onChange={(event) =>
+                          handleStatusUpdate(application.id, event.target.value)
+                        }
+                      >
+                        <option value="APPLIED">APPLIED</option>
+                        <option value="SHORTLISTED">SHORTLISTED</option>
+                        <option value="INTERVIEW_SCHEDULED">
+                          INTERVIEW SCHEDULED
+                        </option>
+                        <option value="SELECTED">SELECTED</option>
+                        <option value="REJECTED">REJECTED</option>
+                      </select>
+                    ) : (
+                      application.status
+                    )}
                   </td>
 
                   <td>
@@ -479,19 +488,23 @@ function ApplicationList() {
                       View
                     </button>
 
-                    <button
-                      type="button"
-                      onClick={() => handleEdit(application.id)}
-                    >
-                      Edit
-                    </button>
+                    {canManageApplications && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => handleEdit(application.id)}
+                        >
+                          Edit
+                        </button>
 
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(application.id)}
-                    >
-                      Delete
-                    </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(application.id)}
+                        >
+                          Delete
+                        </button>
+                      </>
+                    )}
                   </td>
                 </tr>
               ))}
