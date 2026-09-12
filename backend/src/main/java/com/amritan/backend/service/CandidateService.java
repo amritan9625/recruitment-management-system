@@ -1,7 +1,7 @@
 package com.amritan.backend.service;
 
-
 import com.amritan.backend.dto.CandidateDto;
+import com.amritan.backend.dto.CandidateProfileRequest;
 import com.amritan.backend.dto.PageResponse;
 import com.amritan.backend.enums.CandidateStatus;
 
@@ -36,6 +36,6 @@ public interface CandidateService {
     
     CandidateDto getMyProfile(String email);
 
-    CandidateDto saveMyProfile(String email, CandidateDto dto);
+    CandidateDto saveMyProfile(String email, CandidateProfileRequest request);
 
 }

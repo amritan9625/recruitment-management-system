@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.amritan.backend.dto.CandidateDto;
+import com.amritan.backend.dto.CandidateProfileRequest;
 import com.amritan.backend.dto.PageResponse;
 import com.amritan.backend.entity.Candidate;
 import com.amritan.backend.enums.CandidateStatus;
@@ -174,38 +175,38 @@ public class CandidateServiceImpl implements CandidateService{
 	}
 
 	@Override
-	public CandidateDto saveMyProfile(String email, CandidateDto dto) {
+	public CandidateDto saveMyProfile(
+	        String email,
+	        CandidateProfileRequest request) {
+
 	    User user = userRepository.findByEmail(email)
 	            .orElseThrow(() ->
 	                    new ResourceNotFoundException("User not found"));
 
 	    Candidate candidate = candidateRepository.findByUser(user)
-	            .orElseGet(() -> candidateRepository.findByEmailIgnoreCase(email));
+	            .orElseGet(() ->
+	                    candidateRepository.findByEmailIgnoreCase(email));
 
-	    if (candidate == null) {
+	    boolean isNewCandidate = candidate == null;
+
+	    if (isNewCandidate) {
 	        candidate = new Candidate();
+	        candidate.setStatus(CandidateStatus.APPLIED);
 	    }
 
 	    candidate.setUser(user);
 	    candidate.setEmail(user.getEmail());
-	    
-	    candidate.setFirstName(dto.getFirstName());
-	    candidate.setLastName(dto.getLastName());
-	    candidate.setPhone(dto.getPhone());
-	    candidate.setSkills(dto.getSkills());
-	    candidate.setExperience(dto.getExperience());
-	    candidate.setResumeUrl(dto.getResumeUrl());
 
-	    if (dto.getStatus() != null) {
-	        candidate.setStatus(dto.getStatus());
-	    } else if (candidate.getStatus() == null) {
-	        candidate.setStatus(CandidateStatus.APPLIED);
-	    }
+	    candidate.setFirstName(request.getFirstName());
+	    candidate.setLastName(request.getLastName());
+	    candidate.setPhone(request.getPhone());
+	    candidate.setSkills(request.getSkills());
+	    candidate.setExperience(request.getExperience());
+	    candidate.setResumeUrl(request.getResumeUrl());
 
 	    Candidate savedCandidate = candidateRepository.save(candidate);
+
 	    return CandidateMapper.mapToDto(savedCandidate);
 	}
-
-
 
 }

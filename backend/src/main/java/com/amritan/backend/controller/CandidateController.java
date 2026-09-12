@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.amritan.backend.dto.ApiResponse;
 import com.amritan.backend.dto.CandidateDto;
+import com.amritan.backend.dto.CandidateProfileRequest;
 import com.amritan.backend.dto.PageResponse;
 import com.amritan.backend.enums.CandidateStatus;
 import com.amritan.backend.service.CandidateService;
@@ -158,10 +159,12 @@ public class CandidateController {
 	@PutMapping("/me")
 	public ResponseEntity<ApiResponse<CandidateDto>> saveMyProfile(
 	        @AuthenticationPrincipal UserDetails userDetails,
-	        @Valid @RequestBody CandidateDto dto) {
+	        @Valid @RequestBody CandidateProfileRequest request) {
 
 	    CandidateDto candidateDto =
-	            candidateService.saveMyProfile(userDetails.getUsername(), dto);
+	            candidateService.saveMyProfile(
+	                    userDetails.getUsername(),
+	                    request);
 
 	    return ResponseEntity.ok(
 	            new ApiResponse<>(
