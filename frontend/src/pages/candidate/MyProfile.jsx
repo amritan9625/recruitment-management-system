@@ -76,9 +76,12 @@ function MyProfile() {
 
     try {
       const payload = {
-        ...formData,
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
+        phone: formData.phone.trim(),
+        skills: formData.skills.trim(),
         experience: Number(formData.experience),
-        status: formData.status || "APPLIED",
+        resumeUrl: formData.resumeUrl.trim(),
       };
 
       const response = await saveMyCandidateProfile(payload);
