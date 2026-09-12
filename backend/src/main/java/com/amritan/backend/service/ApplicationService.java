@@ -7,6 +7,8 @@ import com.amritan.backend.enums.ApplicationStatus;
 public interface ApplicationService {
 
 	ApplicationDto createApplication(ApplicationDto dto);
+	
+	ApplicationDto applyForJob(Long jobId);
 
 	PageResponse<ApplicationDto> getAllApplications(int pageNo, int pageSize,
 			String sortBy, String sortDir);

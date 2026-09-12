@@ -108,6 +108,42 @@ public class ApplicationServiceImpl implements ApplicationService{
 		
 		return ApplicationMapper.mapToDto(savedApplication);		
 	}
+	
+	
+	@Override
+	public ApplicationDto applyForJob(Long jobId) {
+	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+	    String email = authentication.getName();
+
+	    Candidate candidate = candidateRepository.findByEmailIgnoreCase(email);
+
+	    if (candidate == null) {
+	        throw new ResourceNotFoundException("Candidate profile not found for logged-in user");
+	    }
+
+	    Job job = jobRepository.findById(jobId).orElseThrow(() ->
+	                    new ResourceNotFoundException("Job not found"));
+
+	    boolean alreadyApplied = applicationRepository.existsByCandidateIdAndJobId(
+	                    candidate.getId(),
+	                    job.getId());
+
+	    if (alreadyApplied) {
+	        throw new IllegalStateException("You have already applied for this job");
+	    }
+
+	    Application application = new Application();
+
+	    application.setCandidate(candidate);
+	    application.setJob(job);
+	    application.setStatus(ApplicationStatus.APPLIED);
+
+	    Application savedApplication = applicationRepository.save(application);
+
+	    return ApplicationMapper.mapToDto(savedApplication);
+	}
+	
 
 	@Override
 	public PageResponse<ApplicationDto> getAllApplications(int pageNo, int pageSize

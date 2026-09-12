@@ -43,6 +43,16 @@ public class ApplicationController {
 				new ApiResponse<>(true, "Application created successfully", applicationDto, LocalDateTime.now()),
 				HttpStatus.CREATED);
 	}
+	
+	
+	@PostMapping("/me/{jobId}")
+	public ResponseEntity<ApiResponse<ApplicationDto>> applyForJob(@PathVariable Long jobId) {
+	    ApplicationDto applicationDto = applicationService.applyForJob(jobId);
+
+	    return ResponseEntity.ok(new ApiResponse<>(true, "Application submitted successfully", applicationDto, LocalDateTime.now())
+	    );
+	}
+	
 
 	@GetMapping
 	@Operation(summary = "Get all applications", description = "Fetches applications with pagination and sorting")

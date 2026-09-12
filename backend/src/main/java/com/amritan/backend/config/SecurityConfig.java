@@ -62,7 +62,10 @@ public class SecurityConfig {
 	                .requestMatchers("/api/candidates/**")
 					.hasAnyRole("ADMIN", "RECRUITER", "INTERVIEWER")
 					
+					
 					// Applications
+	                .requestMatchers(HttpMethod.POST, "/api/applications/my/**")
+	                .hasRole("CANDIDATE")
 					// Candidate can access only their own applications
 					.requestMatchers(HttpMethod.GET, "/api/applications/my")
 					.hasRole("CANDIDATE")

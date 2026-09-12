@@ -27,4 +27,6 @@ public interface ApplicationRepository extends JpaRepository<Application	, Long>
 
 	Page<Application> findByJobTitleContainingIgnoreCase(String keyword, Pageable pageable);
 	
+	boolean existsByCandidateIdAndJobId(Long candidateId, Long jobId);
+	
 }
