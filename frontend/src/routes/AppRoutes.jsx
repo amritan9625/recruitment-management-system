@@ -14,6 +14,7 @@ import OfferList from "../pages/recruiter/OfferList";
 import UserList from "../pages/admin/UserList";
 import RoleList from "../pages/admin/RoleList";
 import Register from "../pages/auth/Register";
+import MyProfile from "../pages/candidate/MyProfile";
 
 function AppRoutes() {
   return (
@@ -26,6 +27,12 @@ function AppRoutes() {
 
         {/* Authentication Protected Routes */}
         <Route element={<ProtectedRoute />}>
+
+          {/* My Profile */}
+          <Route element={<RoleProtectedRoute allowedRoles={[ "CANDIDATE" ]} />} >
+            <Route path="/my-profile" element={<MainLayout><MyProfile /></MainLayout>} />
+          </Route>
+
           {/* Dashboard */}
           <Route element={<RoleProtectedRoute allowedRoles={PERMISSIONS.DASHBOARD} />} >
             <Route path="/dashboard" element={<MainLayout><Dashboard /></MainLayout>} />

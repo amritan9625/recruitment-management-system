@@ -69,3 +69,14 @@ export const getCandidatesByStatus = async (
     `/api/candidates/status/${encodeURIComponent(status)}?${params}`,
   );
 };
+
+export const getMyCandidateProfile = async () => {
+  return apiRequest("/api/candidates/me");
+};
+
+export const saveMyCandidateProfile = async (candidateData) => {
+  return apiRequest("/api/candidates/me", {
+    method: "PUT",
+    body: JSON.stringify(candidateData),
+  });
+};

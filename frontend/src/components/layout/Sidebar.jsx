@@ -12,6 +12,11 @@ function Sidebar() {
       permission: PERMISSIONS.DASHBOARD,
     },
     {
+      label: "My Profile",
+      path: "/my-profile",
+      permission: ["CANDIDATE"],
+    },
+    {
       label: "Users",
       path: "/users",
       permission: PERMISSIONS.USERS,
