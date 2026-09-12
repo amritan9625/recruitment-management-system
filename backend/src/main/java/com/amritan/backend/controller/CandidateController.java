@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.amritan.backend.dto.ApiResponse;
 import com.amritan.backend.dto.CandidateDto;
@@ -134,6 +136,41 @@ public class CandidateController {
 		response.setTimestamp(LocalDateTime.now());
 
 		return ResponseEntity.ok(response);
+	}
+	
+	@GetMapping("/me")
+	public ResponseEntity<ApiResponse<CandidateDto>> getMyProfile(
+	        @AuthenticationPrincipal UserDetails userDetails) {
+
+	    CandidateDto candidateDto =
+	            candidateService.getMyProfile(userDetails.getUsername());
+
+	    return ResponseEntity.ok(
+	            new ApiResponse<>(
+	                    true,
+	                    "Candidate profile fetched successfully",
+	                    candidateDto,
+	                    LocalDateTime.now()
+	            )
+	    );
+	}
+
+	@PutMapping("/me")
+	public ResponseEntity<ApiResponse<CandidateDto>> saveMyProfile(
+	        @AuthenticationPrincipal UserDetails userDetails,
+	        @Valid @RequestBody CandidateDto dto) {
+
+	    CandidateDto candidateDto =
+	            candidateService.saveMyProfile(userDetails.getUsername(), dto);
+
+	    return ResponseEntity.ok(
+	            new ApiResponse<>(
+	                    true,
+	                    "Candidate profile saved successfully",
+	                    candidateDto,
+	                    LocalDateTime.now()
+	            )
+	    );
 	}
 
 }

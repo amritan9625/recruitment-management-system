@@ -11,11 +11,17 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.JoinColumn;
 
 @Entity
 @Table(name = "candidates")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Candidate {
 
 	@Id
@@ -42,4 +48,7 @@ public class Candidate {
 	@NotNull
 	private CandidateStatus status;
 	
+	@OneToOne
+	@JoinColumn(name = "user_id", unique = true)
+	private User user;	
 }

@@ -55,6 +55,10 @@ public class SecurityConfig {
 	                .hasAnyRole("ADMIN", "RECRUITER")
 					
 	                // Candidates
+	                // Candidate can access only their own profile endpoints
+	                .requestMatchers("/api/candidates/me")
+	                .hasRole("CANDIDATE")
+	                
 	                .requestMatchers("/api/candidates/**")
 					.hasAnyRole("ADMIN", "RECRUITER", "INTERVIEWER")
 					

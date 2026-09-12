@@ -33,5 +33,9 @@ public interface CandidateService {
             int pageNo,
             int pageSize
     );
+    
+    CandidateDto getMyProfile(String email);
+
+    CandidateDto saveMyProfile(String email, CandidateDto dto);
 
 }

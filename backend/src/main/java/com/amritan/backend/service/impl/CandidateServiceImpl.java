@@ -16,6 +16,8 @@ import com.amritan.backend.exception.ResourceNotFoundException;
 import com.amritan.backend.mapper.CandidateMapper;
 import com.amritan.backend.repository.CandidateRepository;
 import com.amritan.backend.service.CandidateService;
+import com.amritan.backend.entity.User;
+import com.amritan.backend.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class CandidateServiceImpl implements CandidateService{
 
 	private final CandidateRepository candidateRepository;
+	private final UserRepository userRepository;
 	
 	
 	@Override
@@ -151,6 +154,56 @@ public class CandidateServiceImpl implements CandidateService{
 		        page.getTotalElements(),
 		        page.getTotalPages(),
 		        page.isLast() );
+	}
+	
+	
+	@Override
+	public CandidateDto getMyProfile(String email) {
+	    User user = userRepository.findByEmail(email)
+	            .orElseThrow(() ->
+	                    new ResourceNotFoundException("User not found"));
+
+	    Candidate candidate = candidateRepository.findByUser(user)
+	            .orElseGet(() -> candidateRepository.findByEmailIgnoreCase(email));
+
+	    if (candidate == null) {
+	        throw new ResourceNotFoundException("Candidate profile not found");
+	    }
+
+	    return CandidateMapper.mapToDto(candidate);
+	}
+
+	@Override
+	public CandidateDto saveMyProfile(String email, CandidateDto dto) {
+	    User user = userRepository.findByEmail(email)
+	            .orElseThrow(() ->
+	                    new ResourceNotFoundException("User not found"));
+
+	    Candidate candidate = candidateRepository.findByUser(user)
+	            .orElseGet(() -> candidateRepository.findByEmailIgnoreCase(email));
+
+	    if (candidate == null) {
+	        candidate = new Candidate();
+	    }
+
+	    candidate.setUser(user);
+	    candidate.setEmail(user.getEmail());
+	    
+	    candidate.setFirstName(dto.getFirstName());
+	    candidate.setLastName(dto.getLastName());
+	    candidate.setPhone(dto.getPhone());
+	    candidate.setSkills(dto.getSkills());
+	    candidate.setExperience(dto.getExperience());
+	    candidate.setResumeUrl(dto.getResumeUrl());
+
+	    if (dto.getStatus() != null) {
+	        candidate.setStatus(dto.getStatus());
+	    } else if (candidate.getStatus() == null) {
+	        candidate.setStatus(CandidateStatus.APPLIED);
+	    }
+
+	    Candidate savedCandidate = candidateRepository.save(candidate);
+	    return CandidateMapper.mapToDto(savedCandidate);
 	}
 
 
