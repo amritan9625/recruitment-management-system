@@ -64,7 +64,7 @@ public class SecurityConfig {
 					
 					
 					// Applications
-	                .requestMatchers(HttpMethod.POST, "/api/applications/my/**")
+	                .requestMatchers(HttpMethod.POST, "/api/applications/me/**")
 	                .hasRole("CANDIDATE")
 					// Candidate can access only their own applications
 					.requestMatchers(HttpMethod.GET, "/api/applications/my")
