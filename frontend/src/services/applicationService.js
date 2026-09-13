@@ -39,6 +39,12 @@ export const getApplicationById = async (id) => {
   return apiRequest(`/api/applications/${id}`);
 };
 
+export const applyForJob = async (jobId) => {
+  return apiRequest(`/api/applications/me/${jobId}`, {
+    method: "POST",
+  });
+};
+
 export const updateApplication = async (id, applicationData) => {
   return apiRequest(`/api/applications/${id}`, {
     method: "PUT",

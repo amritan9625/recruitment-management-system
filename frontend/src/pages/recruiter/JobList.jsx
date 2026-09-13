@@ -15,6 +15,7 @@ import { useAuth } from "../../context/AuthContext";
 import { ROLES } from "../../utils/permissions";
 import Loading from "../../components/common/Loading";
 import ErrorMessage from "../../components/common/ErrorMessage";
+import { applyForJob } from "../../services/applicationService";
 
 function JobList() {
   const { role } = useAuth();
@@ -40,6 +41,12 @@ function JobList() {
   const [submittedLocationFilter, setSubmittedLocationFilter] = useState("");
 
   const [statusFilter, setStatusFilter] = useState("");
+
+  const [applyingJobId, setApplyingJobId] = useState(null);
+  const [applyMessage, setApplyMessage] = useState("");
+  const [applyError, setApplyError] = useState("");
+
+  const [appliedJobIds, setAppliedJobIds] = useState([]);
 
   const fetchJobs = async () => {
     try {
@@ -116,6 +123,27 @@ function JobList() {
   const handlePageSizeChange = (size) => {
     setPageNo(0);
     setPageSize(size);
+  };
+
+  const handleApply = async (job) => {
+    if (job.status !== "OPEN") return;
+
+    try {
+      setApplyingJobId(job.id);
+      setApplyMessage("");
+      setApplyError("");
+
+      const response = await applyForJob(job.id);
+
+      setAppliedJobIds((prev) => [...prev, job.id]);
+      setApplyMessage(
+        response.message || `Application submitted for "${job.title}".`,
+      );
+    } catch (err) {
+      setApplyError(err.message || "Failed to submit application.");
+    } finally {
+      setApplyingJobId(null);
+    }
   };
 
   const handleEdit = async (id) => {
@@ -276,6 +304,10 @@ function JobList() {
         </SearchFilterBar>
       )}
 
+      {isCandidate && applyMessage && <p role="status">{applyMessage}</p>}
+
+      {isCandidate && applyError && <p role="alert">{applyError}</p>}
+
       {jobs.length === 0 ? (
         <div className="empty-state">
           <p>No jobs found.</p>
@@ -329,6 +361,26 @@ function JobList() {
                       <button onClick={() => setViewingJobId(job.id)}>
                         View
                       </button>
+
+                      {isCandidate && (
+                        <button
+                          type="button"
+                          onClick={() => handleApply(job)}
+                          disabled={
+                            job.status !== "OPEN" ||
+                            applyingJobId === job.id ||
+                            appliedJobIds.includes(job.id)
+                          }
+                        >
+                          {applyingJobId === job.id
+                            ? "Applying..."
+                            : appliedJobIds.includes(job.id)
+                              ? "Already Applied"
+                              : job.status === "OPEN"
+                                ? "Apply"
+                                : "Closed"}
+                        </button>
+                      )}
 
                       {canManageJobs && (
                         <>
