@@ -17,6 +17,8 @@ import com.amritan.backend.entity.Application;
 import com.amritan.backend.entity.Candidate;
 import com.amritan.backend.entity.Job;
 import com.amritan.backend.enums.ApplicationStatus;
+import com.amritan.backend.enums.JobStatus;
+import com.amritan.backend.exception.DuplicateResourceException;
 import com.amritan.backend.exception.ResourceNotFoundException;
 import com.amritan.backend.mapper.ApplicationMapper;
 import com.amritan.backend.repository.ApplicationRepository;
@@ -124,13 +126,17 @@ public class ApplicationServiceImpl implements ApplicationService{
 
 	    Job job = jobRepository.findById(jobId).orElseThrow(() ->
 	                    new ResourceNotFoundException("Job not found"));
+	    if (job.getStatus() != JobStatus.OPEN) {
+	        throw new IllegalStateException(
+	                "This job is not open for applications");
+	    }
 
 	    boolean alreadyApplied = applicationRepository.existsByCandidateIdAndJobId(
 	                    candidate.getId(),
 	                    job.getId());
 
 	    if (alreadyApplied) {
-	        throw new IllegalStateException("You have already applied for this job");
+	        throw new DuplicateResourceException("You have already applied for this job");
 	    }
 
 	    Application application = new Application();
