@@ -318,6 +318,7 @@ function JobList() {
             <table className="job-table">
               <thead>
                 <tr>
+                  <th>Id</th>
                   <th>Title</th>
                   <th>Description</th>
                   <th>Location</th>
@@ -331,6 +332,8 @@ function JobList() {
               <tbody>
                 {jobs.map((job) => (
                   <tr key={job.id}>
+                    <td>{job.id}</td>
+                    
                     <td>{job.title}</td>
 
                     <td>{job.description}</td>

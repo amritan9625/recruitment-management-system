@@ -276,6 +276,7 @@ function CandidateList() {
             <table className="candidate-table">
               <thead>
                 <tr>
+                  <th>Id</th>
                   <th>Name</th>
                   <th>Email</th>
                   <th>Phone</th>
@@ -290,6 +291,7 @@ function CandidateList() {
               <tbody>
                 {candidates.map((candidate) => (
                   <tr key={candidate.id}>
+                    <td>{candidate.id}</td>
                     <td>
                       {candidate.firstName} {candidate.lastName}
                     </td>
