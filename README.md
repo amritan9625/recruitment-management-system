@@ -140,6 +140,23 @@ The frontend uses `VITE_API_BASE_URL` to determine which backend API to call. Fo
 
 The frontend and backend are deployed separately on Render. The frontend is configured to use the deployed backend API, and the static site uses a rewrite rule so React Router routes continue to work when opened or refreshed directly.
 
+## Screenshots
+
+### Login page
+![Login page](screenshots/login.png)
+
+### Dashboard
+![Dashboard](screenshots/dashboard.png)
+
+### Jobs
+![Jobs](screenshots/jobs.png)
+
+### Candidate Profile
+![Candidate Profile](screenshots/candidate-profile.png)
+
+### Applications
+![Applications](screenshots/applications.png)
+
 ## Author
 
 **Amritan Kumar**
