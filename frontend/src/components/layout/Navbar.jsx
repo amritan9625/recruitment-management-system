@@ -15,7 +15,7 @@ function Navbar() {
 
   return (
     <header className="navbar">
-      <div className="navbar-brand">Recruitment Management System</div>
+      <div className="navbar-brand">HireFlow</div>
 
       <div className="navbar-actions">
         <div className="navbar-user">

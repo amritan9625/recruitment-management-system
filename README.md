@@ -1,4 +1,5 @@
-# Recruitment Management System
+# HireFlow
+### Recruitment Management System
 
 A full-stack recruitment management application built with **React** and **Spring Boot**. It supports role-based access for administrators, recruiters, interviewers, and candidates, with workflows for managing jobs, candidate profiles, applications, interviews, and offers.
 
