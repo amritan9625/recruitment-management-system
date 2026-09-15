@@ -1,16 +1,59 @@
-# React + Vite
+# Recruitment Management System — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This folder contains the React + Vite frontend for the Recruitment Management System.
 
-Currently, two official plugins are available:
+## Technology
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+* React
+* Vite
+* React Router
+* JavaScript
+* CSS
 
-## React Compiler
+## Run Locally
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Prerequisites
 
-## Expanding the ESLint configuration
+* Node.js and npm
+* The Recruitment Management System backend running locally
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Setup
+
+From this folder, install dependencies:
+
+```bash
+npm install
+```
+
+Create a `.env` file in the `frontend` folder:
+
+```env
+VITE_API_BASE_URL=http://localhost:8080
+```
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+Open the local URL shown in the terminal, usually `http://localhost:5173`.
+
+## Available Scripts
+
+| Command           | Purpose                              |
+| ----------------- | ------------------------------------ |
+| `npm run dev`     | Start the development server         |
+| `npm run build`   | Create the production build          |
+| `npm run preview` | Preview the production build locally |
+| `npm run lint`    | Run ESLint                           |
+
+## Production
+
+The frontend is deployed on Render:
+
+https://recruitment-management-system-frontend-ztke.onrender.com
+
+The production API base URL is configured through the `VITE_API_BASE_URL` environment variable in the hosting service.
+
+For the complete project overview, backend setup, roles, and workflows, see the [root README](../README.md).
